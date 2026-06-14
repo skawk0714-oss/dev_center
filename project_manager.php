@@ -231,27 +231,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'creat
 
         $currentTask = "# CURRENT_TASK.md — {$newName}\n\n"
             . "## 목표\n{$newTask}\n\n"
-            . "## 작업 범위\n(여기에 작성)\n\n"
-            . "## 제외 범위\n(여기에 작성)\n\n"
-            . "## 완료 조건\n(여기에 작성)\n";
+            . "## 작업 범위\n"
+            . "- (구현할 기능을 구체적으로 적는다)\n\n"
+            . "## 제외 범위\n"
+            . "- 다른 프로젝트 폴더 수정 금지\n"
+            . "- 외부 라이브러리 신규 설치 (사용자 승인 필요)\n"
+            . "- (이번 작업에서 하지 않을 것을 적는다)\n\n"
+            . "## 완료 조건\n"
+            . "- [ ] 브라우저에서 기능이 정상 동작한다\n"
+            . "- [ ] `php -l` 검사를 통과했다\n"
+            . "- [ ] AGENTS.md 규칙을 위반한 변경이 없다\n";
         writeIfNew($nativePath . '/CURRENT_TASK.md', $currentTask);
 
+        $folderName = basename($nativePath);
         $arch = "# ARCHITECTURE.md — {$newName}\n\n"
             . "## 기술 스택\n{$newStack}\n\n"
-            . "## 폴더 구조\n(여기에 작성)\n\n"
-            . "## 주요 파일\n(여기에 작성)\n";
+            . "## 폴더 구조\n"
+            . "```\n"
+            . "{$nativePath}/\n"
+            . "├── index.php          # 진입점\n"
+            . "├── config.php         # 설정 (경로, 상수 등)\n"
+            . "├── assets/\n"
+            . "│   ├── css/\n"
+            . "│   └── js/\n"
+            . "├── data/              # 파일 저장소 (JSON 등, 해당 시)\n"
+            . "├── docs/\n"
+            . "│   └── ROADMAP.md\n"
+            . "├── AGENTS.md\n"
+            . "├── CURRENT_TASK.md\n"
+            . "└── ARCHITECTURE.md\n"
+            . "```\n\n"
+            . "## 주요 파일\n"
+            . "| 파일 | 역할 |\n"
+            . "|------|------|\n"
+            . "| index.php | 메인 진입점 |\n"
+            . "| config.php | 환경 설정 |\n\n"
+            . "## 데이터/스토리지 흐름\n"
+            . "(여기에 작성 — DB 테이블, JSON 파일, 세션 등 데이터 흐름 설명)\n\n"
+            . "## 외부 의존성\n"
+            . "- PHP 8.x (XAMPP)\n"
+            . "- (추가 라이브러리가 있으면 여기 기록)\n";
         writeIfNew($nativePath . '/ARCHITECTURE.md', $arch);
 
-        $readme = "# {$newName}\n\n{$newDesc}\n\n"
+        $urlHint = $newUrl ?: "http://localhost/{$folderName}/";
+        $readme = "# {$newName}\n\n"
+            . ($newDesc ? "{$newDesc}\n\n" : '')
             . "## 목적\n{$newPurpose}\n\n"
             . "## 대상\n{$newAudience}\n\n"
-            . "## 실행 방법\n(여기에 작성)\n";
+            . "## 환경\n"
+            . "- PHP 8.x (XAMPP)\n"
+            . "- 접속: {$urlHint}\n"
+            . "- 프로젝트 경로: `{$nativePath}`\n\n"
+            . "## 실행 방법\n"
+            . "1. XAMPP Apache를 시작한다.\n"
+            . "2. 브라우저에서 {$urlHint} 접속한다.\n\n"
+            . "## 중요 사항\n"
+            . "- 리스크/주의: {$newRisk}\n"
+            . "- 이 도구는 로컬 전용이다. 외부 서버에 올리지 않는다.\n";
         writeIfNew($nativePath . '/README.md', $readme);
 
         if (!is_dir($nativePath . '/docs')) { mkdir($nativePath . '/docs', 0755, true); }
         $roadmap = "# ROADMAP — {$newName}\n\n"
             . "## 상업적 목표\n{$newGoal}\n\n"
-            . "## 단계별 계획\n- [ ] {$newTask}\n";
+            . "## Phase 1 — 기본 기능\n"
+            . "- [ ] {$newTask}\n\n"
+            . "## Phase 2 — 개선\n"
+            . "- [ ] (추가 기능 아이디어)\n\n"
+            . "## Phase 3 — 완성\n"
+            . "- [ ] (배포/공개/수익화 계획)\n\n"
+            . "## 보류 아이디어\n"
+            . "- (나중에 고려할 것들)\n";
         writeIfNew($nativePath . '/docs/ROADMAP.md', $roadmap);
     }
 
