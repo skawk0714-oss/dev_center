@@ -1,0 +1,34 @@
+[
+  {
+    "id": "260614-copier-rms",
+    "date": "2026-06-14",
+    "name": "CopierRMS",
+    "type": "php",
+    "path": "C:/xampp/htdocs/copier",
+    "url": "http://localhost/copier",
+    "status": "active",
+    "description": "복사기 임대·유지보수 관리 ERP",
+    "memo": "",
+    "commands": {
+      "vscode": true,
+      "codex": true,
+      "claude": true
+    }
+  },
+  {
+    "id": "260614-dev-center",
+    "date": "2026-06-14",
+    "name": "Dev Center",
+    "type": "php",
+    "path": "C:/xampp/htdocs/dev_center",
+    "url": "http://localhost/dev_center",
+    "status": "active",
+    "description": "개발 전용 허브 — 프로젝트·기능 보관함·실험실",
+    "memo": "",
+    "commands": {
+      "vscode": true,
+      "codex": true,
+      "claude": true
+    }
+  }
+]
