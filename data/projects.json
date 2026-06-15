@@ -13,7 +13,7 @@
     "priority": 95,
     "completion": 70,
     "next": "모바일 레이아웃 최적화, 운영 화면 안정화, 고객 현장 사용 흐름 정리",
-    "memo": "",
+    "memo": "사무기기 erp",
     "commands": {
       "vscode": true,
       "codex": true,
@@ -34,7 +34,7 @@
     "priority": 90,
     "completion": 60,
     "next": "New Project 생성 흐름 안정화, 기능 보관함/프로젝트 관리 연결",
-    "memo": "",
+    "memo": "개발 센터",
     "commands": {
       "vscode": true,
       "codex": true,
