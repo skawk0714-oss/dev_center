@@ -11,6 +11,16 @@ function json_fail(string $msg): never {
     exit;
 }
 
+function save_requests(string $arFile, array $requests): void {
+    $json = json_encode(
+        $requests,
+        JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+    );
+    if (file_put_contents($arFile, $json, LOCK_EX) === false) {
+        json_fail('파일 저장에 실패했습니다.');
+    }
+}
+
 /* POST 전용 */
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     json_fail('허용되지 않은 메서드입니다.');
@@ -23,7 +33,68 @@ if ($token === '' || !hash_equals($session, $token)) {
     json_fail('CSRF 토큰이 유효하지 않습니다.');
 }
 
-/* 입력값 */
+$action = trim((string)($_POST['action'] ?? 'create'));
+$arFile = DC_DATA_DIR . '/apply_requests.json';
+
+/* ── apply_requests.json 로드 공통 ── */
+$requests = [];
+if (is_file($arFile)) {
+    $decoded = json_decode(file_get_contents($arFile), true);
+    if (is_array($decoded)) { $requests = $decoded; }
+}
+
+/* ════════════════════════════════════
+   action = set_target
+   ════════════════════════════════════ */
+if ($action === 'set_target') {
+    $requestId       = trim((string)($_POST['request_id']        ?? ''));
+    $targetProjectId = trim((string)($_POST['target_project_id'] ?? ''));
+
+    if ($requestId === '' || $targetProjectId === '') {
+        json_fail('request_id와 target_project_id는 필수입니다.');
+    }
+
+    /* projects.json에서 유효한 ID인지 확인 */
+    $projFile = DC_DATA_DIR . '/projects.json';
+    if (!is_file($projFile)) {
+        json_fail('프로젝트 데이터를 찾을 수 없습니다.');
+    }
+    $projects = json_decode(file_get_contents($projFile), true);
+    if (!is_array($projects)) {
+        json_fail('프로젝트 데이터를 읽을 수 없습니다.');
+    }
+    $validIds = array_column($projects, 'id');
+    if (!in_array($targetProjectId, $validIds, true)) {
+        json_fail('유효하지 않은 프로젝트 ID입니다.');
+    }
+
+    /* request_id로 항목 찾아 업데이트 */
+    $found = false;
+    foreach ($requests as &$r) {
+        if (($r['id'] ?? '') === $requestId) {
+            $r['target_project_id'] = $targetProjectId;
+            $found = true;
+            break;
+        }
+    }
+    unset($r);
+
+    if (!$found) {
+        json_fail('존재하지 않는 요청 ID입니다.');
+    }
+
+    save_requests($arFile, $requests);
+
+    echo json_encode(
+        ['ok' => true, 'message' => '대상 프로젝트를 저장했습니다.'],
+        JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
+    );
+    exit;
+}
+
+/* ════════════════════════════════════
+   action = create (기본)
+   ════════════════════════════════════ */
 $expId    = trim((string)($_POST['exp_id']    ?? ''));
 $recordId = trim((string)($_POST['record_id'] ?? ''));
 if ($expId === '' || $recordId === '') {
@@ -52,14 +123,6 @@ if (($exp['record_id'] ?? '') !== $recordId) {
     json_fail('record_id가 실험 데이터와 일치하지 않습니다.');
 }
 
-/* apply_requests.json 로드 */
-$arFile    = DC_DATA_DIR . '/apply_requests.json';
-$requests  = [];
-if (is_file($arFile)) {
-    $decoded = json_decode(file_get_contents($arFile), true);
-    if (is_array($decoded)) { $requests = $decoded; }
-}
-
 /* 중복 draft/pending 방지 */
 $dupStatuses = ['draft', 'pending', 'reviewing'];
 foreach ($requests as $r) {
@@ -84,14 +147,7 @@ $requests[] = [
     'resolved_at'      => null,
 ];
 
-/* 파일 저장 */
-$json = json_encode(
-    $requests,
-    JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-);
-if (file_put_contents($arFile, $json, LOCK_EX) === false) {
-    json_fail('파일 저장에 실패했습니다.');
-}
+save_requests($arFile, $requests);
 
 echo json_encode(
     ['ok' => true, 'message' => '반영 요청 초안을 만들었습니다.'],

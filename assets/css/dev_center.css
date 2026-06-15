@@ -1076,6 +1076,18 @@ code.kn-code {
 .lb-ar-title  { flex: 1 1 140px; font-size: 13px; color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lb-ar-meta   { font-size: 12px; color: var(--text3); white-space: nowrap; }
 .lb-ar-project{ font-style: italic; }
+.lb-ar-target-wrap { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.lb-ar-select {
+  font-size: 12px;
+  padding: 3px 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text);
+  max-width: 160px;
+}
+.lb-ar-save-btn { font-size: 12px; padding: 3px 10px; }
+.lb-ar-save-msg { font-size: 12px; }
 
 /* category / subcategory chips */
 .lb-cat-chip {

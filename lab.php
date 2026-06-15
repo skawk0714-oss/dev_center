@@ -46,6 +46,16 @@ if (is_file($_wsFile)) {
 }
 unset($_wsFile, $_wsAll, $_ws);
 
+/* ── 프로젝트 목록 로드 ── */
+$projects = [];
+$_projFile = DC_DATA_DIR . '/projects.json';
+if (is_file($_projFile)) {
+    $_projRaw = json_decode(file_get_contents($_projFile), true);
+    if (is_array($_projRaw)) { $projects = $_projRaw; }
+}
+unset($_projFile, $_projRaw);
+$jsProjects = json_encode($projects, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
+
 /* ── 반영 요청 목록 로드 ── */
 $applyRequests = [];
 $_arFile = DC_DATA_DIR . '/apply_requests.json';
@@ -173,8 +183,9 @@ $jsView  = json_encode($urlView, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
 <?php if (!$loadError): ?>
 <script>
 (function () {
-  const DATA          = <?= $jsData ?>;
+  const DATA           = <?= $jsData ?>;
   const APPLY_REQUESTS = <?= $jsApplyRequests ?>;
+  const PROJECTS       = <?= $jsProjects ?>;
 
   const CAT_LABELS = {
     design:     '디자인',
@@ -441,29 +452,88 @@ $jsView  = json_encode($urlView, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
   const AR_STATUS_CLASS = { draft: 'lb-apply-pending', pending: 'lb-apply-pending', reviewing: 'lb-apply-reviewing',
                              applied: 'lb-apply-applied', rejected: 'lb-apply-rejected', deferred: 'lb-apply-deferred' };
 
+  /* 로컬 상태 복사본 — target 저장 후 DOM 갱신용 */
+  const arState = APPLY_REQUESTS.map(r => Object.assign({}, r));
+
   function renderApplyList() {
     const wrap = document.getElementById('lb-apply-list');
     if (!wrap) return;
-    if (APPLY_REQUESTS.length === 0) {
+    if (arState.length === 0) {
       wrap.innerHTML = '<div class="kn-empty">생성된 반영 요청이 없습니다.</div>';
       return;
     }
-    const rows = APPLY_REQUESTS.map(r => {
-      const exp     = DATA.find(d => d.id === r.exp_id);
-      const title   = exp ? esc(exp.title) : esc(r.exp_id);
-      const sCls    = AR_STATUS_CLASS[r.status] || 'lb-apply-pending';
-      const sLbl    = AR_STATUS_LABEL[r.status] || esc(r.status);
-      const project = r.target_project_id ? esc(r.target_project_id) : '대상 미지정';
-      return `<div class="lb-ar-row">
+    wrap.innerHTML = arState.map((r, idx) => {
+      const exp   = DATA.find(d => d.id === r.exp_id);
+      const title = exp ? esc(exp.title) : esc(r.exp_id);
+      const sCls  = AR_STATUS_CLASS[r.status] || 'lb-apply-pending';
+      const sLbl  = AR_STATUS_LABEL[r.status] || esc(r.status);
+
+      let projectCell;
+      if (r.target_project_id) {
+        const proj = PROJECTS.find(p => p.id === r.target_project_id);
+        projectCell = `<span class="lb-ar-meta lb-ar-project">${esc(proj ? proj.name : r.target_project_id)}</span>`;
+      } else {
+        const opts = PROJECTS.map(p =>
+          `<option value="${esc(p.id)}">${esc(p.name)}</option>`
+        ).join('');
+        projectCell = `
+          <span class="lb-ar-target-wrap">
+            <select class="lb-ar-select" data-idx="${idx}">
+              <option value="">— 프로젝트 선택 —</option>
+              ${opts}
+            </select>
+            <button class="lb-ar-save-btn ws-launch-btn" data-idx="${idx}">대상 저장</button>
+            <span class="lb-ar-save-msg"></span>
+          </span>`;
+      }
+
+      return `<div class="lb-ar-row" data-request-id="${esc(r.id)}">
         <span class="lb-apply ${sCls}">${sLbl}</span>
         <span class="lb-ar-title">${title}</span>
         <span class="lb-ar-meta">${esc(r.requested_at || '')}</span>
-        <span class="lb-ar-meta lb-ar-project">${project}</span>
+        ${projectCell}
       </div>`;
     }).join('');
-    wrap.innerHTML = rows;
   }
   renderApplyList();
+
+  /* ── 대상 프로젝트 저장 ── */
+  const SET_TARGET_CSRF = <?= json_encode($wsLaunchCsrf, JSON_HEX_TAG | JSON_HEX_AMP) ?>;
+  document.getElementById('lb-apply-list').addEventListener('click', e => {
+    const btn = e.target.closest('.lb-ar-save-btn');
+    if (!btn) return;
+    const idx     = Number(btn.dataset.idx);
+    const row     = btn.closest('.lb-ar-row');
+    const sel     = row.querySelector('.lb-ar-select');
+    const msgEl   = row.querySelector('.lb-ar-save-msg');
+    const projId  = sel ? sel.value : '';
+    if (!projId) {
+      if (msgEl) { msgEl.textContent = '프로젝트를 선택하세요.'; msgEl.className = 'lb-ar-save-msg ws-launch-err'; }
+      return;
+    }
+    btn.disabled = true;
+    const body = new URLSearchParams({
+      action:            'set_target',
+      request_id:        arState[idx].id,
+      target_project_id: projId,
+      csrf_token:        SET_TARGET_CSRF,
+    });
+    fetch('apply_request_api.php', { method: 'POST', body })
+      .then(r => r.json())
+      .then(d => {
+        if (d.ok) {
+          arState[idx].target_project_id = projId;
+          renderApplyList();
+        } else {
+          if (msgEl) { msgEl.textContent = d.message || '저장 실패'; msgEl.className = 'lb-ar-save-msg ws-launch-err'; }
+          btn.disabled = false;
+        }
+      })
+      .catch(() => {
+        if (msgEl) { msgEl.textContent = '요청 실패'; msgEl.className = 'lb-ar-save-msg ws-launch-err'; }
+        btn.disabled = false;
+      });
+  });
 
   /* ── 퍼머링크 복사 버튼 ── */
   document.getElementById('lb-detail').addEventListener('click', e => {
