@@ -128,13 +128,19 @@ body {
 .dc-hero-row {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
 }
 
+/* ── hero title/description block ── */
+.dc-hero-copy {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
 /* ── sub-hero action row (e.g. "새 프로젝트") ── */
 .dc-subhero-actions {
+  width: 100%;
   display: flex;
   justify-content: flex-end;
   margin-top: 12px;
@@ -153,10 +159,12 @@ body {
   gap: 8px;
   justify-content: flex-end;
   flex-shrink: 0;
+  margin-left: auto;
 }
 @media (max-width: 640px) {
-  .ws-action-group {
+  .dc-hero-row .ws-action-group {
     width: 100%;
+    margin-left: 0;
     justify-content: flex-start;
   }
 }

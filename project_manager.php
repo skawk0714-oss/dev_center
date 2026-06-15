@@ -544,7 +544,7 @@ $projectsJson = json_encode($projectsForJs, JSON_HEX_TAG | JSON_HEX_AMP | JSON_H
 <main class="dc-main">
   <div class="dc-hero">
     <div class="dc-hero-row">
-      <div>
+      <div class="dc-hero-copy">
         <h1>프로젝트 관리</h1>
         <p>등록된 프로젝트 목록입니다. 프로젝트명을 클릭하면 메모를 확인하거나 수정할 수 있습니다.</p>
       </div>

@@ -85,7 +85,7 @@ $jsView  = json_encode($urlView, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
 
   <div class="dc-hero">
     <div class="dc-hero-row">
-      <div>
+      <div class="dc-hero-copy">
         <h1>실험실</h1>
         <p>디자인 시도, 자동화, 실행파일, API 테스트, 아이디어를 기록하고 추적합니다.</p>
       </div>
