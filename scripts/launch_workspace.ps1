@@ -18,7 +18,7 @@ $OutputEncoding         = [System.Text.UTF8Encoding]::new($false)
 [Console]::OutputEncoding = $OutputEncoding
 
 # ── 상수 ──────────────────────────────────────────────────────
-$AllowedActions = @('codex', 'claude')
+$AllowedActions = @('codex', 'claude', 'vscode-codex', 'vscode-claude')
 $AllowedRoots   = @(
     'C:/xampp/htdocs',
     'D:/projects',
@@ -123,6 +123,19 @@ if (-not $PathAllowed) {
 }
 
 # ── 실행 함수 ──────────────────────────────────────────────────
+function Invoke-VSCodeWithTool {
+    param([string]$Path, [string]$Tool)
+    if (-not (Get-Command 'code' -ErrorAction SilentlyContinue)) {
+        Write-Output "WARNING: 'code' 명령을 찾을 수 없습니다. VSCode CLI 설치를 확인하세요."
+        return $false
+    }
+    # VSCode를 해당 폴더로 열기 (-n: new window)
+    Start-Process 'code' -ArgumentList @('-n', $Path) -WindowStyle Normal
+    # VSCode CLI는 터미널 명령 자동 실행을 지원하지 않으므로 폴더 열기만 수행하고 안내 메시지 반환
+    Write-Output "VSCODE_OPEN: $Path $Tool"
+    return $true
+}
+
 function Invoke-Codex {
     param([string]$Path)
     if (-not (Get-Command 'codex' -ErrorAction SilentlyContinue)) {
@@ -156,6 +169,16 @@ switch ($Action) {
         $ok = Invoke-ClaudeCode -Path $NativePath
         if (-not $ok) { exit 2 }
         Write-Output "OK: Claude Code 실행 — $NativePath (워크스페이스: $WorkspaceId)"
+    }
+    'vscode-codex' {
+        $ok = Invoke-VSCodeWithTool -Path $NativePath -Tool 'codex'
+        if (-not $ok) { exit 2 }
+        Write-Output "OK: VSCode 열기 완료 — $NativePath (codex 수동 실행 필요)"
+    }
+    'vscode-claude' {
+        $ok = Invoke-VSCodeWithTool -Path $NativePath -Tool 'claude'
+        if (-not $ok) { exit 2 }
+        Write-Output "OK: VSCode 열기 완료 — $NativePath (claude 수동 실행 필요)"
     }
 }
 

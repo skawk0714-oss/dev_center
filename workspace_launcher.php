@@ -66,7 +66,7 @@ if ($workspaceId === '') {
 }
 
 // action 화이트리스트 — workspace launcher는 codex/claude만 허용
-$allowedActions = ['codex', 'claude'];
+$allowedActions = ['codex', 'claude', 'vscode-codex', 'vscode-claude'];
 if (!in_array($action, $allowedActions, true)) {
     jsonFail('허용되지 않은 action입니다. (codex 또는 claude)');
 }
@@ -122,5 +122,13 @@ if ($exitCode !== 0) {
     jsonFail("실행 실패 (exit $exitCode): " . substr(strip_tags($safeOut), 0, 200));
 }
 
-// 성공 시 PowerShell 출력을 응답에 포함하지 않는다 (인코딩 문제 방지)
+// 성공 메시지 — vscode 계열은 터미널 자동 실행 불가를 안내
+$toolLabel = match($action) {
+    'vscode-codex'  => 'codex',
+    'vscode-claude' => 'claude',
+    default         => '',
+};
+if ($toolLabel !== '') {
+    jsonOk("VSCode를 열었습니다. 터미널에서 {$toolLabel}를 실행하세요.");
+}
 jsonOk("워크스페이스 실행 요청을 보냈습니다.");

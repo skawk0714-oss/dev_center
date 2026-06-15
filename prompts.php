@@ -93,6 +93,12 @@ unset($_wsFile, $_wsAll, $_ws);
       <?php if (in_array('claude', $wsLaunchAllowed, true)): ?>
       <button class="ws-launch-btn" data-workspace="ws-prompts" data-action="claude">🤖 Claude 열기</button>
       <?php endif; ?>
+      <?php if (in_array('vscode-codex', $wsLaunchAllowed, true)): ?>
+      <button class="ws-launch-btn" data-workspace="ws-prompts" data-action="vscode-codex">🖥️ VSCode + Codex</button>
+      <?php endif; ?>
+      <?php if (in_array('vscode-claude', $wsLaunchAllowed, true)): ?>
+      <button class="ws-launch-btn" data-workspace="ws-prompts" data-action="vscode-claude">🖥️ VSCode + Claude</button>
+      <?php endif; ?>
     </div>
   </div>
   <span id="ws-launch-msg" class="ws-launch-msg"></span>

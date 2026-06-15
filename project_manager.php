@@ -559,6 +559,12 @@ $projectsJson = json_encode($projectsForJs, JSON_HEX_TAG | JSON_HEX_AMP | JSON_H
       <?php if (in_array('claude', $wsLaunchAllowed, true)): ?>
       <button class="ws-launch-btn" data-workspace="ws-project-manager" data-action="claude">🤖 Claude 열기</button>
       <?php endif; ?>
+      <?php if (in_array('vscode-codex', $wsLaunchAllowed, true)): ?>
+      <button class="ws-launch-btn" data-workspace="ws-project-manager" data-action="vscode-codex">🖥️ VSCode + Codex</button>
+      <?php endif; ?>
+      <?php if (in_array('vscode-claude', $wsLaunchAllowed, true)): ?>
+      <button class="ws-launch-btn" data-workspace="ws-project-manager" data-action="vscode-claude">🖥️ VSCode + Claude</button>
+      <?php endif; ?>
       <button type="button" class="btn-new-project" onclick="openNewModal()">+ 새 프로젝트</button>
     </div>
   </div>

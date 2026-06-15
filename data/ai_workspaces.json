@@ -3,7 +3,7 @@
     "id": "ws-project-manager",
     "label": "프로젝트관리 AI",
     "menu": "project_manager",
-    "ai_tools": ["codex", "claude"],
+    "ai_tools": ["codex", "claude", "vscode-codex", "vscode-claude"],
     "default_project_id": "260614-dev-center",
     "allowed_files": [
       "data/projects.json",
@@ -32,7 +32,7 @@
     "id": "ws-knowledge",
     "label": "기능 보관함 AI",
     "menu": "knowledge",
-    "ai_tools": ["codex", "claude"],
+    "ai_tools": ["codex", "claude", "vscode-codex", "vscode-claude"],
     "default_project_id": "260614-dev-center",
     "allowed_files": [
       "data/features.json",
@@ -58,7 +58,7 @@
     "id": "ws-lab",
     "label": "실험실 AI",
     "menu": "lab",
-    "ai_tools": ["codex", "claude"],
+    "ai_tools": ["codex", "claude", "vscode-codex", "vscode-claude"],
     "default_project_id": "260614-dev-center",
     "allowed_files": [
       "data/lab_experiments.json",
@@ -85,7 +85,7 @@
     "id": "ws-prompts",
     "label": "프롬프트 AI",
     "menu": "prompts",
-    "ai_tools": ["claude"],
+    "ai_tools": ["claude", "vscode-claude"],
     "default_project_id": "260614-dev-center",
     "allowed_files": [
       "data/prompts.json",
@@ -111,7 +111,7 @@
     "id": "ws-settings",
     "label": "설정 AI",
     "menu": "settings",
-    "ai_tools": ["codex"],
+    "ai_tools": ["codex", "vscode-codex"],
     "default_project_id": "260614-dev-center",
     "allowed_files": [
       "config.php",
