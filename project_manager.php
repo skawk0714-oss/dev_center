@@ -766,8 +766,9 @@ async function submitNewProject() {
 document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeNewModal();
 });
-let editing   = null; // 현재 편집 중인 pid
-let hoverOpen = null; // 마우스 호버로 열린 pid
+let editing    = null; // 현재 편집 중인 pid
+let hoverOpen  = null; // 마우스 호버로 열린 pid
+let closeTimers = {};   // 팝오버로 이동하는 짧은 시간 동안 닫힘을 지연
 
 function getWrap(pid)  { return document.querySelector(`.pm-name-wrap[data-pid="${pid}"]`); }
 function getPop(pid)   { return document.getElementById(`pop-${pid}`); }
@@ -789,7 +790,23 @@ function openPop(pid) {
     getPop(pid)?.classList.add('open');
 }
 
+function clearCloseTimer(pid) {
+    if (closeTimers[pid]) {
+        clearTimeout(closeTimers[pid]);
+        delete closeTimers[pid];
+    }
+}
+
+function scheduleClose(pid) {
+    clearCloseTimer(pid);
+    closeTimers[pid] = setTimeout(() => {
+        if (editing !== pid) closePop(pid);
+        delete closeTimers[pid];
+    }, 220);
+}
+
 function closePop(pid) {
+    clearCloseTimer(pid);
     getPop(pid)?.classList.remove('open');
     cancelEdit(pid, true);
 }
@@ -806,19 +823,23 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.pm-name-wrap').forEach(wrap => {
         const pid = wrap.dataset.pid;
         wrap.addEventListener('mouseenter', () => {
+            clearCloseTimer(pid);
             if (editing !== pid) { openPop(pid); hoverOpen = pid; }
         });
         wrap.addEventListener('mouseleave', () => {
-            if (editing !== pid) { closePop(pid); hoverOpen = null; }
+            if (editing !== pid) { scheduleClose(pid); hoverOpen = null; }
         });
     });
 
     // 팝오버 위로 마우스가 들어오면 닫히지 않게
     document.querySelectorAll('.pm-popover').forEach(pop => {
-        pop.addEventListener('mouseenter', () => { /* keep open */ });
+        pop.addEventListener('mouseenter', () => {
+            const pid = pop.id.replace('pop-', '');
+            clearCloseTimer(pid);
+        });
         pop.addEventListener('mouseleave', e => {
             const pid = pop.id.replace('pop-', '');
-            if (editing !== pid) { closePop(pid); hoverOpen = null; }
+            if (editing !== pid) { scheduleClose(pid); hoverOpen = null; }
         });
     });
 
