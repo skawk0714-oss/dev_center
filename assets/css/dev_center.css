@@ -234,6 +234,122 @@ body {
   color: #79c0ff;
 }
 
+/* ── project overview card (project_detail.php) ── */
+.proj-overview {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.proj-overview-meta {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.pom-item {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 10px 12px;
+}
+
+.pom-label {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: 5px;
+}
+
+.pom-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.proj-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(56,139,253,.12);
+  color: var(--accent);
+  border: 1px solid rgba(56,139,253,.25);
+  border-radius: 10px;
+  padding: 2px 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.proj-progress-wrap {
+  margin-bottom: 14px;
+}
+
+.proj-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--text3);
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.proj-progress {
+  height: 7px;
+  border-radius: 99px;
+  background: var(--bg3);
+  overflow: hidden;
+}
+
+.proj-progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), #60a5fa);
+  transition: width .3s ease;
+}
+
+.proj-next {
+  font-size: 13px;
+  color: var(--text2);
+  border-left: 3px solid var(--accent);
+  padding-left: 10px;
+  line-height: 1.6;
+}
+
+.proj-next + .proj-memo {
+  margin-top: 10px;
+}
+
+.proj-memo {
+  font-size: 13px;
+  color: var(--text2);
+  border-left: 3px solid var(--yellow);
+  padding-left: 10px;
+  line-height: 1.6;
+}
+
+.proj-next-label {
+  font-weight: 700;
+  color: var(--text3);
+  margin-right: 4px;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+@media (max-width: 700px) {
+  .proj-overview-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 390px) {
+  .proj-overview-meta { grid-template-columns: 1fr; }
+  .proj-overview { padding: 14px; }
+}
+
 /* ── footer ── */
 .dc-footer {
   margin-top: 48px;

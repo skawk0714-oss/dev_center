@@ -222,6 +222,57 @@ $statusLabel = [
       <?php endif; ?>
     </div>
 
+    <div class="proj-overview">
+      <div class="proj-overview-meta">
+        <div class="pom-item">
+          <span class="pom-label">상태</span>
+          <span class="status-badge <?= $sid['class'] ?>"><?= $sid['label'] ?></span>
+        </div>
+        <?php if (!empty($project['badge'])): ?>
+        <div class="pom-item">
+          <span class="pom-label">분류</span>
+          <span class="proj-badge"><?= e($project['badge']) ?></span>
+        </div>
+        <?php endif; ?>
+        <?php if (!empty($project['commercial'])): ?>
+        <div class="pom-item">
+          <span class="pom-label">상업성</span>
+          <span class="pom-value"><?= e($project['commercial']) ?></span>
+        </div>
+        <?php endif; ?>
+        <?php if (isset($project['priority'])): ?>
+        <div class="pom-item">
+          <span class="pom-label">우선순위</span>
+          <span class="pom-value"><?= (int)$project['priority'] ?></span>
+        </div>
+        <?php endif; ?>
+      </div>
+
+      <?php if (isset($project['completion'])): ?>
+      <div class="proj-progress-wrap">
+        <div class="proj-progress-label">
+          <span>진행률</span>
+          <span><?= (int)$project['completion'] ?>%</span>
+        </div>
+        <div class="proj-progress">
+          <div class="proj-progress-bar" style="width:<?= max(0, min(100, (int)$project['completion'])) ?>%"></div>
+        </div>
+      </div>
+      <?php endif; ?>
+
+      <?php if (!empty($project['next'])): ?>
+      <div class="proj-next">
+        <span class="proj-next-label">다음:</span><?= e($project['next']) ?>
+      </div>
+      <?php endif; ?>
+
+      <?php if (!empty($project['memo'])): ?>
+      <div class="proj-memo">
+        <span class="proj-next-label">메모:</span><?= e($project['memo']) ?>
+      </div>
+      <?php endif; ?>
+    </div>
+
     <?php if ($launchResult !== null): ?>
       <div class="launch-result <?= $launchResult['ok'] ? 'ok' : 'err' ?>">
         <?= $launchResult['ok'] ? '✅ 실행됐습니다.' : '❌ 실행 실패.' ?>

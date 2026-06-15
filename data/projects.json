@@ -8,6 +8,11 @@
     "url": "http://localhost/copier",
     "status": "active",
     "description": "복사기 임대·유지보수 관리 ERP",
+    "badge": "운영 핵심",
+    "commercial": "높음",
+    "priority": 95,
+    "completion": 70,
+    "next": "모바일 레이아웃 최적화, 운영 화면 안정화, 고객 현장 사용 흐름 정리",
     "memo": "",
     "commands": {
       "vscode": true,
@@ -24,6 +29,11 @@
     "url": "http://localhost/dev_center",
     "status": "active",
     "description": "개발 전용 허브 — 프로젝트·기능 보관함·실험실",
+    "badge": "개발 허브",
+    "commercial": "내부 효율",
+    "priority": 90,
+    "completion": 60,
+    "next": "New Project 생성 흐름 안정화, 기능 보관함/프로젝트 관리 연결",
     "memo": "",
     "commands": {
       "vscode": true,
