@@ -1,6 +1,78 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/config.php';
+
+function e(string $v): string {
+    return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
+}
+
+function badge(string $level, string $text): string {
+    return '<span class="st-badge st-badge-' . $level . '">' . e($text) . '</span>';
+}
+
+function ok(bool $cond, string $yes = 'OK', string $no = 'ERROR'): string {
+    return badge($cond ? 'ok' : 'error', $cond ? $yes : $no);
+}
+
+function warn_if(bool $bad, string $yes = 'OK', string $no = 'WARN'): string {
+    return badge($bad ? 'warn' : 'ok', $bad ? $no : $yes);
+}
+
+/* ── A. Dev Center ── */
+$phpVersion  = PHP_VERSION;
+$serverTime  = date('Y-m-d H:i:s');
+
+/* ── B. CopierRMS ── */
+$copierExists = is_dir(COPIER_PATH);
+
+/* ── C. Data directory ── */
+$dataDir      = DC_DATA_DIR;
+$dataDirExist = is_dir($dataDir);
+$dataDirRead  = $dataDirExist && is_readable($dataDir);
+$dataDirWrite = $dataDirExist && is_writable($dataDir);
+
+/* ── D. Allowed roots ── */
+$roots = DEV_ALLOWED_ROOTS;
+
+/* ── E. Launch safety ── */
+$remoteAddr = $_SERVER['REMOTE_ADDR'] ?? '';
+$isLocal    = in_array($remoteAddr, ['127.0.0.1', '::1', '0:0:0:0:0:0:0:1'], true);
+
+/* ── F. Data files ── */
+$dataFiles = [
+    'projects.json'        => ['label' => '프로젝트'],
+    'features.json'        => ['label' => '기능 보관함'],
+    'prompts.json'         => ['label' => '프롬프트'],
+    'lab_experiments.json' => ['label' => '실험실'],
+];
+
+$fileStats = [];
+foreach ($dataFiles as $name => $meta) {
+    $path   = $dataDir . '/' . $name;
+    $exists = is_file($path);
+    $valid  = false;
+    $count  = null;
+    $mtime  = null;
+    $size   = null;
+    if ($exists) {
+        $raw = file_get_contents($path);
+        $decoded = json_decode($raw, true);
+        $valid = ($decoded !== null);
+        if ($valid && is_array($decoded)) {
+            $count = count($decoded);
+        }
+        $mtime = date('Y-m-d H:i:s', filemtime($path));
+        $size  = round(filesize($path) / 1024, 1);
+    }
+    $fileStats[$name] = [
+        'label'  => $meta['label'],
+        'exists' => $exists,
+        'valid'  => $valid,
+        'count'  => $count,
+        'mtime'  => $mtime,
+        'size'   => $size,
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html lang="ko">
@@ -31,17 +103,156 @@ require_once __DIR__ . '/config.php';
 </nav>
 
 <main class="dc-main">
+
   <div class="dc-hero">
-    <h1>설정</h1>
-    <p>개발센터 환경 설정을 관리합니다.</p>
+    <h1>설정 · 상태</h1>
+    <p>Dev Center 환경 설정과 데이터 상태를 읽기 전용으로 확인합니다.</p>
   </div>
-  <div class="dc-alert dc-alert-info">준비 중입니다.</div>
+
+  <!-- A. Dev Center -->
+  <p class="dc-section-title">Dev Center</p>
+  <div class="st-card st-card-grid mb24">
+    <div class="st-row">
+      <span class="st-key">이름</span>
+      <span class="st-val"><?= e(DEV_CENTER_NAME) ?></span>
+    </div>
+    <div class="st-row">
+      <span class="st-key">버전</span>
+      <span class="st-val">v<?= e(DEV_CENTER_VERSION) ?></span>
+    </div>
+    <div class="st-row">
+      <span class="st-key">Base URL</span>
+      <code class="st-code"><?= e(DEV_CENTER_BASE_URL) ?></code>
+    </div>
+    <div class="st-row">
+      <span class="st-key">PHP 버전</span>
+      <span class="st-val"><?= e($phpVersion) ?></span>
+    </div>
+    <div class="st-row">
+      <span class="st-key">서버 시각</span>
+      <span class="st-val"><?= e($serverTime) ?></span>
+    </div>
+  </div>
+
+  <!-- B. CopierRMS -->
+  <p class="dc-section-title">CopierRMS 연결</p>
+  <div class="st-card mb24">
+    <div class="st-row">
+      <span class="st-key">경로</span>
+      <code class="st-code"><?= e(COPIER_PATH) ?></code>
+      <?= ok($copierExists, '존재함', '없음') ?>
+    </div>
+    <div class="st-row">
+      <span class="st-key">URL</span>
+      <code class="st-code"><?= e(COPIER_URL) ?></code>
+    </div>
+    <div class="st-row">
+      <span class="st-key">바로가기</span>
+      <a href="<?= e(COPIER_URL) ?>" target="_blank" class="st-link-btn">CopierRMS 열기 ↗</a>
+    </div>
+  </div>
+
+  <!-- C. Data Directory -->
+  <p class="dc-section-title">데이터 디렉터리</p>
+  <div class="st-card mb24">
+    <div class="st-row">
+      <span class="st-key">경로</span>
+      <code class="st-code"><?= e($dataDir) ?></code>
+    </div>
+    <div class="st-row">
+      <span class="st-key">존재</span>
+      <?= ok($dataDirExist, '있음', '없음') ?>
+    </div>
+    <div class="st-row">
+      <span class="st-key">읽기</span>
+      <?= ok($dataDirRead, '가능', '불가') ?>
+    </div>
+    <div class="st-row">
+      <span class="st-key">쓰기</span>
+      <?= warn_if(!$dataDirWrite, '가능', '불가') ?>
+    </div>
+  </div>
+
+  <!-- D. Allowed Roots -->
+  <p class="dc-section-title">허용된 프로젝트 루트</p>
+  <div class="st-card mb24">
+    <?php foreach ($roots as $root): ?>
+    <?php $rExists = is_dir($root); $rWrite = $rExists && is_writable($root); ?>
+    <div class="st-row st-row-path">
+      <code class="st-code st-code-grow"><?= e($root) ?></code>
+      <div class="st-badges">
+        <?= ok($rExists, '있음', '없음') ?>
+        <?= warn_if(!$rWrite, '쓰기 가능', '쓰기 불가') ?>
+      </div>
+    </div>
+    <?php endforeach; ?>
+  </div>
+
+  <!-- E. Launch Safety -->
+  <p class="dc-section-title">실행 안전</p>
+  <div class="st-card mb24">
+    <div class="st-row">
+      <span class="st-key">DC_LAUNCH_ENABLED</span>
+      <?= DC_LAUNCH_ENABLED ? badge('ok', 'true') : badge('warn', 'false') ?>
+    </div>
+    <div class="st-row">
+      <span class="st-key">접속 IP</span>
+      <code class="st-code"><?= e($remoteAddr) ?></code>
+      <?= ok($isLocal, '로컬', '외부') ?>
+    </div>
+    <div class="st-row">
+      <span class="st-key">안내</span>
+      <span class="st-note">실행 버튼(VS Code · Claude · Codex)은 로컬 접속(127.0.0.1 / ::1)에서만 동작합니다.</span>
+    </div>
+  </div>
+
+  <!-- F. Data Files -->
+  <p class="dc-section-title">데이터 파일 상태</p>
+  <div class="st-file-grid mb24">
+    <?php foreach ($fileStats as $name => $s): ?>
+    <?php $healthy = $s['exists'] && $s['valid']; ?>
+    <div class="st-file-card">
+      <div class="st-file-header">
+        <span class="st-file-label"><?= e($s['label']) ?></span>
+        <?= $healthy ? badge('ok', 'OK') : ($s['exists'] ? badge('warn', 'WARN') : badge('error', 'ERROR')) ?>
+      </div>
+      <code class="st-code st-file-name"><?= e($name) ?></code>
+      <div class="st-file-rows">
+        <div class="st-row">
+          <span class="st-key">파일</span>
+          <?= ok($s['exists'], '있음', '없음') ?>
+        </div>
+        <?php if ($s['exists']): ?>
+        <div class="st-row">
+          <span class="st-key">JSON</span>
+          <?= ok($s['valid'], '유효', '파싱 오류') ?>
+        </div>
+        <?php if ($s['count'] !== null): ?>
+        <div class="st-row">
+          <span class="st-key">항목 수</span>
+          <span class="st-val st-count"><?= e((string)$s['count']) ?>개</span>
+        </div>
+        <?php endif; ?>
+        <div class="st-row">
+          <span class="st-key">수정일</span>
+          <span class="st-val"><?= e($s['mtime'] ?? '') ?></span>
+        </div>
+        <div class="st-row">
+          <span class="st-key">크기</span>
+          <span class="st-val"><?= e((string)$s['size']) ?> KB</span>
+        </div>
+        <?php endif; ?>
+      </div>
+    </div>
+    <?php endforeach; ?>
+  </div>
 
   <footer class="dc-footer">
-    <?= htmlspecialchars(DEV_CENTER_NAME, ENT_QUOTES, 'UTF-8') ?>
-    v<?= htmlspecialchars(DEV_CENTER_VERSION, ENT_QUOTES, 'UTF-8') ?> &mdash;
+    <?= e(DEV_CENTER_NAME) ?>
+    v<?= e(DEV_CENTER_VERSION) ?> &mdash;
     로컬 개발 전용. 외부 공개 금지.
   </footer>
+
 </main>
 </body>
 </html>
