@@ -1,5 +1,6 @@
 {
   "id": "snmp-agent-collector",
+  "project_id": "260614-copier-rms",
   "title": "SNMP 에이전트 수집기",
   "category": "agent",
   "status": "active",

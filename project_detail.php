@@ -11,6 +11,33 @@ function e(string $s): string {
     return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
 }
 
+function loadRelatedRecords(string $projectId): array {
+    $featuresFile = DC_DATA_DIR . '/features.json';
+    if (!is_file($featuresFile)) return ['records' => [], 'skip' => 0];
+    $features = json_decode(file_get_contents($featuresFile), true);
+    if (!is_array($features)) return ['records' => [], 'skip' => 0];
+
+    $related   = [];
+    $skipCount = 0;
+    foreach ($features as $feat) {
+        $id = (string)($feat['id'] ?? '');
+        if ($id === '') continue;
+        $recPath = DC_DATA_DIR . '/records/' . $id . '.json';
+        if (!is_file($recPath)) continue;
+        $rec = json_decode(file_get_contents($recPath), true);
+        if (!is_array($rec)) { $skipCount++; continue; }
+        if (($rec['project_id'] ?? '') !== $projectId) continue;
+        $related[] = [
+            'id'      => $id,
+            'title'   => (string)($rec['title']    ?? $feat['title']    ?? $id),
+            'summary' => (string)($rec['summary']   ?? ''),
+            'category'=> (string)($rec['category']  ?? $feat['category'] ?? ''),
+            'tags'    => (array)($rec['tags'] ?? $feat['tags'] ?? []),
+        ];
+    }
+    return ['records' => $related, 'skip' => $skipCount];
+}
+
 function loadProjects(): array {
     $file = DC_DATA_DIR . '/projects.json';
     if (!is_file($file)) return [];
@@ -129,7 +156,10 @@ if ($project === null && isset($_POST['project_id'])) {
     }
 }
 
-$csrfToken = csrfToken();
+$csrfToken   = csrfToken();
+$relatedData = ($project !== null)
+    ? loadRelatedRecords((string)($project['id'] ?? ''))
+    : ['records' => [], 'skip' => 0];
 
 $statusLabel = [
     'active'   => ['label' => '진행 중', 'class' => 'badge-active'],
@@ -367,6 +397,45 @@ $statusLabel = [
       <?php endif; ?>
     </div>
 
+  <?php endif; /* $project !== null */
+
+  /* ── 관련 기능 보관함 섹션 ── */
+  if ($project !== null):
+    $relRecords = $relatedData['records'];
+    $relSkip    = $relatedData['skip'];
+  ?>
+  <section class="rel-section">
+    <h2 class="rel-title">관련 기능 보관함</h2>
+    <?php if ($relSkip > 0): ?>
+      <p class="rel-warn">JSON 파싱 오류로 <?= $relSkip ?>개 레코드를 건너뜀.</p>
+    <?php endif; ?>
+    <?php if (empty($relRecords)): ?>
+      <p class="rel-empty">이 프로젝트에 연결된 기능 보관함 항목이 없습니다.</p>
+    <?php else: ?>
+      <div class="rel-grid">
+        <?php foreach ($relRecords as $r): ?>
+        <a href="knowledge.php?q=<?= urlencode($r['id']) ?>" class="rel-card">
+          <div class="rel-card-head">
+            <span class="rel-card-title"><?= e($r['title']) ?></span>
+            <?php if ($r['category'] !== ''): ?>
+              <span class="rel-card-cat"><?= e($r['category']) ?></span>
+            <?php endif; ?>
+          </div>
+          <?php if ($r['summary'] !== ''): ?>
+            <div class="rel-card-summary"><?= e($r['summary']) ?></div>
+          <?php endif; ?>
+          <?php if (!empty($r['tags'])): ?>
+            <div class="rel-card-tags">
+              <?php foreach (array_slice($r['tags'], 0, 5) as $tag): ?>
+                <span class="kn-tag"><?= e($tag) ?></span>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
+        </a>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+  </section>
   <?php endif; ?>
 
   <footer class="dc-footer">

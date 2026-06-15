@@ -1,5 +1,6 @@
 {
   "id": "agent-usb-package",
+  "project_id": "260614-copier-rms",
   "title": "에이전트 USB 설치 패키지",
   "category": "agent",
   "status": "active",
