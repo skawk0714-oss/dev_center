@@ -18,6 +18,32 @@ if (!is_file($promptsFile)) {
 }
 
 $jsData = json_encode($prompts, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
+
+/* ── ws-prompts 프롬프트 로드 ── */
+$wsPromptText = '';
+$wsFile = DC_DATA_DIR . '/ai_workspaces.json';
+if (is_file($wsFile)) {
+    $wsAll = json_decode(file_get_contents($wsFile), true);
+    if (is_array($wsAll)) {
+        foreach ($wsAll as $ws) {
+            if (($ws['id'] ?? '') === 'ws-prompts') {
+                $tplPath = __DIR__ . '/' . ($ws['startup_prompt_template'] ?? '');
+                $roleMd  = is_file($tplPath) ? file_get_contents($tplPath) : '';
+                $allowed = implode("\n", array_map(fn($f) => "  - $f", $ws['allowed_files'] ?? []));
+                $dnt     = implode("\n", array_map(fn($f) => "  - $f", $ws['do_not_touch'] ?? []));
+                $valid   = implode("\n", array_map(fn($c) => "  - $c", $ws['validation_commands'] ?? []));
+                $wsPromptText = $roleMd
+                    . "\n---\n"
+                    . "## 워크스페이스: " . ($ws['label'] ?? '') . "\n\n"
+                    . "### 허용 파일\n" . $allowed . "\n\n"
+                    . "### 절대 건드리지 않는 파일\n" . $dnt . "\n\n"
+                    . "### 검증 명령\n" . $valid . "\n";
+                break;
+            }
+        }
+    }
+}
+$jsWsPrompt = json_encode($wsPromptText, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
 ?>
 <!DOCTYPE html>
 <html lang="ko">
@@ -50,8 +76,17 @@ $jsData = json_encode($prompts, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX
 <main class="dc-main">
 
   <div class="dc-hero">
-    <h1>프롬프트 라이브러리</h1>
-    <p>Claude · WinCo · Codex · Git 워크플로에서 자주 쓰는 프롬프트를 검색하고 복사합니다.</p>
+    <div class="dc-hero-row">
+      <div>
+        <h1>프롬프트 라이브러리</h1>
+        <p>Claude · WinCo · Codex · Git 워크플로에서 자주 쓰는 프롬프트를 검색하고 복사합니다.</p>
+      </div>
+      <?php if ($wsPromptText !== ''): ?>
+      <button class="ws-prompt-btn" id="ws-prompt-copy" title="프롬프트 AI 시작 프롬프트를 클립보드에 복사합니다">
+        <span class="ws-prompt-btn-icon">🤖</span> 프롬프트 AI 프롬프트 복사
+      </button>
+      <?php endif; ?>
+    </div>
   </div>
 
 <?php if ($loadError): ?>
@@ -240,6 +275,29 @@ $jsData = json_encode($prompts, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX
   }
 
   render();
+})();
+
+/* ── 프롬프트 AI 프롬프트 복사 ── */
+(function () {
+  const btn = document.getElementById('ws-prompt-copy');
+  if (!btn) return;
+  const PROMPT = <?= $jsWsPrompt ?>;
+  const label  = btn.innerHTML;
+  const fallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = PROMPT; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta); ok();
+  };
+  const ok = () => {
+    btn.innerHTML = '✅ 복사됨';
+    btn.classList.add('ws-prompt-btn--copied');
+    setTimeout(() => { btn.innerHTML = label; btn.classList.remove('ws-prompt-btn--copied'); }, 2000);
+  };
+  btn.addEventListener('click', () => {
+    if (navigator.clipboard) { navigator.clipboard.writeText(PROMPT).then(ok, fallback); }
+    else { fallback(); }
+  });
 })();
 </script>
 <?php endif; ?>
