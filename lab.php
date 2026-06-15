@@ -400,6 +400,16 @@ $jsView  = json_encode($urlView, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
           <div class="kn-detail-label">프리뷰 경로</div>
           <code class="kn-code lb-preview-path">${esc(d.preview_path)}</code>
         </div>` : ''}
+
+        ${d.record_id && d.apply_status !== 'applied' ? `
+        <div class="kn-detail-section lb-apply-request-row">
+          <button class="ws-launch-btn lb-apply-request-btn"
+                  data-exp-id="${esc(d.id)}"
+                  data-record-id="${esc(d.record_id)}">
+            📋 반영 요청 생성
+          </button>
+          <span class="lb-apply-request-msg"></span>
+        </div>` : ''}
       </div>
     `;
   }
@@ -425,6 +435,34 @@ $jsView  = json_encode($urlView, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
     btn.textContent = '✅';
     setTimeout(() => { btn.textContent = '🔗'; }, 1500);
   }
+
+  /* ── 반영 요청 생성 버튼 ── */
+  const APPLY_CSRF = <?= json_encode($wsLaunchCsrf, JSON_HEX_TAG | JSON_HEX_AMP) ?>;
+  document.getElementById('lb-detail').addEventListener('click', e => {
+    const btn = e.target.closest('.lb-apply-request-btn');
+    if (!btn) return;
+    const msg = btn.closest('.lb-apply-request-row')?.querySelector('.lb-apply-request-msg');
+    btn.disabled = true;
+    const body = new URLSearchParams({
+      exp_id:     btn.dataset.expId,
+      record_id:  btn.dataset.recordId,
+      csrf_token: APPLY_CSRF,
+    });
+    fetch('apply_request_api.php', { method: 'POST', body })
+      .then(r => r.json())
+      .then(d => {
+        if (msg) {
+          msg.textContent = d.message || (d.ok ? '완료' : '실패');
+          msg.className = 'lb-apply-request-msg ' + (d.ok ? 'ws-launch-ok' : 'ws-launch-err');
+        }
+        if (d.ok) btn.disabled = true;
+        else      btn.disabled = false;
+      })
+      .catch(() => {
+        if (msg) { msg.textContent = '요청 실패'; msg.className = 'lb-apply-request-msg ws-launch-err'; }
+        btn.disabled = false;
+      });
+  });
 
   const URL_Q    = <?= $jsQ ?>;
   const URL_ID   = <?= $jsId ?>;
