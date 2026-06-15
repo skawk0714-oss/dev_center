@@ -217,6 +217,21 @@ body {
 }
 .ws-launch-btn:hover    { opacity: .85; }
 .ws-launch-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── VSCode launcher buttons — secondary/outline style ── */
+.ws-launch-btn[data-action="vscode-codex"],
+.ws-launch-btn[data-action="vscode-claude"] {
+  background: transparent;
+  color: var(--text2);
+  border-color: var(--border);
+}
+.ws-launch-btn[data-action="vscode-codex"]:hover,
+.ws-launch-btn[data-action="vscode-claude"]:hover {
+  opacity: 1;
+  background: var(--surface2);
+  color: var(--text);
+  border-color: var(--accent);
+}
 .ws-launch-msg {
   font-size: 12px;
   margin-top: 4px;
