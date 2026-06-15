@@ -1,0 +1,25 @@
+{
+  "id": "lab-apply-request-workflow",
+  "title": "실험 반영 요청 워크플로우",
+  "category": "lab",
+  "status": "active",
+  "summary": "실험 항목의 완성도/우선순위/반영상태를 관리하고, 승인된 항목에 대해 반영 요청을 생성/관리하는 기능",
+  "tags": ["lab", "apply-request", "workflow", "review", "priority", "inbox"],
+  "files": [
+    "design_lab.php",
+    "docs/design-lab/apply_requests.json",
+    "docs/design-lab/experiments.json"
+  ],
+  "related_commits": ["690fbe6"],
+  "prompt": "반영 요청함 패널 추가. apply_requests.json 읽기/저장(LOCK_EX). update_apply_request_status POST 액션(CSRF 검증, request_id + status 화이트리스트). 상태: requested/reviewing/approved/applied/rejected. experiments.json은 절대 건드리지 않음.",
+  "review_notes": "request_id 형식: YYYYMMDD-HHMMSS-{exp_id}. updated_at은 상태 변경 시 자동 갱신. 실험 연결: EXPERIMENTS.find(e => e.id === r.experiment_id && e.category === r.category). 상태 변경이 experiments.json을 건드리지 않는지 git diff로 확인.",
+  "validation": [
+    "php -l design_lab.php PASS",
+    "apply_requests.json JSON PASS",
+    "experiments.json unchanged (git diff 확인)",
+    "status update requested→reviewing php -r 시뮬레이션 PASS"
+  ],
+  "reuse_notes": "dl_load_requests() / dl_save_requests()가 apply_requests.json 단독 관리. 새 상태 추가 시 $validReqStatuses 배열과 JS REQ_STATUS_LABELS 둘 다 수정 필요.",
+  "created_at": "2026-06-14",
+  "updated_at": "2026-06-14"
+}

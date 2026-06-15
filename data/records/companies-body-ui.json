@@ -1,0 +1,21 @@
+{
+  "id": "companies-body-ui",
+  "title": "거래처 관리 본문 UI 개선",
+  "category": "ui",
+  "status": "active",
+  "summary": "거래처 관리 본문 UI 개선, 통계 카드 tint, 검색 확장, 모바일 카드형 행 적용",
+  "tags": ["companies", "ui", "mobile", "table", "card", "responsive"],
+  "files": [
+    "companies.php"
+  ],
+  "related_commits": [],
+  "prompt": "stat-card에 data-tone별 border-left + background tint 적용. 검색창 flex 확장. co-contact-badge 색상 팔레트 추가. co-status dot 스타일. 모바일 540px 이하 테이블 행을 카드형으로 변환.",
+  "review_notes": "WinCo visual QA 흐름: WinCo가 화면 문제 발견 → Claude 수정 프롬프트 제안 → Claude 수정 → Codex 최종 리뷰. 모바일 카드형은 thead display:none + tr display:flex + td display:block 조합.",
+  "validation": [
+    "php -l companies.php PASS",
+    "WinCo desktop/mobile visual QA PASS"
+  ],
+  "reuse_notes": "stat-card data-tone 패턴은 다른 페이지에도 동일하게 적용 가능. co-contact-badge 색상 팔레트(c-indigo, c-purple 등)는 crc32(name) % 8 로 결정.",
+  "created_at": "2026-06-14",
+  "updated_at": "2026-06-14"
+}

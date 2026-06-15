@@ -1,0 +1,24 @@
+{
+  "id": "lab-command-center",
+  "title": "실험실 / 커맨드센터",
+  "category": "lab",
+  "status": "active",
+  "summary": "실험/아이디어/디자인/자동화/검증 항목을 관리하는 관리자 전용 실험실",
+  "tags": ["lab", "experiment", "command-center", "design", "idea", "priority"],
+  "files": [
+    "design_lab.php",
+    "docs/design-lab/experiments.json",
+    "docs/design-lab/lab_config.json"
+  ],
+  "related_commits": ["690fbe6"],
+  "prompt": "실험 항목을 카테고리/서브카테고리로 분류하고 완성도·우선순위·반영 상태를 관리. CSRF 검증 POST 액션으로 experiments.json 읽기/쓰기. JSON 파싱 실패 시 에러 배너, 운영 파일 수정 없음.",
+  "review_notes": "experiments.json 스키마: id, title, category, subcategory, completion, priority_score, priority_reason, apply_status, apply_target, apply_note. apply_requests.json은 별도 파일로 분리.",
+  "validation": [
+    "php -l design_lab.php PASS",
+    "experiments.json JSON PASS: 21건",
+    "apply_requests.json JSON PASS: 0건"
+  ],
+  "reuse_notes": "dl_json() 헬퍼로 모든 POST 응답 처리. DL_DIR 상수로 docs/design-lab/ 경로 고정. 새 액션 추가 시 CSRF 검증 필수.",
+  "created_at": "2026-06-14",
+  "updated_at": "2026-06-14"
+}

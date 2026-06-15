@@ -1,0 +1,66 @@
+[
+  {
+    "id": "snmp-agent-collector",
+    "title": "SNMP 에이전트 수집기",
+    "category": "agent",
+    "tags": ["snmp", "agent", "powershell", "toner", "counter", "device"],
+    "status": "active",
+    "record": "docs/knowledge/records/snmp-agent-collector.json"
+  },
+  {
+    "id": "agent-usb-package",
+    "title": "에이전트 USB 설치 패키지",
+    "category": "agent",
+    "tags": ["agent", "usb", "installer", "token", "setup", "zip", "snmp"],
+    "status": "active",
+    "record": "docs/knowledge/records/agent-usb-package.json"
+  },
+  {
+    "id": "lab-command-center",
+    "title": "실험실 / 커맨드센터",
+    "category": "lab",
+    "tags": ["lab", "experiment", "command-center", "design", "idea", "priority"],
+    "status": "active",
+    "record": "docs/knowledge/records/lab-command-center.json"
+  },
+  {
+    "id": "project-center",
+    "title": "프로젝트 센터",
+    "category": "system",
+    "tags": ["project", "center", "priority", "roadmap", "json"],
+    "status": "active",
+    "record": "docs/knowledge/records/project-center.json"
+  },
+  {
+    "id": "companies-help-modal",
+    "title": "거래처 관리 도움말 모달",
+    "category": "ui",
+    "tags": ["help", "manual", "tooltip", "modal", "companies"],
+    "status": "active",
+    "record": "docs/knowledge/records/companies-help-modal.json"
+  },
+  {
+    "id": "companies-body-ui",
+    "title": "거래처 관리 본문 UI 개선",
+    "category": "ui",
+    "tags": ["companies", "ui", "mobile", "table", "card", "responsive"],
+    "status": "active",
+    "record": "docs/knowledge/records/companies-body-ui.json"
+  },
+  {
+    "id": "lab-apply-request-workflow",
+    "title": "실험 반영 요청 워크플로우",
+    "category": "lab",
+    "tags": ["lab", "apply-request", "workflow", "review", "priority", "inbox"],
+    "status": "active",
+    "record": "docs/knowledge/records/lab-apply-request-workflow.json"
+  },
+  {
+    "id": "tabler-bids-preview",
+    "title": "Tabler 기반 입찰정보 프리뷰",
+    "category": "ui",
+    "tags": ["tabler", "bids", "preview", "ui", "library", "dark-mode", "responsive"],
+    "status": "active",
+    "record": "docs/knowledge/records/tabler-bids-preview.json"
+  }
+]

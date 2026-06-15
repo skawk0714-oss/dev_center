@@ -1,0 +1,28 @@
+{
+  "id": "agent-usb-package",
+  "title": "에이전트 USB 설치 패키지",
+  "category": "agent",
+  "status": "active",
+  "summary": "관리자 화면에서 USB 설치 패키지를 ZIP으로 생성하고 install_presets.json을 포함하는 기능",
+  "tags": ["agent", "usb", "installer", "token", "setup", "zip", "snmp"],
+  "files": [
+    "agent_manager.php",
+    "agent/setup_wizard.ps1",
+    "agent/snmp_collect.ps1",
+    "agent/install.vbs",
+    "agent/uninstall.ps1"
+  ],
+  "related_commits": ["2ed2a50"],
+  "prompt": "거래처 검색/선택 + 설치장소 + 복사기 IP 입력 후 토큰 자동 생성. 토큰과 필수 파일을 포함한 단일 ZIP 생성. 웹페이지 .BAT 온라인 설치 버튼 삭제. USB 다운로드는 보험용으로 유지.",
+  "review_notes": "ZIP 생성 시 System.IO.Compression + System.IO.Compression.FileSystem 모두 로드 필요. 0바이트 ZIP을 성공 파일로 남기지 않도록 주의. PowerShell 5.1 환경. USERLEE 같은 하드코딩 경로 금지.",
+  "validation": [
+    "ZIP 생성 확인",
+    "install_presets.json 확인",
+    "토큰 자동발급 방지 확인",
+    "PowerShell Parser PASS: setup_wizard.ps1",
+    "php -l agent_manager.php PASS"
+  ],
+  "reuse_notes": "VBS 파일 생성 시 PowerShell에서 & 연산자·따옴표 이스케이프 오류 주의. 새 PC/다른 계정에서 실행될 스크립트에 현재 PC 전용 경로 하드코딩 금지.",
+  "created_at": "2026-06-14",
+  "updated_at": "2026-06-14"
+}

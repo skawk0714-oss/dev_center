@@ -1,0 +1,24 @@
+{
+  "id": "companies-help-modal",
+  "title": "거래처 관리 도움말 모달",
+  "category": "ui",
+  "status": "active",
+  "summary": "거래처 관리 화면에 짧은 tooltip과 긴 도움말 모달을 추가한 기능",
+  "tags": ["help", "manual", "tooltip", "modal", "companies"],
+  "files": [
+    "companies.php",
+    "includes/help.php",
+    "docs/help/companies.json"
+  ],
+  "related_commits": [],
+  "prompt": "companies.php 페이지 헤더에 ? 버튼 추가. hover/focus 시 tooltip, 클릭 시 모달. 모달에 title/sections/items 표시. ESC/backdrop 닫기. 기존 모달/드로어에 영향 없음. 외부 라이브러리 없음.",
+  "review_notes": "load_page_help(key)로 JSON 로드 후 $pageHelp 변수에 저장. render_page_help(array)로 모달 HTML + JS 출력. JSON 없거나 파싱 실패 시 빈 배열 반환하고 모달 미출력. 버튼/모달 스타일은 companies.php <style> 블록에 페이지 한정.",
+  "validation": [
+    "php -l companies.php PASS",
+    "php -l includes/help.php PASS",
+    "docs/help/companies.json JSON PASS"
+  ],
+  "reuse_notes": "다른 페이지에 도움말 추가 시: (1) docs/help/{key}.json 생성, (2) includes/help.php require, (3) load_page_help('{key}'), (4) 버튼 + render_page_help() 추가. 스타일은 style.css로 옮기면 공유 가능.",
+  "created_at": "2026-06-14",
+  "updated_at": "2026-06-14"
+}

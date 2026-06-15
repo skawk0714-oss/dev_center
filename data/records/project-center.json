@@ -1,0 +1,23 @@
+{
+  "id": "project-center",
+  "title": "프로젝트 센터",
+  "category": "system",
+  "status": "active",
+  "summary": "프로젝트별 상태, 우선순위, 다음 작업을 읽기 전용으로 보여주는 프로젝트 센터",
+  "tags": ["project", "center", "priority", "roadmap", "json"],
+  "files": [
+    "project_center.php",
+    "docs/project-center/projects.json",
+    "includes/sidebar.php"
+  ],
+  "related_commits": ["a01bad9"],
+  "prompt": "project_center.php의 하드코딩 $projectDefs를 docs/project-center/projects.json으로 분리. JSON 없으면 fallback 반환. 항목별 key 정규식/name/match 유효성 검사. 전부 실패 시 fallback.",
+  "review_notes": "match 필드는 JSON 오브젝트로 저장 → json_decode true 시 PHP 연관배열 → is_array() true. pc_project_items()가 category/subcategory/keywords 매칭. pc_avg_completion(), pc_top_priority(), pc_top_items() 함수 유지.",
+  "validation": [
+    "php -l project_center.php PASS",
+    "docs/project-center/projects.json JSON PASS: 6건"
+  ],
+  "reuse_notes": "프로젝트 추가/수정은 docs/project-center/projects.json 직접 편집. 편집 UI는 아직 없음. key는 /^[a-z][a-z0-9_]*$/ 형식.",
+  "created_at": "2026-06-14",
+  "updated_at": "2026-06-14"
+}
