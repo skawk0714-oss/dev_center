@@ -1,0 +1,79 @@
+[
+  {
+    "id": "claude-focused-impl",
+    "category": "claude-task",
+    "title": "Claude 집중 구현 프롬프트",
+    "target": "Claude",
+    "summary": "CURRENT_TASK.md 범위 안에서만 코드를 작성하도록 Claude에게 전달하는 표준 구현 지시 템플릿",
+    "tags": ["claude", "implementation", "scoped", "current-task"],
+    "prompt": "CURRENT_TASK.md를 먼저 읽고, 거기 적힌 작업 범위 안에서만 코드를 수정해줘.\n\n규칙:\n- 범위 밖 파일·기능은 건드리지 않는다.\n- PHP 파일 수정 시 php -l로 문법 검사를 실행한다.\n- 완료 전 diff를 스스로 검토하고, 요청 기능과 무관한 변경은 원복한다.\n- 완료 후 무엇을·어느 파일에서·왜 바꿨는지 3~5줄로 요약한다.\n\n작업 내용:\n[여기에 구체적인 요청 작성]",
+    "created_at": "2026-06-15",
+    "updated_at": "2026-06-15"
+  },
+  {
+    "id": "winco-visual-qa",
+    "category": "winco-qa",
+    "title": "WinCo 시각 QA 프롬프트",
+    "target": "WinCo",
+    "summary": "화면 변경 후 PC/모바일 뷰를 검사하고 Claude에게 줄 수정 지시를 작성하도록 WinCo에게 전달하는 QA 템플릿",
+    "tags": ["winco", "qa", "mobile", "ui", "visual"],
+    "prompt": "다음 화면을 PC(1280px)와 모바일(390px) 두 가지 너비에서 확인해줘.\n\n확인 항목:\n1. 수평 스크롤이 없는가 (document.scrollWidth <= window.innerWidth)\n2. 텍스트가 잘리거나 겹치지 않는가\n3. 버튼/입력창이 클릭하기에 충분한 크기인가 (최소 44px)\n4. 레이아웃이 의도한 대로 1컬럼/2컬럼으로 전환되는가\n5. 색상 대비가 충분한가\n\n문제를 발견하면:\n- 어느 요소가 문제인지 CSS 클래스명 또는 셀렉터로 지정해줘.\n- Claude에게 줄 수정 프롬프트를 작성해줘.\n\n검사 대상 URL: [여기에 URL 입력]\n검사 대상 파일: [여기에 파일명 입력]",
+    "created_at": "2026-06-15",
+    "updated_at": "2026-06-15"
+  },
+  {
+    "id": "codex-final-review",
+    "category": "codex-review",
+    "title": "Codex 최종 diff 리뷰 프롬프트",
+    "target": "Codex",
+    "summary": "Claude 구현 완료 후 diff를 검토하고 범위 밖 변경·보안 문제·누락 항목을 찾아내는 리뷰 지시 템플릿",
+    "tags": ["codex", "review", "diff", "security", "scope"],
+    "prompt": "Claude가 구현을 마쳤다. 아래 기준으로 최종 diff를 리뷰해줘.\n\n리뷰 기준:\n1. CURRENT_TASK.md 범위를 벗어난 변경이 있는가?\n2. PHP 처리 로직·DB 쿼리·인증 흐름이 요청 없이 바뀌었는가?\n3. 사용자 입력 검증·이스케이프가 누락된 곳이 있는가?\n4. PDO prepared statement를 쓰지 않고 SQL을 직접 이어붙인 곳이 있는가?\n5. 포맷·들여쓰기만 바뀐 diff가 섞여 있는가?\n\n결과를 이 형식으로 써줘:\n- 원복할 변경: [범위 밖이라 제거할 것]\n- 남겨야 할 변경: [요청 기능에 필요한 것]\n- 최종 diff 조건: [diff에 남아야 하는 내용]\n- 검증: [실행할 명령]\n\n리뷰 대상 파일: [여기에 파일명 입력]",
+    "created_at": "2026-06-15",
+    "updated_at": "2026-06-15"
+  },
+  {
+    "id": "git-split-commit",
+    "category": "git-commit",
+    "title": "Git 성격별 분리 커밋 프롬프트",
+    "target": "Claude",
+    "summary": "미커밋 변경이 여러 성격(feat/fix/style/docs)으로 섞인 경우 파일별로 분리해서 커밋하는 절차 템플릿",
+    "tags": ["git", "commit", "split", "feat", "fix", "style", "docs"],
+    "prompt": "현재 미커밋 변경을 성격별로 분리해서 커밋해줘.\n\n규칙:\n- git add -A 또는 git add .로 한 번에 올리지 않는다.\n- 각 커밋은 feat: / fix: / style: / docs: 접두사를 사용한다.\n- 커밋 하나에는 한 가지 성격의 변경만 담는다.\n- 커밋 전 변경 내용을 확인하고 어떤 커밋으로 묶을지 계획을 먼저 보여줘.\n\n순서:\n1. git status와 git diff로 변경 목록 확인\n2. 커밋 묶음 계획 제시 (사용자 승인 후 진행)\n3. 파일별 git add → git commit 순서로 각각 커밋\n4. 최종 git log --oneline -5로 결과 확인\n\n현재 작업 디렉토리: [여기에 경로 입력]",
+    "created_at": "2026-06-15",
+    "updated_at": "2026-06-15"
+  },
+  {
+    "id": "new-project-instructions",
+    "category": "new-project",
+    "title": "새 프로젝트 지시 파일 생성 프롬프트",
+    "target": "Claude",
+    "summary": "새 프로젝트 시작 시 AGENTS.md, CURRENT_TASK.md, ARCHITECTURE.md, README.md, ROADMAP.md를 한 번에 생성하는 템플릿",
+    "tags": ["new-project", "agents", "architecture", "readme", "roadmap", "setup"],
+    "prompt": "새 프로젝트를 시작하려고 해. 아래 정보를 바탕으로 지시 파일 4개를 만들어줘.\n\n프로젝트 정보:\n- 이름: [프로젝트명]\n- 목적: [한 줄 설명]\n- 대상 사용자: [예: 내부 관리자 / 일반 사용자]\n- 기술 스택: [예: PHP 8.x, MySQL, XAMPP]\n- 프로젝트 경로: [예: C:/xampp/htdocs/프로젝트명]\n- 상업적 목표: [예: 내부 효율화 / SaaS 수익화]\n- 리스크/주의사항: [예: 외부 API 의존, 모바일 우선]\n\n생성할 파일:\n1. AGENTS.md — 역할 규칙, 보안 규칙, 완료 전 검증 규칙\n2. CURRENT_TASK.md — 첫 번째 작업 목표/범위/완료 조건\n3. ARCHITECTURE.md — 폴더 구조, 주요 파일 역할, 데이터 흐름\n4. README.md — 환경 설정, 실행 방법, 주의사항\n\n각 파일을 실제 프로젝트에 바로 쓸 수 있게 완성된 형태로 작성해줘.",
+    "created_at": "2026-06-15",
+    "updated_at": "2026-06-15"
+  },
+  {
+    "id": "mobile-overflow-debug",
+    "category": "winco-qa",
+    "title": "모바일 overflow 디버그 프롬프트",
+    "target": "WinCo",
+    "summary": "390px에서 수평 스크롤이 생기는 원인 요소를 찾아 Claude에게 줄 CSS 수정 지시를 작성하는 QA 템플릿",
+    "tags": ["mobile", "overflow", "debug", "css", "390px"],
+    "prompt": "390px 모바일 너비에서 수평 스크롤이 생긴다. 원인 요소를 찾아줘.\n\n브라우저 콘솔에서 실행:\ndocument.querySelectorAll('*').forEach(el => {\n  if (el.scrollWidth > document.documentElement.clientWidth) {\n    console.log(el.tagName, el.className, el.scrollWidth);\n  }\n});\n\n확인 후:\n1. 어떤 요소가 viewport보다 넓은지 알려줘.\n2. 원인이 되는 CSS 속성을 찾아줘 (min-width, white-space: nowrap, 고정 width 등).\n3. Claude에게 줄 수정 프롬프트를 작성해줘.\n\n검사 대상 URL: [여기에 URL 입력]",
+    "created_at": "2026-06-15",
+    "updated_at": "2026-06-15"
+  },
+  {
+    "id": "db-schema-migration",
+    "category": "claude-task",
+    "title": "DB 스키마 변경 + 마이그레이션 프롬프트",
+    "target": "Claude",
+    "summary": "테이블·컬럼 변경이 필요한 작업에서 SQL 파일 먼저 작성 → 적용 확인 → 코드 수정 순서로 진행하는 템플릿",
+    "tags": ["database", "migration", "sql", "schema", "pdo"],
+    "prompt": "DB 구조를 바꿔야 하는 작업이야. 아래 순서로 진행해줘.\n\n1단계 — SQL 파일 작성:\n- sql/ 폴더에 YYYYMMDD_설명.sql 파일을 만들어줘.\n- ALTER TABLE 또는 CREATE TABLE 구문을 작성해줘.\n- 파일 상단에 적용 전 백업 권고 주석을 넣어줘.\n\n2단계 — 적용 확인 (내가 직접 실행):\n- SQL 파일을 알려주면 내가 phpMyAdmin 또는 CLI로 실행할게.\n- 적용 완료 후 알려줄게.\n\n3단계 — 코드 수정:\n- 새 컬럼/테이블을 사용하는 PHP 코드를 수정해줘.\n- 모든 쿼리는 PDO prepared statement를 사용해.\n- DB 에러 메시지를 사용자 화면에 출력하지 않도록 해줘.\n\n변경 내용:\n[여기에 어떤 테이블·컬럼을 어떻게 바꿀지 입력]",
+    "created_at": "2026-06-15",
+    "updated_at": "2026-06-15"
+  }
+]
