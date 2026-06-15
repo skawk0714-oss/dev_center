@@ -46,6 +46,16 @@ if (is_file($_wsFile)) {
 }
 unset($_wsFile, $_wsAll, $_ws);
 
+/* ── 반영 요청 목록 로드 ── */
+$applyRequests = [];
+$_arFile = DC_DATA_DIR . '/apply_requests.json';
+if (is_file($_arFile)) {
+    $_arRaw = json_decode(file_get_contents($_arFile), true);
+    if (is_array($_arRaw)) { $applyRequests = $_arRaw; }
+}
+unset($_arFile, $_arRaw);
+$jsApplyRequests = json_encode($applyRequests, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
+
 $urlQ    = trim((string)($_GET['q']    ?? ''));
 $urlId   = trim((string)($_GET['id']   ?? ''));
 $urlView = trim((string)($_GET['view'] ?? ''));
@@ -147,6 +157,9 @@ $jsView  = json_encode($urlView, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
     </aside>
   </div>
 
+  <p class="dc-section-title" style="margin-top:32px">반영 요청</p>
+  <div id="lb-apply-list"></div>
+
 <?php endif; ?>
 
   <footer class="dc-footer">
@@ -160,7 +173,8 @@ $jsView  = json_encode($urlView, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
 <?php if (!$loadError): ?>
 <script>
 (function () {
-  const DATA = <?= $jsData ?>;
+  const DATA          = <?= $jsData ?>;
+  const APPLY_REQUESTS = <?= $jsApplyRequests ?>;
 
   const CAT_LABELS = {
     design:     '디자인',
@@ -421,6 +435,35 @@ $jsView  = json_encode($urlView, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
   }
+
+  /* ── 반영 요청 목록 렌더 ── */
+  const AR_STATUS_LABEL = { draft: '초안', pending: '대기', reviewing: '검토중', applied: '적용됨', rejected: '반려', deferred: '보류' };
+  const AR_STATUS_CLASS = { draft: 'lb-apply-pending', pending: 'lb-apply-pending', reviewing: 'lb-apply-reviewing',
+                             applied: 'lb-apply-applied', rejected: 'lb-apply-rejected', deferred: 'lb-apply-deferred' };
+
+  function renderApplyList() {
+    const wrap = document.getElementById('lb-apply-list');
+    if (!wrap) return;
+    if (APPLY_REQUESTS.length === 0) {
+      wrap.innerHTML = '<div class="kn-empty">생성된 반영 요청이 없습니다.</div>';
+      return;
+    }
+    const rows = APPLY_REQUESTS.map(r => {
+      const exp     = DATA.find(d => d.id === r.exp_id);
+      const title   = exp ? esc(exp.title) : esc(r.exp_id);
+      const sCls    = AR_STATUS_CLASS[r.status] || 'lb-apply-pending';
+      const sLbl    = AR_STATUS_LABEL[r.status] || esc(r.status);
+      const project = r.target_project_id ? esc(r.target_project_id) : '대상 미지정';
+      return `<div class="lb-ar-row">
+        <span class="lb-apply ${sCls}">${sLbl}</span>
+        <span class="lb-ar-title">${title}</span>
+        <span class="lb-ar-meta">${esc(r.requested_at || '')}</span>
+        <span class="lb-ar-meta lb-ar-project">${project}</span>
+      </div>`;
+    }).join('');
+    wrap.innerHTML = rows;
+  }
+  renderApplyList();
 
   /* ── 퍼머링크 복사 버튼 ── */
   document.getElementById('lb-detail').addEventListener('click', e => {
