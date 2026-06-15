@@ -1231,3 +1231,14 @@ code.kn-code {
   .rel-grid { grid-template-columns: 1fr; }
   .rel-card { padding: 12px 14px; }
 }
+
+/* ── kn-url-hint: URL q 파라미터 안내 ── */
+.kn-url-hint {
+  font-size: 12px;
+  color: var(--text3);
+  margin: -8px 0 12px;
+}
+.kn-url-hint code {
+  font-family: monospace;
+  color: var(--text2);
+}

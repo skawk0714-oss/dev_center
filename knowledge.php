@@ -28,6 +28,10 @@ if (is_file($featuresFile)) {
 
 /* JS에 넘길 데이터 (HTML 이스케이프 후 JSON) */
 $jsData = json_encode($features, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
+
+/* URL q 파라미터 */
+$urlQ = trim((string)($_GET['q'] ?? ''));
+$jsQ  = json_encode($urlQ, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
 ?>
 <!DOCTYPE html>
 <html lang="ko">
@@ -71,6 +75,10 @@ $jsData = json_encode($features, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
       <button class="kn-filter active" data-cat="">전체</button>
     </div>
   </div>
+
+  <?php if ($urlQ !== ''): ?>
+  <p class="kn-url-hint">URL 검색어 적용: <code><?= htmlspecialchars($urlQ, ENT_QUOTES, 'UTF-8') ?></code></p>
+  <?php endif; ?>
 
   <div class="kn-layout" id="kn-layout">
     <div class="kn-list" id="kn-list">
@@ -143,7 +151,7 @@ $jsData = json_encode($features, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
 
     if (filtered.length === 0) {
       list.innerHTML = '<div class="kn-empty">검색 결과가 없습니다.</div>';
-      return;
+      return null;
     }
 
     filtered.forEach(d => {
@@ -162,6 +170,8 @@ $jsData = json_encode($features, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
       card.addEventListener('click', () => showDetail(d));
       list.appendChild(card);
     });
+
+    return filtered[0];
   }
 
   function showDetail(d) {
@@ -232,7 +242,16 @@ $jsData = json_encode($features, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
       .replace(/"/g, '&quot;');
   }
 
-  render();
+  /* ── URL q 파라미터 초기 적용 ── */
+  const URL_Q = <?= $jsQ ?>;
+  if (URL_Q !== '') {
+    document.getElementById('kn-search').value = URL_Q;
+  }
+
+  const firstResult = render();
+  if (URL_Q !== '' && firstResult) {
+    showDetail(firstResult);
+  }
 })();
 </script>
 </body>
