@@ -133,6 +133,22 @@ body {
   flex-wrap: wrap;
 }
 
+/* ── AI action button group (prompt-copy + launchers) ── */
+.ws-action-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+@media (max-width: 640px) {
+  .ws-action-group {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
 /* ── AI workspace prompt-copy button ── */
 .ws-prompt-btn {
   display: inline-flex;

@@ -89,6 +89,7 @@ $jsView  = json_encode($urlView, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
         <h1>실험실</h1>
         <p>디자인 시도, 자동화, 실행파일, API 테스트, 아이디어를 기록하고 추적합니다.</p>
       </div>
+      <div class="ws-action-group">
       <?php if ($wsPromptText !== ''): ?>
       <button class="ws-prompt-btn" id="ws-prompt-copy" title="실험실 AI 시작 프롬프트를 클립보드에 복사합니다">
         <span class="ws-prompt-btn-icon">🤖</span> 실험실 AI 프롬프트 복사
@@ -106,6 +107,7 @@ $jsView  = json_encode($urlView, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
       <?php if (in_array('vscode-claude', $wsLaunchAllowed, true)): ?>
       <button class="ws-launch-btn" data-workspace="ws-lab" data-action="vscode-claude">🖥️ VSCode + Claude</button>
       <?php endif; ?>
+      </div>
     </div>
   </div>
   <span id="ws-launch-msg" class="ws-launch-msg"></span>

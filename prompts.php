@@ -82,6 +82,7 @@ unset($_wsFile, $_wsAll, $_ws);
         <h1>프롬프트 라이브러리</h1>
         <p>Claude · WinCo · Codex · Git 워크플로에서 자주 쓰는 프롬프트를 검색하고 복사합니다.</p>
       </div>
+      <div class="ws-action-group">
       <?php if ($wsPromptText !== ''): ?>
       <button class="ws-prompt-btn" id="ws-prompt-copy" title="프롬프트 AI 시작 프롬프트를 클립보드에 복사합니다">
         <span class="ws-prompt-btn-icon">🤖</span> 프롬프트 AI 프롬프트 복사
@@ -99,6 +100,7 @@ unset($_wsFile, $_wsAll, $_ws);
       <?php if (in_array('vscode-claude', $wsLaunchAllowed, true)): ?>
       <button class="ws-launch-btn" data-workspace="ws-prompts" data-action="vscode-claude">🖥️ VSCode + Claude</button>
       <?php endif; ?>
+      </div>
     </div>
   </div>
   <span id="ws-launch-msg" class="ws-launch-msg"></span>

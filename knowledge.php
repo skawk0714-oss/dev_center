@@ -96,6 +96,7 @@ $jsQ  = json_encode($urlQ, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP)
         <h1>기능 보관함</h1>
         <p>완성된 기능, 재사용 패턴, 구현 기록을 검색합니다.</p>
       </div>
+      <div class="ws-action-group">
       <?php if ($wsPromptText !== ''): ?>
       <button class="ws-prompt-btn" id="ws-prompt-copy" title="기능 보관함 AI 시작 프롬프트를 클립보드에 복사합니다">
         <span class="ws-prompt-btn-icon">🤖</span> 기능 보관함 AI 프롬프트 복사
@@ -113,6 +114,7 @@ $jsQ  = json_encode($urlQ, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP)
       <?php if (in_array('vscode-claude', $wsLaunchAllowed, true)): ?>
       <button class="ws-launch-btn" data-workspace="ws-knowledge" data-action="vscode-claude">🖥️ VSCode + Claude</button>
       <?php endif; ?>
+      </div>
     </div>
   </div>
   <span id="ws-launch-msg" class="ws-launch-msg"></span>

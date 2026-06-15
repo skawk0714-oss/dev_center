@@ -140,6 +140,7 @@ unset($_wsFile, $_wsAll, $_ws);
         <h1>설정 · 상태</h1>
         <p>Dev Center 환경 설정과 데이터 상태를 읽기 전용으로 확인합니다.</p>
       </div>
+      <div class="ws-action-group">
       <?php if ($wsPromptText !== ''): ?>
       <button class="ws-prompt-btn" id="ws-prompt-copy" title="설정 AI 시작 프롬프트를 클립보드에 복사합니다">
         <span class="ws-prompt-btn-icon">🤖</span> 설정 AI 프롬프트 복사
@@ -157,6 +158,7 @@ unset($_wsFile, $_wsAll, $_ws);
       <?php if (in_array('vscode-claude', $wsLaunchAllowed, true)): ?>
       <button class="ws-launch-btn" data-workspace="ws-settings" data-action="vscode-claude">🖥️ VSCode + Claude</button>
       <?php endif; ?>
+      </div>
     </div>
   </div>
   <span id="ws-launch-msg" class="ws-launch-msg"></span>
