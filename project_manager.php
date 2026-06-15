@@ -6,6 +6,32 @@ if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
 
 $projectsFile = DC_DATA_DIR . '/projects.json';
 
+/* ── ws-project-manager 프롬프트 로드 ── */
+$wsPromptText = '';
+$wsFile = DC_DATA_DIR . '/ai_workspaces.json';
+if (is_file($wsFile)) {
+    $wsAll = json_decode(file_get_contents($wsFile), true);
+    if (is_array($wsAll)) {
+        foreach ($wsAll as $ws) {
+            if (($ws['id'] ?? '') === 'ws-project-manager') {
+                $tplPath = __DIR__ . '/' . ($ws['startup_prompt_template'] ?? '');
+                $roleMd  = is_file($tplPath) ? file_get_contents($tplPath) : '';
+                $allowed = implode("\n", array_map(fn($f) => "  - $f", $ws['allowed_files'] ?? []));
+                $dnt     = implode("\n", array_map(fn($f) => "  - $f", $ws['do_not_touch'] ?? []));
+                $valid   = implode("\n", array_map(fn($c) => "  - $c", $ws['validation_commands'] ?? []));
+                $wsPromptText = $roleMd
+                    . "\n---\n"
+                    . "## 워크스페이스: " . ($ws['label'] ?? '') . "\n\n"
+                    . "### 허용 파일\n" . $allowed . "\n\n"
+                    . "### 절대 건드리지 않는 파일\n" . $dnt . "\n\n"
+                    . "### 검증 명령\n" . $valid . "\n";
+                break;
+            }
+        }
+    }
+}
+$jsWsPrompt = json_encode($wsPromptText, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
+
 function e(string $s): string {
     return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
 }
@@ -522,7 +548,14 @@ $projectsJson = json_encode($projectsForJs, JSON_HEX_TAG | JSON_HEX_AMP | JSON_H
       <h1>프로젝트 관리</h1>
       <p>등록된 프로젝트 목록입니다. 프로젝트명을 클릭하면 메모를 확인하거나 수정할 수 있습니다.</p>
     </div>
-    <button type="button" class="btn-new-project" onclick="openNewModal()">+ 새 프로젝트</button>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <?php if ($wsPromptText !== ''): ?>
+      <button class="ws-prompt-btn" id="ws-prompt-copy" title="프로젝트관리 AI 시작 프롬프트를 클립보드에 복사합니다">
+        <span class="ws-prompt-btn-icon">🤖</span> 프로젝트관리 AI 프롬프트 복사
+      </button>
+      <?php endif; ?>
+      <button type="button" class="btn-new-project" onclick="openNewModal()">+ 새 프로젝트</button>
+    </div>
   </div>
 
   <?php if (empty($projects)): ?>
@@ -911,6 +944,29 @@ async function saveMemo(pid) {
         msg.classList.add('err');
     }
 }
+
+/* ── 프로젝트관리 AI 프롬프트 복사 ── */
+(function () {
+  const btn = document.getElementById('ws-prompt-copy');
+  if (!btn) return;
+  const PROMPT = <?= $jsWsPrompt ?>;
+  const label  = btn.innerHTML;
+  const fallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = PROMPT; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta); ok();
+  };
+  const ok = () => {
+    btn.innerHTML = '✅ 복사됨';
+    btn.classList.add('ws-prompt-btn--copied');
+    setTimeout(() => { btn.innerHTML = label; btn.classList.remove('ws-prompt-btn--copied'); }, 2000);
+  };
+  btn.addEventListener('click', () => {
+    if (navigator.clipboard) { navigator.clipboard.writeText(PROMPT).then(ok, fallback); }
+    else { fallback(); }
+  });
+})();
 </script>
 </body>
 </html>
