@@ -29,10 +29,32 @@ if (is_file($featuresFile)) {
 /* JS에 넘길 데이터 (HTML 이스케이프 후 JSON) */
 $jsData = json_encode($features, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
 
+if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
+
 /* ── ws-knowledge 프롬프트 로드 ── */
 require_once __DIR__ . '/includes/ai_workspace_prompt.php';
 $wsPromptText = buildAiWorkspacePrompt('ws-knowledge');
 $jsWsPrompt   = json_encode($wsPromptText, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
+
+/* ── 워크스페이스 런처: CSRF + 허용 툴 ── */
+if (empty($_SESSION['dc_csrf_token'])) {
+    $_SESSION['dc_csrf_token'] = bin2hex(random_bytes(32));
+}
+$wsLaunchCsrf    = $_SESSION['dc_csrf_token'];
+$wsLaunchAllowed = [];
+$_wsFile = DC_DATA_DIR . '/ai_workspaces.json';
+if (is_file($_wsFile)) {
+    $_wsAll = json_decode(file_get_contents($_wsFile), true);
+    if (is_array($_wsAll)) {
+        foreach ($_wsAll as $_ws) {
+            if (($_ws['id'] ?? '') === 'ws-knowledge') {
+                $wsLaunchAllowed = (array)($_ws['ai_tools'] ?? []);
+                break;
+            }
+        }
+    }
+}
+unset($_wsFile, $_wsAll, $_ws);
 
 /* URL q 파라미터 */
 $urlQ = trim((string)($_GET['q'] ?? ''));
@@ -79,8 +101,15 @@ $jsQ  = json_encode($urlQ, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP)
         <span class="ws-prompt-btn-icon">🤖</span> 기능 보관함 AI 프롬프트 복사
       </button>
       <?php endif; ?>
+      <?php if (in_array('codex', $wsLaunchAllowed, true)): ?>
+      <button class="ws-launch-btn" data-workspace="ws-knowledge" data-action="codex">⚡ Codex 열기</button>
+      <?php endif; ?>
+      <?php if (in_array('claude', $wsLaunchAllowed, true)): ?>
+      <button class="ws-launch-btn" data-workspace="ws-knowledge" data-action="claude">🤖 Claude 열기</button>
+      <?php endif; ?>
     </div>
   </div>
+  <span id="ws-launch-msg" class="ws-launch-msg"></span>
 
   <div class="kn-toolbar">
     <input type="search" id="kn-search" class="kn-search-input"
@@ -270,5 +299,26 @@ $jsQ  = json_encode($urlQ, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP)
 
 </script>
 <?php if ($wsPromptText !== '') renderWsPromptCopyScript($jsWsPrompt); ?>
+<script>
+(function () {
+  var CSRF = <?= json_encode($wsLaunchCsrf, JSON_HEX_TAG | JSON_HEX_AMP) ?>;
+  document.querySelectorAll('.ws-launch-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var wsId   = btn.dataset.workspace;
+      var action = btn.dataset.action;
+      var msg    = document.getElementById('ws-launch-msg');
+      btn.disabled = true;
+      var body = new URLSearchParams({ workspace_id: wsId, action: action, csrf_token: CSRF });
+      fetch('workspace_launcher.php', { method: 'POST', body: body })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (msg) { msg.textContent = d.message || (d.ok ? '실행됨' : '실패'); msg.className = 'ws-launch-msg ' + (d.ok ? 'ws-launch-ok' : 'ws-launch-err'); }
+        })
+        .catch(function () { if (msg) { msg.textContent = '요청 실패'; msg.className = 'ws-launch-msg ws-launch-err'; } })
+        .finally(function () { btn.disabled = false; });
+    });
+  });
+})();
+</script>
 </body>
 </html>

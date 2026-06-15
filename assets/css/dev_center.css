@@ -161,6 +161,35 @@ body {
   border-color: var(--green);
 }
 
+/* ── AI workspace launcher buttons ── */
+.ws-launch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--accent);
+  color: #fff;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity .15s;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.ws-launch-btn:hover    { opacity: .85; }
+.ws-launch-btn:disabled { opacity: .5; cursor: not-allowed; }
+.ws-launch-msg {
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+.ws-launch-msg:empty { display: none; }
+.ws-launch-ok  { color: var(--green); }
+.ws-launch-err { color: var(--red, #e74c3c); }
+
 /* ── section title ── */
 .dc-section-title {
   font-size: 11px;

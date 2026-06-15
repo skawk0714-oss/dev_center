@@ -11,6 +11,26 @@ require_once __DIR__ . '/includes/ai_workspace_prompt.php';
 $wsPromptText = buildAiWorkspacePrompt('ws-project-manager');
 $jsWsPrompt   = json_encode($wsPromptText, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
 
+/* ── 워크스페이스 런처: CSRF + 허용 툴 ── */
+if (empty($_SESSION['dc_csrf_token'])) {
+    $_SESSION['dc_csrf_token'] = bin2hex(random_bytes(32));
+}
+$wsLaunchCsrf    = $_SESSION['dc_csrf_token'];
+$wsLaunchAllowed = [];
+$_wsFile = DC_DATA_DIR . '/ai_workspaces.json';
+if (is_file($_wsFile)) {
+    $_wsAll = json_decode(file_get_contents($_wsFile), true);
+    if (is_array($_wsAll)) {
+        foreach ($_wsAll as $_ws) {
+            if (($_ws['id'] ?? '') === 'ws-project-manager') {
+                $wsLaunchAllowed = (array)($_ws['ai_tools'] ?? []);
+                break;
+            }
+        }
+    }
+}
+unset($_wsFile, $_wsAll, $_ws);
+
 function e(string $s): string {
     return htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
 }
@@ -533,9 +553,16 @@ $projectsJson = json_encode($projectsForJs, JSON_HEX_TAG | JSON_HEX_AMP | JSON_H
         <span class="ws-prompt-btn-icon">🤖</span> 프로젝트관리 AI 프롬프트 복사
       </button>
       <?php endif; ?>
+      <?php if (in_array('codex', $wsLaunchAllowed, true)): ?>
+      <button class="ws-launch-btn" data-workspace="ws-project-manager" data-action="codex">⚡ Codex 열기</button>
+      <?php endif; ?>
+      <?php if (in_array('claude', $wsLaunchAllowed, true)): ?>
+      <button class="ws-launch-btn" data-workspace="ws-project-manager" data-action="claude">🤖 Claude 열기</button>
+      <?php endif; ?>
       <button type="button" class="btn-new-project" onclick="openNewModal()">+ 새 프로젝트</button>
     </div>
   </div>
+  <span id="ws-launch-msg" class="ws-launch-msg"></span>
 
   <?php if (empty($projects)): ?>
     <div class="empty-msg">등록된 프로젝트가 없습니다. <code>data/projects.json</code>을 확인하세요.</div>
@@ -926,5 +953,26 @@ async function saveMemo(pid) {
 
 </script>
 <?php if ($wsPromptText !== '') renderWsPromptCopyScript($jsWsPrompt); ?>
+<script>
+(function () {
+  var CSRF = <?= json_encode($wsLaunchCsrf, JSON_HEX_TAG | JSON_HEX_AMP) ?>;
+  document.querySelectorAll('.ws-launch-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var wsId   = btn.dataset.workspace;
+      var action = btn.dataset.action;
+      var msg    = document.getElementById('ws-launch-msg');
+      btn.disabled = true;
+      var body = new URLSearchParams({ workspace_id: wsId, action: action, csrf_token: CSRF });
+      fetch('workspace_launcher.php', { method: 'POST', body: body })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (msg) { msg.textContent = d.message || (d.ok ? '실행됨' : '실패'); msg.className = 'ws-launch-msg ' + (d.ok ? 'ws-launch-ok' : 'ws-launch-err'); }
+        })
+        .catch(function () { if (msg) { msg.textContent = '요청 실패'; msg.className = 'ws-launch-msg ws-launch-err'; } })
+        .finally(function () { btn.disabled = false; });
+    });
+  });
+})();
+</script>
 </body>
 </html>
