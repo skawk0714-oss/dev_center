@@ -14,6 +14,9 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+$OutputEncoding         = [System.Text.UTF8Encoding]::new($false)
+[Console]::OutputEncoding = $OutputEncoding
+
 # ── 상수 ──────────────────────────────────────────────────────
 $AllowedActions = @('codex', 'claude')
 $AllowedRoots   = @(

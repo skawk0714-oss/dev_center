@@ -9,13 +9,27 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 
 header('Content-Type: application/json; charset=UTF-8');
 
+function safeUtf8(string $s): string {
+    // 비-UTF-8 바이트를 ?로 대체해 json_encode 실패 방지
+    $converted = mb_convert_encoding($s, 'UTF-8', 'UTF-8');
+    return $converted === false ? preg_replace('/[^\x09\x0A\x0D\x20-\x7E]/u', '?', $s) : $converted;
+}
+
 function jsonFail(string $msg): never {
-    echo json_encode(['ok' => false, 'message' => $msg], JSON_UNESCAPED_UNICODE);
+    $payload = json_encode(['ok' => false, 'message' => $msg], JSON_UNESCAPED_UNICODE);
+    if ($payload === false) {
+        $payload = json_encode(['ok' => false, 'message' => safeUtf8($msg)], JSON_UNESCAPED_UNICODE);
+    }
+    echo $payload ?: '{"ok":false,"message":"unknown error"}';
     exit;
 }
 
 function jsonOk(string $msg): never {
-    echo json_encode(['ok' => true, 'message' => $msg], JSON_UNESCAPED_UNICODE);
+    $payload = json_encode(['ok' => true, 'message' => $msg], JSON_UNESCAPED_UNICODE);
+    if ($payload === false) {
+        $payload = json_encode(['ok' => true, 'message' => safeUtf8($msg)], JSON_UNESCAPED_UNICODE);
+    }
+    echo $payload ?: '{"ok":true,"message":"done"}';
     exit;
 }
 
@@ -104,7 +118,9 @@ exec($cmd, $output, $exitCode);
 $outputStr = implode("\n", $output);
 
 if ($exitCode !== 0) {
-    jsonFail("실행 실패 (exit $exitCode): $outputStr");
+    $safeOut = mb_convert_encoding($outputStr, 'UTF-8', 'UTF-8,CP949,EUC-KR') ?: $outputStr;
+    jsonFail("실행 실패 (exit $exitCode): " . substr(strip_tags($safeOut), 0, 200));
 }
 
-jsonOk("워크스페이스 '$workspaceId' — $action 실행 완료. $outputStr");
+// 성공 시 PowerShell 출력을 응답에 포함하지 않는다 (인코딩 문제 방지)
+jsonOk("워크스페이스 실행 요청을 보냈습니다.");
