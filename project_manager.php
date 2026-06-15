@@ -542,29 +542,33 @@ $projectsJson = json_encode($projectsForJs, JSON_HEX_TAG | JSON_HEX_AMP | JSON_H
 </nav>
 
 <main class="dc-main">
-  <div class="dc-hero" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-    <div>
-      <h1>프로젝트 관리</h1>
-      <p>등록된 프로젝트 목록입니다. 프로젝트명을 클릭하면 메모를 확인하거나 수정할 수 있습니다.</p>
+  <div class="dc-hero">
+    <div class="dc-hero-row">
+      <div>
+        <h1>프로젝트 관리</h1>
+        <p>등록된 프로젝트 목록입니다. 프로젝트명을 클릭하면 메모를 확인하거나 수정할 수 있습니다.</p>
+      </div>
+      <div class="ws-action-group">
+        <?php if ($wsPromptText !== ''): ?>
+        <button class="ws-prompt-btn" id="ws-prompt-copy" title="프로젝트관리 AI 시작 프롬프트를 클립보드에 복사합니다">
+          <span class="ws-prompt-btn-icon">🤖</span> 프로젝트관리 AI 프롬프트 복사
+        </button>
+        <?php endif; ?>
+        <?php if (in_array('codex', $wsLaunchAllowed, true)): ?>
+        <button class="ws-launch-btn" data-workspace="ws-project-manager" data-action="codex">⚡ Codex 열기</button>
+        <?php endif; ?>
+        <?php if (in_array('claude', $wsLaunchAllowed, true)): ?>
+        <button class="ws-launch-btn" data-workspace="ws-project-manager" data-action="claude">🤖 Claude 열기</button>
+        <?php endif; ?>
+        <?php if (in_array('vscode-codex', $wsLaunchAllowed, true)): ?>
+        <button class="ws-launch-btn" data-workspace="ws-project-manager" data-action="vscode-codex">🖥️ VSCode + Codex</button>
+        <?php endif; ?>
+        <?php if (in_array('vscode-claude', $wsLaunchAllowed, true)): ?>
+        <button class="ws-launch-btn" data-workspace="ws-project-manager" data-action="vscode-claude">🖥️ VSCode + Claude</button>
+        <?php endif; ?>
+      </div>
     </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <?php if ($wsPromptText !== ''): ?>
-      <button class="ws-prompt-btn" id="ws-prompt-copy" title="프로젝트관리 AI 시작 프롬프트를 클립보드에 복사합니다">
-        <span class="ws-prompt-btn-icon">🤖</span> 프로젝트관리 AI 프롬프트 복사
-      </button>
-      <?php endif; ?>
-      <?php if (in_array('codex', $wsLaunchAllowed, true)): ?>
-      <button class="ws-launch-btn" data-workspace="ws-project-manager" data-action="codex">⚡ Codex 열기</button>
-      <?php endif; ?>
-      <?php if (in_array('claude', $wsLaunchAllowed, true)): ?>
-      <button class="ws-launch-btn" data-workspace="ws-project-manager" data-action="claude">🤖 Claude 열기</button>
-      <?php endif; ?>
-      <?php if (in_array('vscode-codex', $wsLaunchAllowed, true)): ?>
-      <button class="ws-launch-btn" data-workspace="ws-project-manager" data-action="vscode-codex">🖥️ VSCode + Codex</button>
-      <?php endif; ?>
-      <?php if (in_array('vscode-claude', $wsLaunchAllowed, true)): ?>
-      <button class="ws-launch-btn" data-workspace="ws-project-manager" data-action="vscode-claude">🖥️ VSCode + Claude</button>
-      <?php endif; ?>
+    <div class="dc-subhero-actions">
       <button type="button" class="btn-new-project" onclick="openNewModal()">+ 새 프로젝트</button>
     </div>
   </div>

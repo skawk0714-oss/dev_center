@@ -133,6 +133,18 @@ body {
   flex-wrap: wrap;
 }
 
+/* ── sub-hero action row (e.g. "새 프로젝트") ── */
+.dc-subhero-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+@media (max-width: 640px) {
+  .dc-subhero-actions {
+    justify-content: flex-start;
+  }
+}
+
 /* ── AI action button group (prompt-copy + launchers) ── */
 .ws-action-group {
   display: flex;
