@@ -38,6 +38,31 @@ function loadRelatedRecords(string $projectId): array {
     return ['records' => $related, 'skip' => $skipCount];
 }
 
+function loadRelatedLabExperiments(string $projectId): array {
+    $labFile = DC_DATA_DIR . '/lab_experiments.json';
+    if (!is_file($labFile)) return [];
+    $experiments = json_decode(file_get_contents($labFile), true);
+    if (!is_array($experiments)) return [];
+
+    $related = [];
+    foreach ($experiments as $exp) {
+        if (!is_array($exp)) continue;
+        if (($exp['project_id'] ?? '') !== $projectId) continue;
+        $related[] = [
+            'id'          => (string)($exp['id']           ?? ''),
+            'title'       => (string)($exp['title']        ?? ''),
+            'summary'     => (string)($exp['summary']      ?? ''),
+            'category'    => (string)($exp['category']     ?? ''),
+            'subcategory' => (string)($exp['subcategory']  ?? ''),
+            'status'      => (string)($exp['status']       ?? ''),
+            'completion'  => (int)($exp['completion']      ?? 0),
+            'priority_score' => (int)($exp['priority_score'] ?? 0),
+            'tags'        => (array)($exp['tags']          ?? []),
+        ];
+    }
+    return $related;
+}
+
 function loadProjects(): array {
     $file = DC_DATA_DIR . '/projects.json';
     if (!is_file($file)) return [];
@@ -160,6 +185,9 @@ $csrfToken   = csrfToken();
 $relatedData = ($project !== null)
     ? loadRelatedRecords((string)($project['id'] ?? ''))
     : ['records' => [], 'skip' => 0];
+$relatedLab  = ($project !== null)
+    ? loadRelatedLabExperiments((string)($project['id'] ?? ''))
+    : [];
 
 $statusLabel = [
     'active'   => ['label' => '진행 중', 'class' => 'badge-active'],
@@ -435,6 +463,66 @@ $statusLabel = [
         <?php endforeach; ?>
       </div>
     <?php endif; ?>
+  </section>
+  <?php endif; ?>
+
+  <?php if ($project !== null && !empty($relatedLab)):
+    $labStatusClass = [
+      'done'        => 'lb-status-done',
+      'archived'    => 'lb-status-archived',
+      'in-progress' => 'lb-status-progress',
+      'idea'        => 'lb-status-idea',
+      'paused'      => 'lb-status-paused',
+    ];
+    $labStatusLabel = [
+      'done'        => '완료',
+      'archived'    => '보관',
+      'in-progress' => '진행중',
+      'idea'        => '아이디어',
+      'paused'      => '보류',
+    ];
+  ?>
+  <section class="rel-section">
+    <h2 class="rel-title">관련 실험실</h2>
+    <div class="rel-grid">
+      <?php foreach ($relatedLab as $exp):
+        $sCls = $labStatusClass[$exp['status']] ?? 'lb-status-idea';
+        $sLbl = $labStatusLabel[$exp['status']] ?? e($exp['status']);
+        $pct  = max(0, min(100, $exp['completion']));
+      ?>
+      <a href="lab.php?id=<?= urlencode($exp['id']) ?>" class="rel-card">
+        <div class="rel-card-head">
+          <span class="rel-card-title"><?= e($exp['title']) ?></span>
+          <span class="lb-status <?= $sCls ?>"><?= $sLbl ?></span>
+        </div>
+        <div class="lb-card-meta" style="margin-bottom:6px;">
+          <?php if ($exp['category'] !== ''): ?>
+            <span class="lb-cat-chip"><?= e($exp['category']) ?></span>
+          <?php endif; ?>
+          <?php if ($exp['subcategory'] !== ''): ?>
+            <span class="lb-subcat-chip"><?= e($exp['subcategory']) ?></span>
+          <?php endif; ?>
+          <?php if ($exp['priority_score'] > 0): ?>
+            <span class="lb-priority">P<?= $exp['priority_score'] ?></span>
+          <?php endif; ?>
+        </div>
+        <div class="lb-progress-wrap" style="margin-bottom:6px;">
+          <div class="lb-progress"><div class="lb-progress-bar" style="width:<?= $pct ?>%"></div></div>
+          <span class="lb-pct"><?= $pct ?>%</span>
+        </div>
+        <?php if ($exp['summary'] !== ''): ?>
+          <div class="rel-card-summary"><?= e($exp['summary']) ?></div>
+        <?php endif; ?>
+        <?php if (!empty($exp['tags'])): ?>
+          <div class="rel-card-tags">
+            <?php foreach (array_slice($exp['tags'], 0, 4) as $tag): ?>
+              <span class="kn-tag"><?= e($tag) ?></span>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+      </a>
+      <?php endforeach; ?>
+    </div>
   </section>
   <?php endif; ?>
 
