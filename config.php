@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 define('DEV_CENTER_NAME',    '개발센터');
-define('DEV_CENTER_VERSION', '1.0');
+define('DEV_CENTER_VERSION', '1.1.0');
 define('DEV_CENTER_BASE_URL', 'http://localhost/dev_center');
 define('COPIER_PATH',        'C:/xampp/htdocs/copier');
 define('COPIER_URL',         'http://localhost/copier');
