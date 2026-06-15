@@ -845,6 +845,34 @@ code.kn-code {
 }
 
 /* ── lab page ── */
+.lb-view-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 14px;
+}
+.lb-view-tab {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 5px 16px;
+  font-size: 13px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+  line-height: 1.4;
+}
+.lb-view-tab:first-child { border-radius: 6px 0 0 6px; }
+.lb-view-tab:last-child  { border-radius: 0 6px 6px 0; }
+.lb-view-tab + .lb-view-tab { border-left: none; }
+.lb-view-tab:hover { background: var(--bg3); color: var(--text); }
+.lb-view-tab.active {
+  background: var(--accent2);
+  border-color: var(--accent2);
+  color: #fff;
+}
+
+.kn-item--muted { opacity: 0.5; }
+.kn-item--muted:hover { opacity: 0.75; }
+
 .lb-subcat-row {
   display: flex;
   gap: 6px;
@@ -882,9 +910,24 @@ code.kn-code {
 }
 
 .lb-status-done     { background: rgba(46,164,79,.12);   color: var(--green);  border: 1px solid rgba(46,164,79,.25); }
+.lb-status-archived { background: rgba(139,92,246,.10);  color: #a78bfa;       border: 1px solid rgba(139,92,246,.25); }
 .lb-status-progress { background: rgba(56,139,253,.12);  color: var(--accent); border: 1px solid rgba(56,139,253,.25); }
 .lb-status-idea     { background: rgba(210,153,34,.10);  color: var(--yellow); border: 1px solid rgba(210,153,34,.25); }
 .lb-status-paused   { background: rgba(110,118,129,.12); color: var(--text3);  border: 1px solid rgba(110,118,129,.25); }
+
+/* permalink button */
+.lb-permalink-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: .5;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: opacity .15s;
+}
+.lb-permalink-btn:hover { opacity: 1; }
 
 /* apply badge */
 .lb-apply {
