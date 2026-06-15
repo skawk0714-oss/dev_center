@@ -19,6 +19,32 @@ if (!is_file($labFile)) {
 
 $jsData = json_encode($experiments, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
 
+/* ── ws-lab 프롬프트 로드 ── */
+$wsPromptText = '';
+$wsFile = DC_DATA_DIR . '/ai_workspaces.json';
+if (is_file($wsFile)) {
+    $wsAll = json_decode(file_get_contents($wsFile), true);
+    if (is_array($wsAll)) {
+        foreach ($wsAll as $ws) {
+            if (($ws['id'] ?? '') === 'ws-lab') {
+                $tplPath = __DIR__ . '/' . ($ws['startup_prompt_template'] ?? '');
+                $roleMd  = is_file($tplPath) ? file_get_contents($tplPath) : '';
+                $allowed = implode("\n", array_map(fn($f) => "  - $f", $ws['allowed_files'] ?? []));
+                $dnt     = implode("\n", array_map(fn($f) => "  - $f", $ws['do_not_touch'] ?? []));
+                $valid   = implode("\n", array_map(fn($c) => "  - $c", $ws['validation_commands'] ?? []));
+                $wsPromptText = $roleMd
+                    . "\n---\n"
+                    . "## 워크스페이스: " . ($ws['label'] ?? '') . "\n\n"
+                    . "### 허용 파일\n" . $allowed . "\n\n"
+                    . "### 절대 건드리지 않는 파일\n" . $dnt . "\n\n"
+                    . "### 검증 명령\n" . $valid . "\n";
+                break;
+            }
+        }
+    }
+}
+$jsWsPrompt = json_encode($wsPromptText, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
+
 $urlQ    = trim((string)($_GET['q']    ?? ''));
 $urlId   = trim((string)($_GET['id']   ?? ''));
 $urlView = trim((string)($_GET['view'] ?? ''));
@@ -57,8 +83,17 @@ $jsView  = json_encode($urlView, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
 <main class="dc-main">
 
   <div class="dc-hero">
-    <h1>실험실</h1>
-    <p>디자인 시도, 자동화, 실행파일, API 테스트, 아이디어를 기록하고 추적합니다.</p>
+    <div class="dc-hero-row">
+      <div>
+        <h1>실험실</h1>
+        <p>디자인 시도, 자동화, 실행파일, API 테스트, 아이디어를 기록하고 추적합니다.</p>
+      </div>
+      <?php if ($wsPromptText !== ''): ?>
+      <button class="ws-prompt-btn" id="ws-prompt-copy" title="실험실 AI 시작 프롬프트를 클립보드에 복사합니다">
+        <span class="ws-prompt-btn-icon">🤖</span> 실험실 AI 프롬프트 복사
+      </button>
+      <?php endif; ?>
+    </div>
   </div>
 
 <?php if ($loadError): ?>
@@ -419,6 +454,32 @@ $jsView  = json_encode($urlView, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
   } else if (URL_Q !== '' && firstResult) {
     showDetail(firstResult);
   }
+})();
+
+/* ── 실험실 AI 프롬프트 복사 ── */
+(function () {
+  const btn = document.getElementById('ws-prompt-copy');
+  if (!btn) return;
+  const PROMPT = <?= $jsWsPrompt ?>;
+  const label  = btn.innerHTML;
+  const fallback = () => {
+    const ta = document.createElement('textarea');
+    ta.value = PROMPT; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta); ok();
+  };
+  const ok = () => {
+    btn.innerHTML = '✅ 복사됨';
+    btn.classList.add('ws-prompt-btn--copied');
+    setTimeout(() => { btn.innerHTML = label; btn.classList.remove('ws-prompt-btn--copied'); }, 2000);
+  };
+  btn.addEventListener('click', () => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(PROMPT).then(ok, fallback);
+    } else {
+      fallback();
+    }
+  });
 })();
 </script>
 <?php endif; ?>
