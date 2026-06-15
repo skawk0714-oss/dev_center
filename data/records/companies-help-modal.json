@@ -20,6 +20,13 @@
     "docs/help/companies.json JSON PASS"
   ],
   "reuse_notes": "다른 페이지에 도움말 추가 시: (1) docs/help/{key}.json 생성, (2) includes/help.php require, (3) load_page_help('{key}'), (4) 버튼 + render_page_help() 추가. 스타일은 style.css로 옮기면 공유 가능.",
+  "lab_experiment_id": "companies-body-ui",
+  "reusable": true,
+  "compatible_types": ["php-erp", "php-local-tool", "laravel-saas"],
+  "target_files": ["companies.php", "includes/help.php", "docs/help/companies.json"],
+  "requires_db": false,
+  "risk_level": "low",
+  "adapt_notes": {},
   "created_at": "2026-06-14",
   "updated_at": "2026-06-14"
 }

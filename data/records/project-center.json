@@ -19,6 +19,13 @@
     "docs/project-center/projects.json JSON PASS: 6건"
   ],
   "reuse_notes": "프로젝트 추가/수정은 docs/project-center/projects.json 직접 편집. 편집 UI는 아직 없음. key는 /^[a-z][a-z0-9_]*$/ 형식.",
+  "lab_experiment_id": null,
+  "reusable": false,
+  "compatible_types": [],
+  "target_files": ["project_center.php", "docs/project-center/projects.json", "includes/sidebar.php"],
+  "requires_db": false,
+  "risk_level": "medium",
+  "adapt_notes": {},
   "created_at": "2026-06-14",
   "updated_at": "2026-06-14"
 }

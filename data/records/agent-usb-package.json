@@ -24,6 +24,13 @@
     "php -l agent_manager.php PASS"
   ],
   "reuse_notes": "VBS 파일 생성 시 PowerShell에서 & 연산자·따옴표 이스케이프 오류 주의. 새 PC/다른 계정에서 실행될 스크립트에 현재 PC 전용 경로 하드코딩 금지.",
+  "lab_experiment_id": "agent-usb-package",
+  "reusable": true,
+  "compatible_types": ["php-erp", "php-local-tool"],
+  "target_files": ["agent_manager.php", "agent/setup_wizard.ps1", "agent/snmp_collect.ps1", "agent/install.vbs", "agent/uninstall.ps1"],
+  "requires_db": false,
+  "risk_level": "medium",
+  "adapt_notes": {"laravel-saas": "서버사이드 ZIP 생성 로직은 동일. Blade 뷰와 컨트롤러로 분리."},
   "created_at": "2026-06-14",
   "updated_at": "2026-06-14"
 }

@@ -19,6 +19,13 @@
     "php -l agent_api.php PASS"
   ],
   "reuse_notes": "snmp_collect.ps1는 OID 목록이 모델별로 다르므로 install_presets.json에서 모델별 OID를 관리. 새 모델 추가 시 OID 매핑 먼저 확인할 것.",
+  "lab_experiment_id": "snmp-agent-collector",
+  "reusable": true,
+  "compatible_types": ["php-erp", "php-local-tool"],
+  "target_files": ["agent/snmp_collect.ps1", "agent_api.php", "agent/setup_wizard.ps1"],
+  "requires_db": true,
+  "risk_level": "medium",
+  "adapt_notes": {"laravel-saas": "API endpoint로 분리 필요. Laravel Jobs 사용 권장."},
   "created_at": "2026-06-14",
   "updated_at": "2026-06-14"
 }

@@ -21,6 +21,13 @@
     "status update requested→reviewing php -r 시뮬레이션 PASS"
   ],
   "reuse_notes": "dl_load_requests() / dl_save_requests()가 apply_requests.json 단독 관리. 새 상태 추가 시 $validReqStatuses 배열과 JS REQ_STATUS_LABELS 둘 다 수정 필요.",
+  "lab_experiment_id": null,
+  "reusable": false,
+  "compatible_types": [],
+  "target_files": ["design_lab.php", "docs/design-lab/apply_requests.json", "docs/design-lab/experiments.json"],
+  "requires_db": false,
+  "risk_level": "medium",
+  "adapt_notes": {},
   "created_at": "2026-06-14",
   "updated_at": "2026-06-14"
 }

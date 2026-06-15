@@ -17,6 +17,13 @@
     "WinCo desktop/mobile visual QA PASS"
   ],
   "reuse_notes": "stat-card data-tone 패턴은 다른 페이지에도 동일하게 적용 가능. co-contact-badge 색상 팔레트(c-indigo, c-purple 등)는 crc32(name) % 8 로 결정.",
+  "lab_experiment_id": "companies-body-ui",
+  "reusable": true,
+  "compatible_types": ["php-erp", "php-local-tool", "laravel-saas"],
+  "target_files": ["companies.php"],
+  "requires_db": false,
+  "risk_level": "low",
+  "adapt_notes": {"laravel-saas": "Tailwind CSS 기준 재작성. stat-card data-tone 패턴은 동일하게 유지 가능."},
   "created_at": "2026-06-14",
   "updated_at": "2026-06-14"
 }

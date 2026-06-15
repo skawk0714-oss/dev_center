@@ -18,6 +18,13 @@
     "no horizontal scroll at 390px PASS"
   ],
   "reuse_notes": "Tabler 도입 결정 시 CDN 의존 제거하고 로컬 번들 필요. 현재는 실험 단계 프리뷰로만 사용.",
+  "lab_experiment_id": "tabler-bids-preview",
+  "reusable": true,
+  "compatible_types": ["php-erp", "laravel-saas"],
+  "target_files": ["docs/design-lab/previews/bids-tabler-preview.html"],
+  "requires_db": false,
+  "risk_level": "low",
+  "adapt_notes": {"php-local-tool": "Tabler CDN 사용 가능. 로그인 불필요 시 auth 제거."},
   "created_at": "2026-06-14",
   "updated_at": "2026-06-14"
 }
