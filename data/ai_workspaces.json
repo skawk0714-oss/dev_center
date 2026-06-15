@@ -1,0 +1,138 @@
+[
+  {
+    "id": "ws-project-manager",
+    "label": "프로젝트관리 AI",
+    "menu": "project_manager",
+    "ai_tools": ["codex", "claude"],
+    "default_project_id": "260614-dev-center",
+    "allowed_files": [
+      "data/projects.json",
+      "project_manager.php",
+      "project_detail.php",
+      "scripts/launch_project.ps1",
+      "templates/instructions/*.md"
+    ],
+    "do_not_touch": [
+      "data/features.json",
+      "data/lab_experiments.json",
+      "data/prompts.json",
+      "data/ai_workspaces.json",
+      "knowledge.php",
+      "lab.php",
+      "prompts.php",
+      "settings.php"
+    ],
+    "startup_prompt_template": "templates/ai_roles/project-manager.md",
+    "validation_commands": [
+      "php -l project_manager.php",
+      "php -l project_detail.php"
+    ]
+  },
+  {
+    "id": "ws-knowledge",
+    "label": "기능 보관함 AI",
+    "menu": "knowledge",
+    "ai_tools": ["codex", "claude"],
+    "default_project_id": "260614-dev-center",
+    "allowed_files": [
+      "data/features.json",
+      "data/records/*.json",
+      "knowledge.php"
+    ],
+    "do_not_touch": [
+      "data/projects.json",
+      "data/lab_experiments.json",
+      "data/prompts.json",
+      "data/ai_workspaces.json",
+      "project_manager.php",
+      "lab.php",
+      "prompts.php",
+      "settings.php"
+    ],
+    "startup_prompt_template": "templates/ai_roles/knowledge.md",
+    "validation_commands": [
+      "php -l knowledge.php"
+    ]
+  },
+  {
+    "id": "ws-lab",
+    "label": "실험실 AI",
+    "menu": "lab",
+    "ai_tools": ["codex", "claude"],
+    "default_project_id": "260614-dev-center",
+    "allowed_files": [
+      "data/lab_experiments.json",
+      "data/apply_requests.json",
+      "lab.php"
+    ],
+    "do_not_touch": [
+      "data/projects.json",
+      "data/features.json",
+      "data/prompts.json",
+      "data/ai_workspaces.json",
+      "project_manager.php",
+      "knowledge.php",
+      "prompts.php",
+      "settings.php"
+    ],
+    "startup_prompt_template": "templates/ai_roles/lab.md",
+    "validation_commands": [
+      "php -l lab.php",
+      "php -r \"$d=json_decode(file_get_contents('data/lab_experiments.json')); echo json_last_error();\""
+    ]
+  },
+  {
+    "id": "ws-prompts",
+    "label": "프롬프트 AI",
+    "menu": "prompts",
+    "ai_tools": ["claude"],
+    "default_project_id": "260614-dev-center",
+    "allowed_files": [
+      "data/prompts.json",
+      "prompts.php"
+    ],
+    "do_not_touch": [
+      "data/projects.json",
+      "data/features.json",
+      "data/lab_experiments.json",
+      "data/ai_workspaces.json",
+      "project_manager.php",
+      "knowledge.php",
+      "lab.php",
+      "settings.php"
+    ],
+    "startup_prompt_template": "templates/ai_roles/prompts.md",
+    "validation_commands": [
+      "php -l prompts.php",
+      "php -r \"$d=json_decode(file_get_contents('data/prompts.json')); echo json_last_error();\""
+    ]
+  },
+  {
+    "id": "ws-settings",
+    "label": "설정 AI",
+    "menu": "settings",
+    "ai_tools": ["codex"],
+    "default_project_id": "260614-dev-center",
+    "allowed_files": [
+      "config.php",
+      "settings.php",
+      "scripts/*.ps1"
+    ],
+    "do_not_touch": [
+      "data/projects.json",
+      "data/features.json",
+      "data/lab_experiments.json",
+      "data/prompts.json",
+      "data/ai_workspaces.json",
+      "project_manager.php",
+      "knowledge.php",
+      "lab.php",
+      "prompts.php"
+    ],
+    "startup_prompt_template": "templates/ai_roles/settings.md",
+    "validation_commands": [
+      "php -l settings.php",
+      "php -l config.php"
+    ]
+  }
+]
