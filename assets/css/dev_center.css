@@ -682,6 +682,219 @@ code.kn-code {
   .kn-detail-inner { padding: 16px; }
 }
 
+/* ── lab page ── */
+.lb-subcat-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  min-width: 0;
+}
+
+.lb-subcat {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text3);
+  font-size: 11.5px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+
+.lb-subcat:hover,
+.lb-subcat.active {
+  background: var(--bg3);
+  border-color: var(--text3);
+  color: var(--text);
+}
+
+/* status badge */
+.lb-status {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.lb-status-done     { background: rgba(46,164,79,.12);   color: var(--green);  border: 1px solid rgba(46,164,79,.25); }
+.lb-status-progress { background: rgba(56,139,253,.12);  color: var(--accent); border: 1px solid rgba(56,139,253,.25); }
+.lb-status-idea     { background: rgba(210,153,34,.10);  color: var(--yellow); border: 1px solid rgba(210,153,34,.25); }
+.lb-status-paused   { background: rgba(110,118,129,.12); color: var(--text3);  border: 1px solid rgba(110,118,129,.25); }
+
+/* apply badge */
+.lb-apply {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.lb-apply-applied   { background: rgba(46,164,79,.10);   color: var(--green);  border: 1px solid rgba(46,164,79,.2); }
+.lb-apply-reviewing { background: rgba(56,139,253,.10);  color: var(--accent); border: 1px solid rgba(56,139,253,.2); }
+.lb-apply-pending   { background: rgba(110,118,129,.08); color: var(--text3);  border: 1px solid rgba(110,118,129,.2); }
+.lb-apply-rejected  { background: rgba(248,81,73,.08);   color: var(--red);    border: 1px solid rgba(248,81,73,.2); }
+.lb-apply-deferred  { background: rgba(210,153,34,.08);  color: var(--yellow); border: 1px solid rgba(210,153,34,.2); }
+
+/* category / subcategory chips */
+.lb-cat-chip {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(56,139,253,.1);
+  border: 1px solid rgba(56,139,253,.2);
+  border-radius: 99px;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+
+.lb-subcat-chip {
+  font-size: 11px;
+  color: var(--text3);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+
+.lb-priority {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+  margin-left: auto;
+}
+
+/* card meta row */
+.lb-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 7px;
+  min-width: 0;
+}
+
+/* progress bar (card) */
+.lb-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+
+.lb-progress {
+  flex: 1;
+  height: 5px;
+  border-radius: 99px;
+  background: var(--bg3);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.lb-progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), #60a5fa);
+}
+
+.lb-pct {
+  font-size: 11px;
+  color: var(--text3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* detail panel */
+.lb-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  min-width: 0;
+}
+
+.lb-priority-badge {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text2);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.lb-detail-progress {
+  margin-bottom: 16px;
+}
+
+.lb-detail-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--text3);
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.lb-progress-lg {
+  height: 7px;
+}
+
+.lb-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.lb-meta-cell {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.lb-meta-cell .kn-detail-label {
+  margin-bottom: 0;
+}
+
+.lb-meta-cell span:last-child,
+.lb-meta-cell code {
+  font-size: 12.5px;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.lb-note {
+  border-left: 3px solid var(--yellow);
+  padding-left: 10px;
+  word-break: break-word;
+}
+
+.lb-preview-path {
+  display: block;
+  word-break: break-all;
+  white-space: pre-wrap;
+  max-width: 100%;
+}
+
+@media (max-width: 390px) {
+  .lb-meta-grid { grid-template-columns: 1fr; }
+  .lb-subcat-row { gap: 4px; }
+}
+
 /* ── prompts page ── */
 .dc-alert-warn {
   background: rgba(210,153,34,.08);
