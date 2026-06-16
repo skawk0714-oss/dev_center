@@ -100,5 +100,23 @@
     "status": "active",
     "created_at": "2026-06-16",
     "updated_at": "2026-06-16"
+  },
+  {
+    "id": "copier-field-diagnostic-workflow",
+    "title": "Copier 현장 진단 및 설치 순서",
+    "category": "document",
+    "project_id": "260614-copier-rms",
+    "description": "거래처 PC에서 바로 에이전트를 설치하지 않고, 먼저 diagnose_copier.vbs로 복사기 수집 가능 여부를 진단한 뒤 서버 판정에 따라 일반 에이전트, WebProbe 포함 에이전트, 모델 전용 프로필 제작 여부를 결정하는 현장 작업 순서입니다.",
+    "storage_type": "note",
+    "path": "",
+    "url": "",
+    "drive_file_id": "",
+    "drive_folder_id": "",
+    "mime_type": "text/markdown",
+    "tags": ["copier", "field", "diagnostic", "install", "agent", "workflow", "preinstall"],
+    "content": "1. 거래처 PC에서 diagnose_copier.vbs 실행\n2. 복사기 IP 입력\n3. 서버 diagnostic_api.php로 결과 전송\n4. 서버 판정 확인\n   - standard_agent_ok: 일반 에이전트 설치\n   - web_probe_agent_required: WebProbe 포함 에이전트 설치\n   - model_profile_required: 모델 전용 프로필 제작 후 설치\n   - manual_review: IP/네트워크/장비 설정 수동 확인\n5. 설치 후 수동 수집으로 카운터 확인",
+    "status": "active",
+    "created_at": "2026-06-16",
+    "updated_at": "2026-06-16"
   }
 ]
