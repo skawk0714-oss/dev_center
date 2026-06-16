@@ -147,13 +147,20 @@ unset($_wsFile, $_wsAll, $_ws);
   const DATA = <?= $jsData ?>;
 
   /* ── 카테고리 버튼 생성 ── */
+  const CAT_LABELS = {
+    'claude-task':  'Claude 구현',
+    'codex-review': 'Codex 리뷰',
+    'winco-qa':     'WinCo QA',
+    'git-commit':   'Git 커밋',
+    'new-project':  '새 프로젝트',
+  };
   const cats = [...new Set(DATA.map(d => d.category).filter(Boolean))];
   const filterBar = document.getElementById('pm-filters');
   cats.forEach(cat => {
     const btn = document.createElement('button');
     btn.className = 'kn-filter';
     btn.dataset.cat = cat;
-    btn.textContent = cat;
+    btn.textContent = CAT_LABELS[cat] || cat;
     filterBar.appendChild(btn);
   });
 
