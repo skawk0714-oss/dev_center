@@ -170,8 +170,8 @@ function rc_e(string $s): string { return htmlspecialchars($s, ENT_QUOTES | ENT_
           <div class="rc-item-actions">
             <?php if ($storageType === 'local' && $path !== ''): ?>
               <button type="button"
-                class="rc-btn primary"
-                onclick="rcCopy(<?= json_encode($path, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT) ?>)"
+                class="rc-btn primary rc-copy-btn"
+                data-path="<?= rc_e($path) ?>"
               >경로 복사</button>
             <?php elseif ($storageType === 'url' && $url !== ''): ?>
               <a href="<?= rc_e($url) ?>" target="_blank" rel="noopener" class="rc-btn primary">열기</a>
@@ -212,14 +212,16 @@ function rcCopyFallback(text) {
   var ta = document.createElement('textarea');
   ta.value = text;
   ta.style.position = 'fixed';
+  ta.style.left     = '-9999px';
   ta.style.opacity  = '0';
   document.body.appendChild(ta);
   ta.focus();
   ta.select();
+  ta.setSelectionRange(0, ta.value.length);
   var ok = false;
   try { ok = document.execCommand('copy'); } catch (e) {}
   document.body.removeChild(ta);
-  rcToast(ok ? '경로가 복사되었습니다.' : '복사에 실패했습니다.', ok ? 'success' : 'error');
+  rcToast(ok ? '경로가 복사되었습니다.' : '경로 복사에 실패했습니다.', ok ? 'success' : 'error');
 }
 function rcToast(msg, type) {
   var el = document.getElementById('rc-toast');
@@ -228,6 +230,13 @@ function rcToast(msg, type) {
   el.style.display = 'block';
   setTimeout(function() { el.style.display = 'none'; }, 2200);
 }
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.rc-copy-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      rcCopy(btn.dataset.path);
+    });
+  });
+});
 </script>
 </body>
 </html>
