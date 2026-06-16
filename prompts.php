@@ -56,25 +56,7 @@ unset($_wsFile, $_wsAll, $_ws);
 </head>
 <body>
 
-<nav class="dc-topnav">
-  <a href="index.php" class="dc-brand">
-    🛠️ 개발센터
-    <span class="dc-brand-badge">DEV</span>
-  </a>
-  <ul class="dc-nav-links">
-    <li><a href="index.php">홈</a></li>
-    <li><a href="project_manager.php">프로젝트 관리</a></li>
-    <li><a href="knowledge.php">기능 보관함</a></li>
-    <li><a href="lab.php">실험실</a></li>
-    <li><a href="prompts.php" class="active">프롬프트</a></li>
-    <li><a href="resources.php">자료실</a></li>
-    <li><a href="executables.php">실행파일</a></li>
-    <li><a href="settings.php">설정</a></li>
-  </ul>
-  <div class="dc-topnav-right">
-    <span class="dc-badge-env">LOCAL</span>
-  </div>
-</nav>
+<?php $activeNav = 'prompts'; require __DIR__ . '/includes/dev_center_nav.php'; ?>
 
 <main class="dc-main">
 
