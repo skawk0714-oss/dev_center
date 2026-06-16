@@ -251,6 +251,7 @@ $statusLabel = [
     <li><a href="lab.php">실험실</a></li>
     <li><a href="prompts.php">프롬프트</a></li>
     <li><a href="resources.php">자료실</a></li>
+    <li><a href="executables.php">실행파일</a></li>
     <li><a href="settings.php">설정</a></li>
   </ul>
   <div class="dc-topnav-right"><span class="dc-badge-env">LOCAL</span></div>

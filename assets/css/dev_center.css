@@ -1508,3 +1508,86 @@ code.kn-code {
   .rc-item-actions { margin-left:0; }
   .rc-btn          { width:100%; justify-content:center; }
 }
+
+/* ── ex-*: 실행파일 라이브러리 ──────────────────────────── */
+.ex-wrap        { display:flex; flex-direction:column; gap:0; }
+.ex-count       { font-size:12px; color:var(--text3); padding:4px 0 10px; }
+.ex-empty       { padding:48px 24px; text-align:center; color:var(--text3); font-size:14px; }
+
+.ex-group       { margin-bottom:28px; }
+.ex-group-header {
+  font-size:12px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--text3);
+  padding:0 0 8px; border-bottom:1px solid var(--border);
+  margin-bottom:10px;
+}
+.ex-list        { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+
+.ex-item {
+  display:flex; flex-direction:column; gap:7px;
+  padding:14px 16px; border:1px solid var(--border);
+  border-radius:8px; background:var(--bg2);
+  transition:border-color .12s;
+}
+.ex-item:hover                 { border-color:var(--accent); }
+.ex-item.ex-usage-field_run    { border-color:var(--accent); }
+.ex-item.ex-usage-installer    { border-color:var(--green); }
+.ex-item.ex-usage-uninstaller  { border-color:var(--red); }
+
+.ex-item-header  { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+.ex-item-title   { font-size:14px; font-weight:600; color:var(--text); flex:1; min-width:0; }
+.ex-item-badges  { display:flex; gap:5px; align-items:center; flex-shrink:0; }
+
+.ex-usage-badge  { font-size:11px; padding:2px 8px; border-radius:10px; border:1px solid var(--border); color:var(--text3); white-space:nowrap; }
+.ex-usage-badge-field_run    { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+.ex-usage-badge-installer    { background:var(--green);  border-color:var(--green);  color:#fff; font-weight:600; }
+.ex-usage-badge-uninstaller  { background:var(--red);    border-color:var(--red);    color:#fff; }
+.ex-usage-badge-internal_tool { background:var(--bg3); border-color:var(--border); color:var(--text3); }
+.ex-usage-badge-script        { background:var(--bg3); border-color:var(--border); color:var(--text2); }
+
+.ex-filetype-badge { font-size:11px; padding:2px 7px; border-radius:8px; background:var(--bg3); color:var(--text3); font-family:monospace; }
+
+.ex-run-instr  { font-size:12.5px; line-height:1.5; padding:6px 10px; border-radius:6px; background:var(--bg3); color:var(--text2); }
+.ex-run-instr-field_run   { background:color-mix(in srgb, var(--accent) 10%, var(--bg2)); color:var(--accent); border-left:3px solid var(--accent); border-radius:0 6px 6px 0; }
+.ex-run-instr-installer   { background:color-mix(in srgb, var(--green)  10%, var(--bg2)); color:var(--green);  border-left:3px solid var(--green);  border-radius:0 6px 6px 0; }
+.ex-run-instr-uninstaller { background:color-mix(in srgb, var(--red)    10%, var(--bg2)); color:var(--red);    border-left:3px solid var(--red);    border-radius:0 6px 6px 0; }
+.ex-run-instr-internal_tool { color:var(--text3); border-left:3px solid var(--border); border-radius:0 6px 6px 0; }
+
+.ex-item-desc  { font-size:13px; color:var(--text2); line-height:1.55; }
+.ex-item-meta  { display:flex; gap:5px; flex-wrap:wrap; align-items:center; }
+.ex-pid        { font-size:11px; color:var(--text3); font-family:monospace; }
+.ex-version    { font-size:11px; padding:1px 6px; border-radius:8px; background:var(--bg3); color:var(--text3); }
+.ex-tag        { font-size:11px; padding:1px 6px; border-radius:8px; background:var(--bg3); color:var(--text3); }
+
+.ex-item-footer  { display:flex; align-items:center; gap:10px; padding-top:9px; border-top:1px solid var(--border); margin-top:2px; }
+.ex-path         { font-size:11.5px; color:var(--text3); font-family:monospace; word-break:break-all; flex:1; min-width:0; }
+.ex-item-actions { margin-left:auto; flex-shrink:0; }
+
+.ex-btn {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:12px; padding:5px 13px;
+  border:1px solid var(--border); border-radius:6px;
+  background:var(--bg2); color:var(--text2);
+  cursor:pointer; white-space:nowrap; text-decoration:none;
+  transition:all .12s;
+}
+.ex-btn:hover         { border-color:var(--accent); color:var(--accent); }
+.ex-btn.primary       { background:var(--accent); border-color:var(--accent); color:#fff; }
+.ex-btn.primary:hover { opacity:.88; }
+.ex-btn:disabled,
+.ex-btn.disabled      { opacity:.45; cursor:not-allowed; pointer-events:none; }
+
+#ex-toast {
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  padding:12px 18px; border-radius:8px; font-size:13.5px;
+  font-weight:500; display:none; box-shadow:0 4px 16px rgba(0,0,0,.25);
+}
+#ex-toast.success { background:var(--green); color:#fff; }
+#ex-toast.error   { background:var(--red);   color:#fff; }
+
+@media (max-width:768px) {
+  .ex-list         { grid-template-columns:1fr; }
+  .ex-item-footer  { flex-direction:column; align-items:stretch; gap:8px; }
+  .ex-item-actions { margin-left:0; }
+  .ex-btn          { width:100%; justify-content:center; }
+}

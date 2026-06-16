@@ -82,6 +82,7 @@ $jsQ  = json_encode($urlQ, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP)
     <li><a href="lab.php">실험실</a></li>
     <li><a href="prompts.php">프롬프트</a></li>
     <li><a href="resources.php">자료실</a></li>
+    <li><a href="executables.php">실행파일</a></li>
     <li><a href="settings.php">설정</a></li>
   </ul>
   <div class="dc-topnav-right">
