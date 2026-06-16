@@ -19,8 +19,9 @@ $NAV_ITEMS = [
     ['key' => 'lab',         'label' => '실험실',         'href' => 'lab.php'],
     ['key' => 'prompts',     'label' => '프롬프트',       'href' => 'prompts.php'],
     ['key' => 'resources',   'label' => '자료실',         'href' => 'resources.php'],
-    ['key' => 'executables', 'label' => '실행파일',       'href' => 'executables.php'],
-    ['key' => 'settings',    'label' => '설정',           'href' => 'settings.php'],
+    ['key' => 'executables',        'label' => '실행파일',  'href' => 'executables.php'],
+    ['key' => 'instruction_review', 'label' => '지침점검', 'href' => 'instruction_review.php'],
+    ['key' => 'settings',           'label' => '설정',     'href' => 'settings.php'],
 ];
 
 function _nav_e(string $s): string {
