@@ -93,6 +93,116 @@ if ($action === 'set_target') {
 }
 
 /* ════════════════════════════════════
+   action = generate_prompt
+   ════════════════════════════════════ */
+if ($action === 'generate_prompt') {
+    $requestId = trim((string)($_POST['request_id'] ?? ''));
+    if ($requestId === '') { json_fail('request_id는 필수입니다.'); }
+
+    /* 요청 찾기 */
+    $found = false;
+    $idx   = -1;
+    foreach ($requests as $i => $r) {
+        if (($r['id'] ?? '') === $requestId) { $found = true; $idx = $i; break; }
+    }
+    if (!$found) { json_fail('존재하지 않는 요청 ID입니다.'); }
+
+    $req      = $requests[$idx];
+    $recordId = $req['record_id'] ?? '';
+    $targetId = $req['target_project_id'] ?? '';
+    if ($recordId === '') { json_fail('record_id가 없습니다.'); }
+    if ($targetId === '') { json_fail('대상 프로젝트가 지정되지 않았습니다.'); }
+
+    /* record 로드 */
+    $recFile = DC_DATA_DIR . '/records/' . basename($recordId) . '.json';
+    if (!is_file($recFile)) { json_fail('기능 기록 파일을 찾을 수 없습니다.'); }
+    $rec = json_decode(file_get_contents($recFile), true);
+    if (!is_array($rec)) { json_fail('기능 기록 파일을 읽을 수 없습니다.'); }
+
+    /* 대상 프로젝트 로드 */
+    $projFile = DC_DATA_DIR . '/projects.json';
+    if (!is_file($projFile)) { json_fail('프로젝트 데이터를 찾을 수 없습니다.'); }
+    $projects = json_decode(file_get_contents($projFile), true);
+    if (!is_array($projects)) { json_fail('프로젝트 데이터를 읽을 수 없습니다.'); }
+    $proj = null;
+    foreach ($projects as $p) {
+        if (($p['id'] ?? '') === $targetId) { $proj = $p; break; }
+    }
+    if ($proj === null) { json_fail('대상 프로젝트를 프로젝트 목록에서 찾을 수 없습니다.'); }
+
+    /* adapt_notes 결정 */
+    $adaptNotes = $rec['adapt_notes'][$proj['type'] ?? ''] ?? '대상 프로젝트 구조에 맞춰 최소 변경으로 적용하세요.';
+
+    /* validation 목록 */
+    $validationList = '';
+    if (!empty($rec['validation']) && is_array($rec['validation'])) {
+        foreach ($rec['validation'] as $v) {
+            $validationList .= '  - ' . $v . "\n";
+        }
+    }
+    $validationList .= '  - 수정된 PHP 파일마다 php -l 실행';
+
+    /* 소스 파일 목록 */
+    $filesList = '';
+    if (!empty($rec['files']) && is_array($rec['files'])) {
+        $filesList = implode(', ', $rec['files']);
+    }
+
+    /* 프롬프트 생성 */
+    $prompt = <<<PROMPT
+Task
+  Apply feature package "{$rec['title']}" to project "{$proj['name']}".
+
+Feature source
+  - Record ID: {$rec['id']}
+  - Original project: {$rec['project_id']}
+  - Category: {$rec['category']}
+  - Summary: {$rec['summary']}
+  - Source files: {$filesList}
+
+Implementation spec
+{$rec['prompt']}
+
+Target project
+  - ID: {$proj['id']}
+  - Name: {$proj['name']}
+  - Type: {$proj['type']}
+  - Path: {$proj['path']}
+  - URL: {$proj['url']}
+
+Adaptation notes
+  {$adaptNotes}
+
+Reuse caution
+  {$rec['reuse_notes']}
+
+Constraints
+  - Do not copy code blindly from the original project.
+  - Do not change authentication/login logic.
+  - Do not install external libraries without explicit user approval.
+  - Keep existing file naming and coding conventions of the target project.
+  - Keep the final diff focused on this feature only.
+
+Validation
+{$validationList}
+
+When done
+  - Summarize in Korean: what changed, which files changed, why it changed.
+  - Say what validation passed.
+PROMPT;
+
+    $requests[$idx]['generated_prompt'] = $prompt;
+    $requests[$idx]['status']           = 'pending';
+    save_requests($arFile, $requests);
+
+    echo json_encode(
+        ['ok' => true, 'message' => 'Claude 프롬프트를 생성했습니다.', 'generated_prompt' => $prompt],
+        JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_SLASHES
+    );
+    exit;
+}
+
+/* ════════════════════════════════════
    action = create (기본)
    ════════════════════════════════════ */
 $expId    = trim((string)($_POST['exp_id']    ?? ''));
@@ -143,6 +253,7 @@ $requests[] = [
     'target_project_id'=> null,
     'requested_at'     => $now,
     'status'           => 'draft',
+    'generated_prompt' => '',
     'codex_checklist'  => '',
     'resolved_at'      => null,
 ];

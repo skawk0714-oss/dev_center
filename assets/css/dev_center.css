@@ -1088,6 +1088,10 @@ code.kn-code {
 }
 .lb-ar-save-btn { font-size: 12px; padding: 3px 10px; }
 .lb-ar-save-msg { font-size: 12px; }
+.lb-ar-gen-btn  { font-size: 12px; padding: 3px 10px; }
+.lb-ar-gen-msg  { font-size: 12px; }
+.lb-ar-copy-btn { font-size: 12px; padding: 3px 10px; }
+.ws-launch-btn--outline { background: transparent; border: 1px solid var(--primary,#0d6efd); color: var(--primary,#0d6efd); }
 
 /* category / subcategory chips */
 .lb-cat-chip {

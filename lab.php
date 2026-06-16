@@ -487,11 +487,22 @@ $jsView  = json_encode($urlView, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
           </span>`;
       }
 
+      let promptCell = '';
+      if (r.target_project_id) {
+        if (r.generated_prompt) {
+          promptCell = `<button class="lb-ar-copy-btn ws-launch-btn ws-launch-btn--outline" data-idx="${idx}">프롬프트 복사</button>`;
+        } else {
+          promptCell = `<button class="lb-ar-gen-btn ws-launch-btn" data-idx="${idx}">프롬프트 생성</button>
+            <span class="lb-ar-gen-msg"></span>`;
+        }
+      }
+
       return `<div class="lb-ar-row" data-request-id="${esc(r.id)}">
         <span class="lb-apply ${sCls}">${sLbl}</span>
         <span class="lb-ar-title">${title}</span>
         <span class="lb-ar-meta">${esc(r.requested_at || '')}</span>
         ${projectCell}
+        ${promptCell}
       </div>`;
     }).join('');
   }
@@ -534,6 +545,66 @@ $jsView  = json_encode($urlView, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
         btn.disabled = false;
       });
   });
+
+  /* ── 프롬프트 생성 / 복사 ── */
+  document.getElementById('lb-apply-list').addEventListener('click', e => {
+    /* 생성 버튼 */
+    const genBtn = e.target.closest('.lb-ar-gen-btn');
+    if (genBtn) {
+      const idx   = Number(genBtn.dataset.idx);
+      const row   = genBtn.closest('.lb-ar-row');
+      const msgEl = row.querySelector('.lb-ar-gen-msg');
+      genBtn.disabled = true;
+      fetch('apply_request_api.php', {
+        method: 'POST',
+        body: new URLSearchParams({
+          action:     'generate_prompt',
+          request_id: arState[idx].id,
+          csrf_token: SET_TARGET_CSRF,
+        }),
+      })
+        .then(r => r.json())
+        .then(d => {
+          if (d.ok) {
+            arState[idx].generated_prompt = d.generated_prompt;
+            arState[idx].status = 'pending';
+            renderApplyList();
+          } else {
+            if (msgEl) { msgEl.textContent = d.message || '생성 실패'; msgEl.className = 'lb-ar-gen-msg ws-launch-err'; }
+            genBtn.disabled = false;
+          }
+        })
+        .catch(() => {
+          if (msgEl) { msgEl.textContent = '요청 실패'; msgEl.className = 'lb-ar-gen-msg ws-launch-err'; }
+          genBtn.disabled = false;
+        });
+      return;
+    }
+
+    /* 복사 버튼 */
+    const copyBtn = e.target.closest('.lb-ar-copy-btn');
+    if (copyBtn) {
+      const idx  = Number(copyBtn.dataset.idx);
+      const text = arState[idx].generated_prompt || '';
+      const done = () => { copyBtn.textContent = '✅ 복사됨'; setTimeout(() => { copyBtn.textContent = '프롬프트 복사'; }, 1800); };
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+      } else {
+        fallbackCopy(text, done);
+      }
+    }
+  });
+
+  function fallbackCopy(text, cb) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (cb) cb();
+  }
 
   /* ── 퍼머링크 복사 버튼 ── */
   document.getElementById('lb-detail').addEventListener('click', e => {
