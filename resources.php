@@ -198,12 +198,28 @@ function rc_e(string $s): string { return htmlspecialchars($s, ENT_QUOTES | ENT_
 
 <script>
 function rcCopy(text) {
-  if (!navigator.clipboard) { rcToast('클립보드를 사용할 수 없습니다.', 'error'); return; }
-  navigator.clipboard.writeText(text).then(function() {
-    rcToast('경로가 복사되었습니다.', 'success');
-  }, function() {
-    rcToast('복사에 실패했습니다.', 'error');
-  });
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      rcToast('경로가 복사되었습니다.', 'success');
+    }, function() {
+      rcCopyFallback(text);
+    });
+    return;
+  }
+  rcCopyFallback(text);
+}
+function rcCopyFallback(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity  = '0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  var ok = false;
+  try { ok = document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  rcToast(ok ? '경로가 복사되었습니다.' : '복사에 실패했습니다.', ok ? 'success' : 'error');
 }
 function rcToast(msg, type) {
   var el = document.getElementById('rc-toast');
