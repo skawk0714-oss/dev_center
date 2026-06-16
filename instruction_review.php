@@ -393,6 +393,11 @@ $ACTION_LABELS = [
         <div class="rc-item-footer">
           <?php if ($rpath !== ''): ?>
             <div class="rc-path"><?= $rpath ?></div>
+            <div class="rc-item-actions">
+              <button type="button"
+                class="rc-btn primary rc-copy-btn"
+                data-path="<?= $rpath ?>">경로 복사</button>
+            </div>
           <?php endif; ?>
         </div>
       </div>
@@ -406,5 +411,52 @@ $ACTION_LABELS = [
   </footer>
 
 </main>
+
+<div id="ir-toast"></div>
+
+<script>
+(function () {
+  function irCopy(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        irToast('경로가 복사되었습니다.', 'success');
+      }, function () {
+        irCopyFallback(text);
+      });
+      return;
+    }
+    irCopyFallback(text);
+  }
+  function irCopyFallback(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left     = '-9999px';
+    ta.style.opacity  = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    irToast(ok ? '경로가 복사되었습니다.' : '경로 복사에 실패했습니다.', ok ? 'success' : 'error');
+  }
+  function irToast(msg, type) {
+    var el = document.getElementById('ir-toast');
+    el.textContent  = msg;
+    el.className    = type;
+    el.style.display = 'block';
+    setTimeout(function () { el.style.display = 'none'; }, 2200);
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.rc-copy-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        irCopy(btn.dataset.path);
+      });
+    });
+  });
+})();
+</script>
 </body>
 </html>
