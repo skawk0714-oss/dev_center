@@ -1,0 +1,19 @@
+[
+  {
+    "id": "copier-web-probe",
+    "title": "Copier WebProbe 진단 도구",
+    "category": "diagnostic_tool",
+    "project_id": "copier-rms",
+    "description": "D450/D470 웹 화면에서 카운터와 소모품 정보를 수집하는 Playwright 기반 진단 도구",
+    "storage_type": "local",
+    "path": "C:/xampp/htdocs/copier/tools/copier_web_probe.js",
+    "url": "",
+    "drive_file_id": "",
+    "drive_folder_id": "",
+    "mime_type": "application/javascript",
+    "tags": ["copier", "d450", "d470", "webprobe"],
+    "status": "active",
+    "created_at": "2026-06-16",
+    "updated_at": "2026-06-16"
+  }
+]

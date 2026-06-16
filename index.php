@@ -40,6 +40,7 @@ $recordCount = is_dir($recordsDir) ? count(glob($recordsDir . '/*.json') ?: []) 
     <li><a href="knowledge.php">기능 보관함</a></li>
     <li><a href="lab.php">실험실</a></li>
     <li><a href="prompts.php">프롬프트</a></li>
+    <li><a href="resources.php">자료실</a></li>
     <li><a href="settings.php">설정</a></li>
   </ul>
   <div class="dc-topnav-right">

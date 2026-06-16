@@ -536,6 +536,7 @@ $projectsJson = json_encode($projectsForJs, JSON_HEX_TAG | JSON_HEX_AMP | JSON_H
     <li><a href="knowledge.php">기능 보관함</a></li>
     <li><a href="lab.php">실험실</a></li>
     <li><a href="prompts.php">프롬프트</a></li>
+    <li><a href="resources.php">자료실</a></li>
     <li><a href="settings.php">설정</a></li>
   </ul>
   <div class="dc-topnav-right"><span class="dc-badge-env">LOCAL</span></div>
