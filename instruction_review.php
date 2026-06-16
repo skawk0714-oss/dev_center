@@ -310,6 +310,24 @@ $ACTION_LABELS = [
     </div>
   </div>
 
+  <div class="ir-guide">
+    <div class="ir-guide-item">
+      <span class="ir-guide-label">Codex 리뷰</span>
+      <span class="ir-guide-desc">분석/검토/프롬프트 작성/범위 통제 규칙을 점검합니다.</span>
+    </div>
+    <div class="ir-guide-item">
+      <span class="ir-guide-label">Claude 리뷰</span>
+      <span class="ir-guide-desc">구현/수정/검증/최종 diff 규칙을 점검합니다.</span>
+    </div>
+    <div class="ir-guide-item">
+      <span class="ir-guide-label">통합 리뷰</span>
+      <span class="ir-guide-desc">중복 규칙, 충돌 규칙, 보안/DB/인증/유지보수 원칙을 함께 점검합니다.</span>
+    </div>
+    <div class="ir-guide-warn">
+      ⚠️ 이 기능은 지침 파일을 자동 수정하지 않습니다. 보고서 초안을 만들고, 실제 반영은 사용자 승인 후 별도 작업으로 진행합니다.
+    </div>
+  </div>
+
 <?php if ($postError !== null): ?>
   <div class="dc-alert dc-alert-error"><?= ir_e($postError) ?></div>
 <?php endif; ?>
