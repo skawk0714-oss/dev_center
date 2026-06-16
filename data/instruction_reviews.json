@@ -1,5 +1,68 @@
 [
     {
+        "id": "ir-20260616-006",
+        "type": "integrated",
+        "title": "Integrated ?? ??",
+        "status": "draft",
+        "reviewed_files": [
+            "AGENTS.md",
+            "templates\/ai_roles\/project-manager.md",
+            "templates\/ai_roles\/knowledge.md",
+            "templates\/ai_roles\/lab.md",
+            "templates\/ai_roles\/prompts.md",
+            "templates\/ai_roles\/settings.md",
+            "templates\/instructions\/base.md",
+            "templates\/instructions\/php-local-tool.md",
+            "data\/prompts.json",
+            "docs\/INCIDENT_LOG.md"
+        ],
+        "report_path": "docs\/instruction_reviews\/20260616_006_integrated_review.md",
+        "created_at": "2026-06-16 17:57:19",
+        "updated_at": "2026-06-16 17:57:19",
+        "summary": "",
+        "risk_level": "low",
+        "next_action": "review"
+    },
+    {
+        "id": "ir-20260616-005",
+        "type": "claude",
+        "title": "Claude ?? ??",
+        "status": "draft",
+        "reviewed_files": [
+            "AGENTS.md",
+            "templates\/instructions\/base.md",
+            "templates\/instructions\/php-local-tool.md",
+            "data\/prompts.json"
+        ],
+        "report_path": "docs\/instruction_reviews\/20260616_005_claude_review.md",
+        "created_at": "2026-06-16 17:57:19",
+        "updated_at": "2026-06-16 17:57:19",
+        "summary": "",
+        "risk_level": "low",
+        "next_action": "review"
+    },
+    {
+        "id": "ir-20260616-004",
+        "type": "codex",
+        "title": "Codex ?? ??",
+        "status": "draft",
+        "reviewed_files": [
+            "AGENTS.md",
+            "templates\/ai_roles\/project-manager.md",
+            "templates\/ai_roles\/knowledge.md",
+            "templates\/ai_roles\/lab.md",
+            "templates\/ai_roles\/prompts.md",
+            "templates\/ai_roles\/settings.md",
+            "data\/prompts.json"
+        ],
+        "report_path": "docs\/instruction_reviews\/20260616_004_codex_review.md",
+        "created_at": "2026-06-16 17:57:19",
+        "updated_at": "2026-06-16 17:57:19",
+        "summary": "",
+        "risk_level": "low",
+        "next_action": "review"
+    },
+    {
         "id": "ir-20260616-003",
         "type": "integrated",
         "title": "Integrated ?? ??",

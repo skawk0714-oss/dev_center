@@ -110,6 +110,34 @@ function ir_markdown(string $type, string $id, string $now): string {
         ir_default_files($type)
     ));
 
+    $typeChecks = match($type) {
+        'codex' => <<<MD
+        ## Codex-Specific Checks
+        - [ ] Codex does not directly modify code when the project rule says review-only.
+        - [ ] Codex writes Claude-ready prompts clearly.
+        - [ ] Codex checks CURRENT_TASK.md before making recommendations.
+        - [ ] Codex separates findings, risks, and next actions.
+        - [ ] Codex does not approve unverified changes.
+
+        ## Claude-Specific Checks
+        - [ ] Claude keeps final diff scoped to the requested task.
+        - [ ] Claude does not change auth/DB/schema without approval.
+        - [ ] Claude validates modified PHP/PowerShell/JSON files.
+        - [ ] Claude summarizes what/where/why in Korean.
+        - [ ] Claude does not leave unrelated formatting changes.
+        MD,
+        'integrated' => <<<MD
+        ## Integrated Checks
+        - [ ] Codex and Claude role boundaries are clear.
+        - [ ] Security, auth, DB migration, and validation rules do not conflict.
+        - [ ] Maintainability-first rule is present and does not allow broad refactors.
+        - [ ] Incident logging rules are clear.
+        - [ ] Approval-required operations are listed clearly.
+        - [ ] Prompt/library/resource/executable roles are not mixed.
+        MD,
+        default => '',
+    };
+
     return <<<MD
     # Instruction Review Report
 
@@ -157,6 +185,20 @@ function ir_markdown(string $type, string $id, string $now): string {
     - Suggested new rule:
     - Reason:
     - Expected benefit:
+
+    {$typeChecks}
+
+    ## Recommended Prompt Rewrite
+    - Original rule:
+    - Improved wording:
+    - Reason:
+
+    ## Decision
+    - [ ] Keep as-is
+    - [ ] Rewrite proposed
+    - [ ] Move to another file
+    - [ ] Archive/remove
+    - [ ] Needs user approval
 
     ## Patch Proposal
     Do not apply automatically.
