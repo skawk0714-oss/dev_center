@@ -1,0 +1,44 @@
+{
+  "id": "copier-web-probe",
+  "project_id": "260614-copier-rms",
+  "title": "모델별 복사기 수집 프로필 — SNMP + 웹 fallback",
+  "category": "agent",
+  "status": "reviewing",
+  "summary": "SNMP만으로 수집 불가한 mono/color 카운터와 소모품 잔량을 Playwright 웹 탐침(copier_web_probe.js v0.2)으로 보완. D450/D470 모두 검증 완료.",
+  "tags": ["snmp", "playwright", "web-probe", "counter", "supplies", "d450", "d470", "spa-api"],
+  "files": [
+    "tools/copier_web_probe.js",
+    "agent/copier_snmp_scanner.ps1",
+    "docs/COPIER_COLLECTION_PLAN.md",
+    "docs/WEB_FALLBACK_EXTRACTOR_PLAN.md"
+  ],
+  "related_commits": [],
+  "prompt": "SNMP 1차 수집 후, mono/color == 0 이면 Playwright 웹 탐침으로 보완. SPA 메인 페이지 로드 → JS 메뉴 클릭 → _Total/_CSM000 API 응답 인터셉트 → JSON 파싱.",
+  "review_notes": "D450(192.168.0.101): total=35612, mono=13958~13959(1페이지 차이 허용), color=21653, toner Y29/M37/C27/K48, drum C62/M62/Y62/K80, developer C98/M98/Y98/K97 — PASS. D470(192.168.0.100): total≈4879, 컬러 우세 구성 — PASS. 직접 API 호출(/wcd/api/AppReqGetCustomData/_Total)은 SPA 세션 없이 Nack 반환. total-minus-mono 역산 금지: SNMP mono=0일 때 역산하면 color=total 전체로 오계산.",
+  "validation": [
+    "node --check tools/copier_web_probe.js PASS",
+    "D450 final_values 육안 확인 PASS",
+    "D470 final_values 육안 확인 PASS"
+  ],
+  "reuse_notes": "copier_web_probe.js는 IP만 바꾸면 D450/D470 양 기종에 동작. Node.js + Playwright 설치 필요. 에이전트 PC에 Node 없으면 사용 불가 — 설치 확인 필요.",
+  "lab_experiment_id": "copier-web-probe",
+  "reusable": true,
+  "compatible_types": ["php-erp", "php-local-tool"],
+  "target_files": [
+    "tools/copier_web_probe.js",
+    "agent/copier_snmp_scanner.ps1"
+  ],
+  "requires_db": false,
+  "risk_level": "low",
+  "next_steps": [
+    "SNMP 스캐너 JSON + 웹 탐침 JSON을 하나의 최종 수집 프로필로 합산하는 로직 설계",
+    "agent/snmp_collect.ps1에 웹 fallback 통합 (별도 작업)",
+    "D470 웹 탐침 동작 유지 확인",
+    "D450 프로필: SNMP total + 웹 mono/color/supplies 적용",
+    "billing/dashboard/device_detail 변경은 이 작업에 포함하지 않음",
+    "운영 에이전트 통합 완료 후 apply_status를 applied로 변경"
+  ],
+  "adapt_notes": {},
+  "created_at": "2026-06-16",
+  "updated_at": "2026-06-16"
+}

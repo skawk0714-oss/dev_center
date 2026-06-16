@@ -76,6 +76,25 @@
     "updated_at": "2026-06-15"
   },
   {
+    "id": "copier-web-probe",
+    "project_id": "260614-copier-rms",
+    "category": "api",
+    "subcategory": "snmp",
+    "title": "모델별 복사기 수집 프로필 — SNMP + 웹 fallback",
+    "target": "CopierRMS / tools/copier_web_probe.js + agent/copier_snmp_scanner.ps1",
+    "summary": "SNMP만으로 수집 불가한 mono/color 카운터와 소모품 잔량을 Playwright 웹 탐침으로 보완. D450/D470 모두 PASS 확인.",
+    "status": "reviewing",
+    "completion": 80,
+    "priority_score": 90,
+    "apply_status": "pending",
+    "record_id": "copier-web-probe",
+    "tags": ["snmp", "playwright", "web-probe", "counter", "supplies", "d450", "d470", "spa-api"],
+    "note": "SNMP: serial/total 신뢰. 웹 probe: mono/color/소모품 신뢰. total-minus-mono 역산 금지. Playwright SPA API 인터셉트 방식(_Total/_CSM000). 직접 API 호출은 Nack 반환. 운영 agent 통합은 별도 작업.",
+    "preview_path": "",
+    "created_at": "2026-06-16",
+    "updated_at": "2026-06-16"
+  },
+  {
     "id": "snmp-agent-collector",
     "project_id": "260614-copier-rms",
     "category": "api",
