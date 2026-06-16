@@ -426,7 +426,7 @@ $jsView  = json_encode($urlView, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HE
           <code class="kn-code lb-preview-path">${esc(d.preview_path)}</code>
         </div>` : ''}
 
-        ${d.record_id && d.apply_status !== 'applied' ? `
+        ${d.record_id && (d.status === 'done' || d.status === 'archived') && d.apply_status !== 'applied' ? `
         <div class="kn-detail-section lb-apply-request-row">
           <button class="ws-launch-btn lb-apply-request-btn"
                   data-exp-id="${esc(d.id)}"
