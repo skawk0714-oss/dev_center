@@ -1478,6 +1478,22 @@ code.kn-code {
 .rc-btn.disabled       { opacity:.45; cursor:not-allowed; pointer-events:none; }
 .rc-empty { padding:48px 24px; text-align:center; color:var(--text3); font-size:14px; }
 
+/* usage_type 뱃지 */
+.rc-item-badges       { display:flex; gap:5px; align-items:center; flex-shrink:0; }
+.rc-usage-badge       { font-size:11px; padding:2px 8px; border-radius:10px; border:1px solid var(--border); color:var(--text3); white-space:nowrap; }
+.rc-usage-badge-field_run     { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+.rc-usage-badge-internal_tool { background:var(--bg3); border-color:var(--border); color:var(--text3); }
+.rc-usage-badge-document      { background:var(--bg3); border-color:var(--border); color:var(--text2); }
+.rc-usage-badge-reference     { background:var(--bg3); border-color:var(--border); color:var(--text2); }
+
+/* usage_note */
+.rc-usage-note        { font-size:12.5px; line-height:1.5; padding:6px 10px; border-radius:6px; background:var(--bg3); color:var(--text2); }
+.rc-usage-note-field_run      { background:color-mix(in srgb, var(--accent) 10%, var(--bg2)); color:var(--accent); border-left:3px solid var(--accent); border-radius:0 6px 6px 0; }
+.rc-usage-note-internal_tool  { color:var(--text3); border-left:3px solid var(--border); border-radius:0 6px 6px 0; }
+
+/* field_run 카드 강조 */
+.rc-item.rc-usage-field_run   { border-color:var(--accent); }
+
 #rc-toast {
   position:fixed; bottom:24px; right:24px; z-index:9999;
   padding:12px 18px; border-radius:8px; font-size:13.5px;

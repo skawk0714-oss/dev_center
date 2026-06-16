@@ -137,7 +137,15 @@ function rc_e(string $s): string { return htmlspecialchars($s, ENT_QUOTES | ENT_
         <?= $q !== '' || $catFilt !== '' ? '검색 결과가 없습니다.' : '등록된 자료가 없습니다.' ?>
       </div>
 <?php else: ?>
-<?php foreach ($filtered as $r):
+<?php
+$USAGE_TYPE_LABELS = [
+    'field_run'         => '현장 실행용',
+    'internal_tool'     => '내부 도구',
+    'document'          => '개발 문서',
+    'installer_package' => '설치 패키지',
+    'reference'         => '참고 자료',
+];
+foreach ($filtered as $r):
     $storageType  = (string)($r['storage_type'] ?? 'other');
     $catKey       = (string)($r['category'] ?? '');
     $catLabel     = $CATEGORY_LABELS[$catKey] ?? $catKey;
@@ -145,12 +153,23 @@ function rc_e(string $s): string { return htmlspecialchars($s, ENT_QUOTES | ENT_
     $tags         = (array)($r['tags'] ?? []);
     $path         = (string)($r['path'] ?? '');
     $url          = (string)($r['url'] ?? '');
+    $usageType    = (string)($r['usage_type'] ?? '');
+    $usageNote    = (string)($r['usage_note'] ?? '');
+    $usageLabel   = $USAGE_TYPE_LABELS[$usageType] ?? '';
 ?>
-      <div class="rc-item">
+      <div class="rc-item rc-usage-<?= rc_e($usageType) ?>">
         <div class="rc-item-header">
           <div class="rc-item-title"><?= rc_e((string)($r['title'] ?? '')) ?></div>
-          <span class="rc-storage-badge rc-storage-<?= rc_e($storageType) ?>"><?= rc_e($storageLabel) ?></span>
+          <div class="rc-item-badges">
+            <?php if ($usageLabel !== ''): ?>
+              <span class="rc-usage-badge rc-usage-badge-<?= rc_e($usageType) ?>"><?= rc_e($usageLabel) ?></span>
+            <?php endif; ?>
+            <span class="rc-storage-badge rc-storage-<?= rc_e($storageType) ?>"><?= rc_e($storageLabel) ?></span>
+          </div>
         </div>
+        <?php if ($usageNote !== ''): ?>
+          <div class="rc-usage-note rc-usage-note-<?= rc_e($usageType) ?>"><?= rc_e($usageNote) ?></div>
+        <?php endif; ?>
         <div class="rc-item-desc"><?= rc_e((string)($r['description'] ?? '')) ?></div>
         <div class="rc-item-meta">
           <?php if ($catLabel !== ''): ?>
