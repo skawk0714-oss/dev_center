@@ -82,16 +82,17 @@ function loadRelatedResources(string $projectId): array {
         if (!is_array($item)) continue;
         if (($item['project_id'] ?? '') !== $projectId) continue;
         $result[] = [
-            'id'           => (string)($item['id']           ?? ''),
-            'title'        => (string)($item['title']        ?? ''),
-            'category'     => (string)($item['category']     ?? ''),
-            'description'  => (string)($item['description']  ?? ''),
-            'path'         => (string)($item['path']         ?? ''),
-            'url'          => (string)($item['url']          ?? ''),
-            'usage_label'  => (string)($item['usage_note']   ?? ''),
-            'storage_type' => (string)($item['storage_type'] ?? ''),
-            'tags'         => (array)($item['tags']          ?? []),
-            'status'       => (string)($item['status']       ?? ''),
+            'id'            => (string)($item['id']            ?? ''),
+            'title'         => (string)($item['title']         ?? ''),
+            'category'      => (string)($item['category']      ?? ''),
+            'description'   => (string)($item['description']   ?? ''),
+            'path'          => (string)($item['path']          ?? ''),
+            'url'           => (string)($item['url']           ?? ''),
+            'usage_label'   => (string)($item['usage_note']    ?? ''),
+            'storage_type'  => (string)($item['storage_type']  ?? ''),
+            'tags'          => (array)($item['tags']           ?? []),
+            'status'        => (string)($item['status']        ?? ''),
+            'resource_kind' => (string)($item['resource_kind'] ?? ''),
         ];
     }
     return $result;
@@ -585,13 +586,26 @@ $statusLabel = [
       <p class="rel-empty">이 프로젝트에 연결된 자료실 항목이 없습니다.</p>
     <?php else: ?>
       <div class="rel-grid">
-        <?php foreach ($relatedResources as $res): ?>
+        <?php
+        $KIND_LABELS_RES = [
+            'reference'          => '참고 자료',
+            'project_asset'      => '프로젝트 자료',
+            'deployment_package' => '배포 패키지',
+            'diagnostic_tool'    => '진단 도구',
+            'driver_package'     => '드라이버 패키지',
+            'scan_package'       => '스캔 파일',
+            'script'             => '스크립트',
+            'note'               => '노트',
+            'other'              => '기타',
+        ];
+        foreach ($relatedResources as $res):
+            $kindKey   = $res['resource_kind'] !== '' ? $res['resource_kind'] : $res['category'];
+            $kindLabel = $KIND_LABELS_RES[$kindKey] ?? ($kindKey !== '' ? $kindKey : '기타');
+        ?>
         <div class="rel-card rel-card-action">
           <div class="rel-card-head">
             <span class="rel-card-title"><?= e($res['title']) ?></span>
-            <?php if ($res['category'] !== ''): ?>
-              <span class="rel-card-cat"><?= e($res['category']) ?></span>
-            <?php endif; ?>
+            <span class="rc-kind-badge rc-kind-<?= e($kindKey) ?>"><?= e($kindLabel) ?></span>
           </div>
           <?php if ($res['storage_type'] !== ''): ?>
             <div class="rel-card-meta"><?= e($res['storage_type']) ?><?= $res['usage_label'] !== '' ? ' · ' . e($res['usage_label']) : '' ?></div>
