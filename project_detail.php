@@ -38,6 +38,40 @@ function loadRelatedRecords(string $projectId): array {
     return ['records' => $related, 'skip' => $skipCount];
 }
 
+function loadIncomingApplyRequests(string $projectId): array {
+    $arFile = DC_DATA_DIR . '/apply_requests.json';
+    if (!is_file($arFile)) return [];
+    $items = json_decode(file_get_contents($arFile), true);
+    if (!is_array($items)) return [];
+
+    $featMap = [];
+    $featuresFile = DC_DATA_DIR . '/features.json';
+    if (is_file($featuresFile)) {
+        $feats = json_decode(file_get_contents($featuresFile), true);
+        if (is_array($feats)) {
+            foreach ($feats as $f) {
+                if (!empty($f['id'])) $featMap[$f['id']] = $f;
+            }
+        }
+    }
+
+    $result = [];
+    foreach ($items as $item) {
+        if (!is_array($item)) continue;
+        if (($item['target_project_id'] ?? '') !== $projectId) continue;
+        $rid = (string)($item['record_id'] ?? '');
+        $feat = $featMap[$rid] ?? [];
+        $result[] = [
+            'record_id'  => $rid,
+            'title'      => (string)($feat['title'] ?? $rid),
+            'category'   => (string)($feat['category'] ?? ''),
+            'tags'       => (array)($feat['tags'] ?? []),
+            'status'     => (string)($item['status'] ?? ''),
+        ];
+    }
+    return $result;
+}
+
 function loadRelatedLabExperiments(string $projectId): array {
     $labFile = DC_DATA_DIR . '/lab_experiments.json';
     if (!is_file($labFile)) return [];
@@ -187,6 +221,9 @@ $relatedData = ($project !== null)
     : ['records' => [], 'skip' => 0];
 $relatedLab  = ($project !== null)
     ? loadRelatedLabExperiments((string)($project['id'] ?? ''))
+    : [];
+$incomingApply = ($project !== null)
+    ? loadIncomingApplyRequests((string)($project['id'] ?? ''))
     : [];
 
 $statusLabel = [
@@ -444,6 +481,38 @@ $statusLabel = [
           <?php if (!empty($r['tags'])): ?>
             <div class="rel-card-tags">
               <?php foreach (array_slice($r['tags'], 0, 5) as $tag): ?>
+                <span class="kn-tag"><?= e($tag) ?></span>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
+        </a>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+  </section>
+  <?php endif; ?>
+
+  <?php if ($project !== null): ?>
+  <section class="rel-section">
+    <h2 class="rel-title">다른 프로젝트에서 반영된 기능</h2>
+    <?php if (empty($incomingApply)): ?>
+      <p class="rel-empty">아직 다른 프로젝트에서 반영 요청된 기능이 없습니다.</p>
+    <?php else: ?>
+      <div class="rel-grid">
+        <?php foreach ($incomingApply as $ia): ?>
+        <a href="knowledge.php?q=<?= urlencode($ia['record_id']) ?>" class="rel-card">
+          <div class="rel-card-head">
+            <span class="rel-card-title"><?= e($ia['title']) ?></span>
+            <?php if ($ia['category'] !== ''): ?>
+              <span class="rel-card-cat"><?= e($ia['category']) ?></span>
+            <?php endif; ?>
+            <?php if ($ia['status'] !== ''): ?>
+              <span class="kn-status kn-status-<?= e($ia['status']) ?>"><?= e($ia['status']) ?></span>
+            <?php endif; ?>
+          </div>
+          <?php if (!empty($ia['tags'])): ?>
+            <div class="rel-card-tags">
+              <?php foreach (array_slice($ia['tags'], 0, 5) as $tag): ?>
                 <span class="kn-tag"><?= e($tag) ?></span>
               <?php endforeach; ?>
             </div>

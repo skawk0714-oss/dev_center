@@ -29,6 +29,28 @@ if (is_file($featuresFile)) {
 /* JS에 넘길 데이터 (HTML 이스케이프 후 JSON) */
 $jsData = json_encode($features, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
 
+/* 프로젝트 이름 맵 (id → name) */
+$_pMap = [];
+$_pFile = DC_DATA_DIR . '/projects.json';
+if (is_file($_pFile)) {
+    $_pd = json_decode(file_get_contents($_pFile), true);
+    if (is_array($_pd)) {
+        foreach ($_pd as $_p) {
+            if (!empty($_p['id'])) {
+                $_pMap[$_p['id']] = (string)($_p['name'] ?? $_p['id']);
+            }
+        }
+    }
+}
+$jsProjects = json_encode($_pMap, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
+unset($_pFile, $_pd, $_p, $_pMap);
+
+/* 반영 요청 데이터 */
+$_arFile = DC_DATA_DIR . '/apply_requests.json';
+$_arRaw  = is_file($_arFile) ? (json_decode(file_get_contents($_arFile), true) ?? []) : [];
+$jsApplyRequests = json_encode(is_array($_arRaw) ? $_arRaw : [], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
+unset($_arFile, $_arRaw);
+
 if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
 
 /* ── ws-knowledge 프롬프트 로드 ── */
@@ -137,7 +159,9 @@ $jsQ  = json_encode($urlQ, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP)
 
 <script>
 (function () {
-  const DATA = <?= $jsData ?>;
+  const DATA            = <?= $jsData ?>;
+  const PROJECTS        = <?= $jsProjects ?>;
+  const APPLY_REQUESTS  = <?= $jsApplyRequests ?>;
 
   /* ── 카테고리 목록 ── */
   const cats = [...new Set(DATA.map(d => d.feat.category).filter(Boolean))];
@@ -261,12 +285,36 @@ $jsQ  = json_encode($urlQ, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP)
           <ul class="kn-valid-list">${valid}</ul>
         </div>` : ''}
 
+        <div class="kn-detail-section kn-apply-section">
+          <div class="kn-detail-label">적용 현황</div>
+          ${buildApplySection(f, r)}
+        </div>
+
         <div class="kn-detail-footer">
           <span>ID: <code>${esc(f.id)}</code></span>
           ${r.updated_at ? `<span>업데이트: ${esc(r.updated_at)}</span>` : ''}
         </div>
       </div>
     `;
+  }
+
+  function buildApplySection(f, r) {
+    const srcId   = r.project_id || '';
+    const srcName = srcId ? (PROJECTS[srcId] || srcId) : '—';
+    const srcHtml = `<div class="kn-apply-row"><span class="kn-apply-label">원본 프로젝트</span><span class="kn-apply-val">${esc(srcName)}</span></div>`;
+
+    const matched = APPLY_REQUESTS.filter(a => a.record_id === f.id);
+    let arHtml;
+    if (matched.length === 0) {
+      arHtml = `<div class="kn-apply-empty">아직 다른 프로젝트 반영 요청이 없습니다.</div>`;
+    } else {
+      arHtml = matched.map(a => {
+        const tName  = PROJECTS[a.target_project_id] || a.target_project_id || '—';
+        const status = a.status || '—';
+        return `<div class="kn-apply-row"><span class="kn-apply-label">${esc(tName)}</span><span class="kn-apply-status kn-apply-status-${esc(status)}">${esc(status)}</span></div>`;
+      }).join('');
+    }
+    return srcHtml + arHtml;
   }
 
   function esc(str) {
