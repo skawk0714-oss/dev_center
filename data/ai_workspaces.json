@@ -134,5 +134,104 @@
       "php -l settings.php",
       "php -l config.php"
     ]
+  },
+  {
+    "id": "ws-resources",
+    "label": "자료실 AI",
+    "menu": "resources",
+    "ai_tools": ["codex", "claude", "vscode-codex", "vscode-claude"],
+    "default_project_id": "260614-dev-center",
+    "allowed_files": [
+      "data/resources.json",
+      "resources.php",
+      "assets/css/dev_center.css"
+    ],
+    "do_not_touch": [
+      "data/executables.json",
+      "data/instruction_reviews.json",
+      "data/projects.json",
+      "data/features.json",
+      "data/lab_experiments.json",
+      "data/prompts.json",
+      "data/ai_workspaces.json",
+      "scripts/launch_project.ps1",
+      "project_manager.php",
+      "knowledge.php",
+      "lab.php",
+      "prompts.php",
+      "settings.php",
+      "executables.php",
+      "instruction_review.php"
+    ],
+    "startup_prompt_template": "templates/ai_roles/resources.md",
+    "validation_commands": [
+      "php -l resources.php",
+      "php -r \"json_decode(file_get_contents('data/resources.json')); echo json_last_error();\""
+    ]
+  },
+  {
+    "id": "ws-executables",
+    "label": "실행파일 AI",
+    "menu": "executables",
+    "ai_tools": ["codex", "claude", "vscode-codex", "vscode-claude"],
+    "default_project_id": "260614-dev-center",
+    "allowed_files": [
+      "data/executables.json",
+      "executables.php",
+      "assets/css/dev_center.css"
+    ],
+    "do_not_touch": [
+      "data/resources.json",
+      "data/instruction_reviews.json",
+      "data/projects.json",
+      "data/features.json",
+      "data/lab_experiments.json",
+      "data/prompts.json",
+      "data/ai_workspaces.json",
+      "scripts/launch_project.ps1",
+      "project_manager.php",
+      "knowledge.php",
+      "lab.php",
+      "prompts.php",
+      "settings.php",
+      "resources.php",
+      "instruction_review.php"
+    ],
+    "startup_prompt_template": "templates/ai_roles/executables.md",
+    "validation_commands": [
+      "php -l executables.php",
+      "php -r \"json_decode(file_get_contents('data/executables.json')); echo json_last_error();\""
+    ]
+  },
+  {
+    "id": "ws-instruction-review",
+    "label": "지침점검 AI",
+    "menu": "instruction_review",
+    "ai_tools": ["codex", "claude", "vscode-codex", "vscode-claude"],
+    "default_project_id": "260614-dev-center",
+    "allowed_files": [
+      "docs/instruction_reviews/*.md",
+      "data/instruction_reviews.json",
+      "assets/css/dev_center.css"
+    ],
+    "do_not_touch": [
+      "AGENTS.md",
+      "templates/ai_roles/*.md",
+      "templates/instructions/*.md",
+      "data/prompts.json",
+      "data/resources.json",
+      "data/executables.json",
+      "data/projects.json",
+      "data/features.json",
+      "data/lab_experiments.json",
+      "data/ai_workspaces.json",
+      "instruction_review.php",
+      "scripts/launch_project.ps1"
+    ],
+    "startup_prompt_template": "templates/ai_roles/instruction-review.md",
+    "validation_commands": [
+      "php -r \"json_decode(file_get_contents('data/instruction_reviews.json')); echo json_last_error();\"",
+      "git diff --name-only"
+    ]
   }
 ]
