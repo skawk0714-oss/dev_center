@@ -1599,6 +1599,23 @@ code.kn-code {
 .rc-usage-badge-document      { background:var(--bg3); border-color:var(--border); color:var(--text2); }
 .rc-usage-badge-reference     { background:var(--bg3); border-color:var(--border); color:var(--text2); }
 
+/* resource_kind badge */
+.rc-kind-badge { font-size:11px; padding:2px 8px; border-radius:10px; border:1px solid var(--border); white-space:nowrap; flex-shrink:0; }
+.rc-kind-reference          { background:rgba(56,139,253,.1); border-color:rgba(56,139,253,.3); color:#79c0ff; }
+.rc-kind-diagnostic_tool    { background:rgba(210,153,34,.1); border-color:rgba(210,153,34,.3); color:#d29922; }
+.rc-kind-script             { background:rgba(110,118,129,.12); border-color:var(--border); color:var(--text2); }
+.rc-kind-note               { background:rgba(163,113,247,.1); border-color:rgba(163,113,247,.3); color:#bc8cff; }
+.rc-kind-project_asset      { background:rgba(46,164,79,.1); border-color:rgba(46,164,79,.3); color:#3fb950; }
+.rc-kind-deployment_package { background:rgba(248,81,73,.1); border-color:rgba(248,81,73,.3); color:#ff7b72; }
+.rc-kind-driver_package     { background:rgba(110,118,129,.12); border-color:var(--border); color:var(--text2); }
+.rc-kind-scan_package       { background:rgba(110,118,129,.12); border-color:var(--border); color:var(--text2); }
+.rc-kind-other              { background:var(--bg3); border-color:var(--border); color:var(--text3); }
+
+/* kind filter row */
+.rc-kind-filters { margin-top:6px; }
+.rc-filter-label { font-size:11px; color:var(--text3); font-weight:600; margin-right:4px; white-space:nowrap; align-self:center; }
+.kn-filter-sm { font-size:11px; padding:2px 9px; }
+
 /* usage_note */
 .rc-usage-note        { font-size:12.5px; line-height:1.5; padding:6px 10px; border-radius:6px; background:var(--bg3); color:var(--text2); }
 .rc-usage-note-field_run      { background:color-mix(in srgb, var(--accent) 10%, var(--bg2)); color:var(--accent); border-left:3px solid var(--accent); border-radius:0 6px 6px 0; }

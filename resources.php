@@ -31,6 +31,18 @@ $CATEGORY_LABELS = [
     'other'           => '기타',
 ];
 
+$KIND_LABELS = [
+    'reference'          => '참고 자료',
+    'project_asset'      => '프로젝트 자료',
+    'deployment_package' => '배포 패키지',
+    'diagnostic_tool'    => '진단 도구',
+    'driver_package'     => '드라이버',
+    'scan_package'       => '스캔 패키지',
+    'script'             => '스크립트',
+    'note'               => '노트',
+    'other'              => '기타',
+];
+
 $STORAGE_LABELS = [
     'local'        => '로컬',
     'url'          => 'URL',
@@ -38,11 +50,15 @@ $STORAGE_LABELS = [
     'note'         => '메모',
 ];
 
-$q       = trim((string)($_GET['q'] ?? ''));
-$catFilt = trim((string)($_GET['cat'] ?? ''));
+$q        = trim((string)($_GET['q'] ?? ''));
+$catFilt  = trim((string)($_GET['cat'] ?? ''));
+$kindFilt = trim((string)($_GET['kind'] ?? ''));
 
-$filtered = array_values(array_filter($resources, static function (array $r) use ($q, $catFilt): bool {
+$filtered = array_values(array_filter($resources, static function (array $r) use ($q, $catFilt, $kindFilt): bool {
     if ($catFilt !== '' && (string)($r['category'] ?? '') !== $catFilt) {
+        return false;
+    }
+    if ($kindFilt !== '' && (string)($r['resource_kind'] ?? '') !== $kindFilt) {
         return false;
     }
     if ($q !== '') {
@@ -51,6 +67,7 @@ $filtered = array_values(array_filter($resources, static function (array $r) use
             (string)($r['description'] ?? ''),
             (string)($r['project_id'] ?? ''),
             (string)($r['storage_type'] ?? ''),
+            (string)($r['resource_kind'] ?? ''),
             implode(' ', (array)($r['tags'] ?? [])),
         ]), 'UTF-8');
         if (mb_strpos($haystack, mb_strtolower($q, 'UTF-8'), 0, 'UTF-8') === false) {
@@ -65,6 +82,14 @@ foreach ($resources as $r) {
     $c = (string)($r['category'] ?? '');
     if ($c !== '' && !isset($allCats[$c])) {
         $allCats[$c] = $CATEGORY_LABELS[$c] ?? $c;
+    }
+}
+
+$allKinds = [];
+foreach ($resources as $r) {
+    $k = (string)($r['resource_kind'] ?? '');
+    if ($k !== '' && !isset($allKinds[$k])) {
+        $allKinds[$k] = $KIND_LABELS[$k] ?? $k;
     }
 }
 
@@ -99,20 +124,33 @@ function rc_e(string $s): string { return htmlspecialchars($s, ENT_QUOTES | ENT_
 
   <div class="rc-wrap">
     <form method="get" class="kn-toolbar" id="rc-form">
+      <input type="hidden" name="cat"  value="<?= rc_e($catFilt) ?>">
+      <input type="hidden" name="kind" value="<?= rc_e($kindFilt) ?>">
       <input
         type="search" name="q"
         value="<?= rc_e($q) ?>"
-        placeholder="제목, 설명, 태그, 프로젝트 검색…"
+        placeholder="제목, 설명, 태그, 종류 검색…"
         class="kn-search-input"
         id="rc-search-input">
-      <div class="kn-filters">
-        <button type="submit" name="cat" value=""
+      <div class="kn-filters" id="rc-cat-filters">
+        <button type="button" data-filter="cat" data-value=""
           class="kn-filter<?= $catFilt === '' ? ' active' : '' ?>">전체</button>
         <?php foreach ($allCats as $key => $label): ?>
-          <button type="submit" name="cat" value="<?= rc_e($key) ?>"
+          <button type="button" data-filter="cat" data-value="<?= rc_e($key) ?>"
             class="kn-filter<?= $catFilt === $key ? ' active' : '' ?>"><?= rc_e($label) ?></button>
         <?php endforeach; ?>
       </div>
+      <?php if (!empty($allKinds)): ?>
+      <div class="kn-filters rc-kind-filters" id="rc-kind-filters">
+        <span class="rc-filter-label">종류</span>
+        <button type="button" data-filter="kind" data-value=""
+          class="kn-filter kn-filter-sm<?= $kindFilt === '' ? ' active' : '' ?>">전체</button>
+        <?php foreach ($allKinds as $key => $label): ?>
+          <button type="button" data-filter="kind" data-value="<?= rc_e($key) ?>"
+            class="kn-filter kn-filter-sm<?= $kindFilt === $key ? ' active' : '' ?>"><?= rc_e($label) ?></button>
+        <?php endforeach; ?>
+      </div>
+      <?php endif; ?>
     </form>
 
     <div class="rc-count"><?= count($filtered) ?>건 / 전체 <?= count($resources) ?>건</div>
@@ -142,11 +180,16 @@ foreach ($filtered as $r):
     $usageType    = (string)($r['usage_type'] ?? '');
     $usageNote    = (string)($r['usage_note'] ?? '');
     $usageLabel   = $USAGE_TYPE_LABELS[$usageType] ?? '';
+    $kindKey      = (string)($r['resource_kind'] ?? '');
+    $kindLabel    = $KIND_LABELS[$kindKey] ?? $kindKey;
 ?>
       <div class="rc-item rc-usage-<?= rc_e($usageType) ?>">
         <div class="rc-item-header">
           <div class="rc-item-title"><?= rc_e((string)($r['title'] ?? '')) ?></div>
           <div class="rc-item-badges">
+            <?php if ($kindLabel !== ''): ?>
+              <span class="rc-kind-badge rc-kind-<?= rc_e($kindKey) ?>"><?= rc_e($kindLabel) ?></span>
+            <?php endif; ?>
             <?php if ($usageLabel !== ''): ?>
               <span class="rc-usage-badge rc-usage-badge-<?= rc_e($usageType) ?>"><?= rc_e($usageLabel) ?></span>
             <?php endif; ?>
@@ -239,6 +282,16 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.rc-copy-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
       rcCopy(btn.dataset.path);
+    });
+  });
+
+  var form = document.getElementById('rc-form');
+  document.querySelectorAll('[data-filter]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var filterName = btn.dataset.filter;
+      var filterVal  = btn.dataset.value;
+      form.querySelector('input[name="' + filterName + '"]').value = filterVal;
+      form.submit();
     });
   });
 });
