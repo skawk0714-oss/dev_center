@@ -1498,6 +1498,44 @@ code.kn-code {
   .rel-card { padding: 12px 14px; }
 }
 
+/* ── Section 31: rel-card with action footer ── */
+.rel-card-action { cursor: default; }
+.rel-card-action:hover { border-color: var(--border); background: var(--bg2); }
+.rel-card-meta {
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 6px;
+}
+.rel-card-foot {
+  margin-top: 10px;
+}
+.btn-copy-path {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 5px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.btn-copy-path:hover { border-color: var(--accent); color: var(--accent); }
+.btn-copy-path.copied { border-color: var(--green); color: #3fb950; }
+.btn-open-url {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 5px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  text-decoration: none;
+  display: inline-block;
+  transition: border-color .15s;
+}
+.btn-open-url:hover { border-color: var(--accent); }
+
 /* ── kn-url-hint: URL q 파라미터 안내 ── */
 .kn-url-hint {
   font-size: 12px;

@@ -72,6 +72,54 @@ function loadIncomingApplyRequests(string $projectId): array {
     return $result;
 }
 
+function loadRelatedResources(string $projectId): array {
+    $file = DC_DATA_DIR . '/resources.json';
+    if (!is_file($file)) return [];
+    $items = json_decode(file_get_contents($file), true);
+    if (!is_array($items)) return [];
+    $result = [];
+    foreach ($items as $item) {
+        if (!is_array($item)) continue;
+        if (($item['project_id'] ?? '') !== $projectId) continue;
+        $result[] = [
+            'id'           => (string)($item['id']           ?? ''),
+            'title'        => (string)($item['title']        ?? ''),
+            'category'     => (string)($item['category']     ?? ''),
+            'description'  => (string)($item['description']  ?? ''),
+            'path'         => (string)($item['path']         ?? ''),
+            'url'          => (string)($item['url']          ?? ''),
+            'usage_label'  => (string)($item['usage_note']   ?? ''),
+            'storage_type' => (string)($item['storage_type'] ?? ''),
+            'tags'         => (array)($item['tags']          ?? []),
+            'status'       => (string)($item['status']       ?? ''),
+        ];
+    }
+    return $result;
+}
+
+function loadRelatedExecutables(string $projectId): array {
+    $file = DC_DATA_DIR . '/executables.json';
+    if (!is_file($file)) return [];
+    $items = json_decode(file_get_contents($file), true);
+    if (!is_array($items)) return [];
+    $result = [];
+    foreach ($items as $item) {
+        if (!is_array($item)) continue;
+        if (($item['project_id'] ?? '') !== $projectId) continue;
+        $result[] = [
+            'id'          => (string)($item['id']           ?? ''),
+            'title'       => (string)($item['title']        ?? ''),
+            'file_type'   => (string)($item['file_type']    ?? ''),
+            'path'        => (string)($item['path']         ?? ''),
+            'usage_label' => (string)($item['usage_label']  ?? ''),
+            'description' => (string)($item['description']  ?? ''),
+            'tags'        => (array)($item['tags']          ?? []),
+            'status'      => (string)($item['status']       ?? ''),
+        ];
+    }
+    return $result;
+}
+
 function loadRelatedLabExperiments(string $projectId): array {
     $labFile = DC_DATA_DIR . '/lab_experiments.json';
     if (!is_file($labFile)) return [];
@@ -224,6 +272,12 @@ $relatedLab  = ($project !== null)
     : [];
 $incomingApply = ($project !== null)
     ? loadIncomingApplyRequests((string)($project['id'] ?? ''))
+    : [];
+$relatedResources  = ($project !== null)
+    ? loadRelatedResources((string)($project['id'] ?? ''))
+    : [];
+$relatedExecutables = ($project !== null)
+    ? loadRelatedExecutables((string)($project['id'] ?? ''))
     : [];
 
 $statusLabel = [
@@ -524,6 +578,90 @@ $statusLabel = [
   </section>
   <?php endif; ?>
 
+  <?php if ($project !== null): ?>
+  <section class="rel-section">
+    <h2 class="rel-title">관련 자료실</h2>
+    <?php if (empty($relatedResources)): ?>
+      <p class="rel-empty">이 프로젝트에 연결된 자료실 항목이 없습니다.</p>
+    <?php else: ?>
+      <div class="rel-grid">
+        <?php foreach ($relatedResources as $res): ?>
+        <div class="rel-card rel-card-action">
+          <div class="rel-card-head">
+            <span class="rel-card-title"><?= e($res['title']) ?></span>
+            <?php if ($res['category'] !== ''): ?>
+              <span class="rel-card-cat"><?= e($res['category']) ?></span>
+            <?php endif; ?>
+          </div>
+          <?php if ($res['storage_type'] !== ''): ?>
+            <div class="rel-card-meta"><?= e($res['storage_type']) ?><?= $res['usage_label'] !== '' ? ' · ' . e($res['usage_label']) : '' ?></div>
+          <?php elseif ($res['usage_label'] !== ''): ?>
+            <div class="rel-card-meta"><?= e($res['usage_label']) ?></div>
+          <?php endif; ?>
+          <?php if ($res['description'] !== ''): ?>
+            <div class="rel-card-summary"><?= e($res['description']) ?></div>
+          <?php endif; ?>
+          <?php if (!empty($res['tags'])): ?>
+            <div class="rel-card-tags">
+              <?php foreach (array_slice($res['tags'], 0, 4) as $tag): ?>
+                <span class="kn-tag"><?= e($tag) ?></span>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
+          <div class="rel-card-foot">
+            <?php if ($res['path'] !== ''): ?>
+              <button type="button" class="btn-copy-path" data-path="<?= e($res['path']) ?>">경로 복사</button>
+            <?php elseif ($res['url'] !== ''): ?>
+              <a href="<?= e($res['url']) ?>" target="_blank" rel="noopener" class="btn-open-url">열기 ↗</a>
+            <?php endif; ?>
+          </div>
+        </div>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+  </section>
+  <?php endif; ?>
+
+  <?php if ($project !== null): ?>
+  <section class="rel-section">
+    <h2 class="rel-title">관련 실행파일</h2>
+    <?php if (empty($relatedExecutables)): ?>
+      <p class="rel-empty">이 프로젝트에 연결된 실행파일이 없습니다.</p>
+    <?php else: ?>
+      <div class="rel-grid">
+        <?php foreach ($relatedExecutables as $exe): ?>
+        <div class="rel-card rel-card-action">
+          <div class="rel-card-head">
+            <span class="rel-card-title"><?= e($exe['title']) ?></span>
+            <?php if ($exe['file_type'] !== ''): ?>
+              <span class="rel-card-cat"><?= e($exe['file_type']) ?></span>
+            <?php endif; ?>
+          </div>
+          <?php if ($exe['usage_label'] !== ''): ?>
+            <div class="rel-card-meta"><?= e($exe['usage_label']) ?></div>
+          <?php endif; ?>
+          <?php if ($exe['description'] !== ''): ?>
+            <div class="rel-card-summary"><?= e($exe['description']) ?></div>
+          <?php endif; ?>
+          <?php if (!empty($exe['tags'])): ?>
+            <div class="rel-card-tags">
+              <?php foreach (array_slice($exe['tags'], 0, 4) as $tag): ?>
+                <span class="kn-tag"><?= e($tag) ?></span>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
+          <?php if ($exe['path'] !== ''): ?>
+          <div class="rel-card-foot">
+            <button type="button" class="btn-copy-path" data-path="<?= e($exe['path']) ?>">경로 복사</button>
+          </div>
+          <?php endif; ?>
+        </div>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+  </section>
+  <?php endif; ?>
+
   <?php if ($project !== null && !empty($relatedLab)):
     $labStatusClass = [
       'done'        => 'lb-status-done',
@@ -601,6 +739,44 @@ function copyPrompt() {
         setTimeout(() => { btn.textContent = '복사'; }, 1500);
     });
 }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.btn-copy-path').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var path = btn.dataset.path || '';
+            if (!path) return;
+            function onCopied() {
+                var orig = btn.textContent;
+                btn.textContent = '✅ 복사됨';
+                btn.classList.add('copied');
+                setTimeout(function () { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
+            }
+            function onFail() {
+                var orig = btn.textContent;
+                btn.textContent = '실패';
+                setTimeout(function () { btn.textContent = orig; }, 1500);
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(path).then(onCopied).catch(function () {
+                    var ta = document.createElement('textarea');
+                    ta.value = path;
+                    ta.style.position = 'fixed'; ta.style.opacity = '0';
+                    document.body.appendChild(ta); ta.select();
+                    document.execCommand('copy') ? onCopied() : onFail();
+                    document.body.removeChild(ta);
+                });
+            } else {
+                var ta = document.createElement('textarea');
+                ta.value = path;
+                ta.style.position = 'fixed'; ta.style.opacity = '0';
+                document.body.appendChild(ta); ta.select();
+                document.execCommand('copy') ? onCopied() : onFail();
+                document.body.removeChild(ta);
+            }
+        });
+    });
+});
 </script>
 </body>
 </html>
