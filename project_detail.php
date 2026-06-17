@@ -108,14 +108,16 @@ function loadRelatedExecutables(string $projectId): array {
         if (!is_array($item)) continue;
         if (($item['project_id'] ?? '') !== $projectId) continue;
         $result[] = [
-            'id'          => (string)($item['id']           ?? ''),
-            'title'       => (string)($item['title']        ?? ''),
-            'file_type'   => (string)($item['file_type']    ?? ''),
-            'path'        => (string)($item['path']         ?? ''),
-            'usage_label' => (string)($item['usage_label']  ?? ''),
-            'description' => (string)($item['description']  ?? ''),
-            'tags'        => (array)($item['tags']          ?? []),
-            'status'      => (string)($item['status']       ?? ''),
+            'id'              => (string)($item['id']              ?? ''),
+            'title'           => (string)($item['title']           ?? ''),
+            'file_type'       => (string)($item['file_type']       ?? ''),
+            'path'            => (string)($item['path']            ?? ''),
+            'usage_type'      => (string)($item['usage_type']      ?? ''),
+            'usage_label'     => (string)($item['usage_label']     ?? ''),
+            'run_instruction' => (string)($item['run_instruction'] ?? ''),
+            'description'     => (string)($item['description']     ?? ''),
+            'tags'            => (array)($item['tags']             ?? []),
+            'status'          => (string)($item['status']          ?? ''),
         ];
     }
     return $result;
@@ -643,16 +645,39 @@ $statusLabel = [
       <p class="rel-empty">이 프로젝트에 연결된 실행파일이 없습니다.</p>
     <?php else: ?>
       <div class="rel-grid">
-        <?php foreach ($relatedExecutables as $exe): ?>
-        <div class="rel-card rel-card-action">
+        <?php
+        $EX_USAGE_LABELS = [
+            'field_run'     => '현장 실행용',
+            'installer'     => '에이전트 설치용',
+            'uninstaller'   => '에이전트 삭제용',
+            'internal_tool' => '내부 도구',
+            'script'        => '스크립트',
+            'other'         => '기타',
+        ];
+        foreach ($relatedExecutables as $exe):
+            $exUsageType  = $exe['usage_type'];
+            $exUsageLabel = $exe['usage_label'] !== ''
+                ? $exe['usage_label']
+                : ($EX_USAGE_LABELS[$exUsageType] ?? '');
+            $exIsInternal = in_array($exUsageType, ['internal_tool', 'script'], true);
+        ?>
+        <div class="rel-card rel-card-action ex-usage-<?= e($exUsageType) ?>">
           <div class="rel-card-head">
             <span class="rel-card-title"><?= e($exe['title']) ?></span>
-            <?php if ($exe['file_type'] !== ''): ?>
-              <span class="rel-card-cat"><?= e($exe['file_type']) ?></span>
-            <?php endif; ?>
+            <div style="display:flex;gap:4px;align-items:center;flex-shrink:0;">
+              <?php if ($exUsageLabel !== ''): ?>
+                <span class="ex-usage-badge ex-usage-badge-<?= e($exUsageType) ?>"><?= e($exUsageLabel) ?></span>
+              <?php endif; ?>
+              <?php if ($exe['file_type'] !== ''): ?>
+                <span class="ex-filetype-badge">.<?= e($exe['file_type']) ?></span>
+              <?php endif; ?>
+            </div>
           </div>
-          <?php if ($exe['usage_label'] !== ''): ?>
-            <div class="rel-card-meta"><?= e($exe['usage_label']) ?></div>
+          <?php if ($exe['run_instruction'] !== ''): ?>
+            <div class="ex-run-instr ex-run-instr-<?= e($exUsageType) ?>" style="margin:6px 0 4px;">
+              <?php if ($exIsInternal): ?>⚠️ <?php endif; ?>
+              <?= e($exe['run_instruction']) ?>
+            </div>
           <?php endif; ?>
           <?php if ($exe['description'] !== ''): ?>
             <div class="rel-card-summary"><?= e($exe['description']) ?></div>
