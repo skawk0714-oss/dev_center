@@ -250,9 +250,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'creat
 
     // 인스트럭션 파일 생성
     if ($createFiles) {
-        $typeSlug = in_array($newType, $allowedTypes, true) ? $newType : 'other';
-        $agentsMd = fillTpl(readTpl('base'), $vars) . "\n\n" . fillTpl(readTpl($typeSlug), $vars);
-        writeIfNew($nativePath . '/AGENTS.md', $agentsMd);
+        $typeSlug  = in_array($newType, $allowedTypes, true) ? $newType : 'other';
+        $baseTpl   = readTpl('base');
+        $typeTpl   = readTpl($typeSlug);
+        // 타입 템플릿이 없으면 'other' 폴백, base도 없으면 AGENTS.md 생성 건너뜀
+        if ($typeTpl === '') $typeTpl = readTpl('other');
+        if ($baseTpl !== '') {
+            $agentsMd = fillTpl($baseTpl, $vars) . ($typeTpl !== '' ? "\n\n" . fillTpl($typeTpl, $vars) : '');
+            writeIfNew($nativePath . '/AGENTS.md', $agentsMd);
+        }
 
         $currentTask = "# CURRENT_TASK.md — {$newName}\n\n"
             . "## 목표\n{$newTask}\n\n"
@@ -360,6 +366,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'creat
         'initial_task'    => $newTask,
         'commands'        => ['vscode' => true, 'codex' => true, 'claude' => true],
         'memo'            => '',
+        'next'            => $newTask ?? '',
         'setup_prompt'    => $setupPrompt,
     ];
 
@@ -727,13 +734,26 @@ const MEMOS     = <?= $projectsJson ?>;
 const PM_CSRF   = <?= json_encode($pmCsrfToken, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 
 // ── New Project Modal ────────────────────────────────────────
+function resetNewModal() {
+    ['np-name','np-id','np-url','np-path','np-purpose','np-audience','np-goal','np-risk','np-desc','np-stack','np-task'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    document.getElementById('np-type').value = 'php-erp';
+    document.getElementById('np-create-files').checked = true;
+    document.getElementById('np-reg-existing').checked = false;
+    document.getElementById('np-err').textContent = '';
+    const btn = document.getElementById('np-submit');
+    btn.disabled = false;
+    btn.textContent = '프로젝트 생성';
+}
 function openNewModal() {
+    resetNewModal();
     document.getElementById('np-overlay').classList.add('open');
     document.getElementById('np-name').focus();
 }
 function closeNewModal() {
     document.getElementById('np-overlay').classList.remove('open');
-    document.getElementById('np-err').textContent = '';
 }
 function closeNewModalOutside(e) {
     if (e.target === document.getElementById('np-overlay')) closeNewModal();
@@ -748,14 +768,44 @@ function slugify(s) {
         .substring(0, 30);
 }
 
+// 한글 → 로마자 초성 변환 테이블
+const KO_ONSET = ['g','kk','n','d','tt','r','m','b','pp','s','ss','','j','jj','ch','k','t','p','h'];
+function koreanToSlug(s) {
+    let result = '';
+    for (const ch of s) {
+        const cp = ch.codePointAt(0);
+        if (cp >= 0xAC00 && cp <= 0xD7A3) {
+            // 완성형 한글 → 초성 인덱스
+            result += KO_ONSET[Math.floor((cp - 0xAC00) / 588)] + '-';
+        } else {
+            result += ch;
+        }
+    }
+    return slugify(result).replace(/-+/g, '-').replace(/^-|-$/g, '');
+}
+
 function suggestId() {
-    const name = document.getElementById('np-name').value;
+    const name = document.getElementById('np-name').value.trim();
+    if (!name) return;
     const today = new Date();
     const yy = String(today.getFullYear()).slice(2);
     const mm = String(today.getMonth()+1).padStart(2,'0');
     const dd = String(today.getDate()).padStart(2,'0');
-    const slug = slugify(name);
-    if (slug) document.getElementById('np-id').value = yy+mm+dd+'-'+slug;
+    const datePrefix = yy + mm + dd;
+
+    let slug = slugify(name);
+    if (!slug) slug = koreanToSlug(name); // 한글 이름이면 초성 변환
+
+    const idField = document.getElementById('np-id');
+    if (slug) {
+        idField.value = datePrefix + '-' + slug;
+        idField.style.borderColor = '';
+    } else {
+        // 변환 불가 시 날짜만 채우고 직접 입력 유도
+        idField.value = datePrefix + '-';
+        idField.focus();
+        idField.setSelectionRange(idField.value.length, idField.value.length);
+    }
 }
 
 async function submitNewProject() {
