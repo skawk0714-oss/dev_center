@@ -353,6 +353,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_
         </div>
       </div>
     `;
+
+    // data-fid 기반 이벤트 리스너 (onclick 인라인 대체)
+    panel.querySelectorAll('.kn-ap-edit-btn').forEach(btn =>
+      btn.addEventListener('click', () => openApEdit(btn.dataset.fid))
+    );
+    panel.querySelectorAll('.kn-ap-save-btn').forEach(btn =>
+      btn.addEventListener('click', () => saveApplied(btn.dataset.fid))
+    );
+    panel.querySelectorAll('.kn-ap-cancel-btn').forEach(btn =>
+      btn.addEventListener('click', () => closeApEdit(btn.dataset.fid))
+    );
   }
 
   function buildApplySection(f, r) {
@@ -365,7 +376,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_
       ? appliedIds.map(pid => `<span class="kn-applied-chip">${esc(PROJECTS[pid] || pid)}</span>`).join('')
       : `<span class="kn-apply-empty-inline">—</span>`;
 
-    const editBtnHtml = `<button type="button" class="kn-ap-edit-btn" onclick="openApEdit('${esc(f.id)}')">편집</button>`;
+    const editBtnHtml = `<button type="button" class="kn-ap-edit-btn" data-fid="${esc(f.id)}">편집</button>`;
 
     // 체크박스 목록 (모든 프로젝트)
     const checkboxes = Object.entries(PROJECTS).map(([pid, pname]) => {
@@ -377,8 +388,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_
       <div class="kn-ap-edit-area" id="kn-ap-edit-${esc(f.id)}" style="display:none">
         <div class="kn-ap-checks">${checkboxes || '<span style="color:var(--text3);font-size:12px">등록된 프로젝트 없음</span>'}</div>
         <div class="kn-ap-edit-actions">
-          <button type="button" class="kn-ap-save-btn" onclick="saveApplied('${esc(f.id)}')">저장</button>
-          <button type="button" class="kn-ap-cancel-btn" onclick="closeApEdit('${esc(f.id)}')">취소</button>
+          <button type="button" class="kn-ap-save-btn" data-fid="${esc(f.id)}">저장</button>
+          <button type="button" class="kn-ap-cancel-btn" data-fid="${esc(f.id)}">취소</button>
           <span class="kn-ap-msg" id="kn-ap-msg-${esc(f.id)}"></span>
         </div>
       </div>`;
