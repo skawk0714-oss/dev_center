@@ -366,7 +366,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'creat
         'initial_task'    => $newTask,
         'commands'        => ['vscode' => true, 'codex' => true, 'claude' => true],
         'memo'            => '',
-        'next'            => $newTask ?: '',
+        'next'            => $newTask ?? '',
         'setup_prompt'    => $setupPrompt,
     ];
 
