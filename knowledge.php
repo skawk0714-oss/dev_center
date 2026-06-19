@@ -423,9 +423,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_
   function openApEdit(fid) {
     if (_apCurrentFid && _apCurrentFid !== fid) closeApEdit(_apCurrentFid);
     _apCurrentFid = fid;
-    document.getElementById(`kn-ap-edit-${fid}`).style.display = 'block';
-    document.getElementById(`kn-ap-chips-${fid}`).style.display = 'none';
-    document.querySelector(`#kn-ap-row-${fid} .kn-ap-edit-btn`).style.display = 'none';
+    const editEl  = document.getElementById(`kn-ap-edit-${fid}`);
+    const chipsEl = document.getElementById(`kn-ap-chips-${fid}`);
+    const btnEl   = document.querySelector(`#kn-ap-row-${fid} .kn-ap-edit-btn`);
+    if (editEl)  editEl.style.display  = 'block';
+    if (chipsEl) chipsEl.style.display = 'none';
+    if (btnEl)   btnEl.style.display   = 'none';
   }
 
   function closeApEdit(fid) {
