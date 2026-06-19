@@ -81,6 +81,62 @@ unset($_wsFile, $_wsAll, $_ws);
 /* URL q 파라미터 */
 $urlQ = trim((string)($_GET['q'] ?? ''));
 $jsQ  = json_encode($urlQ, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP);
+
+/* ── POST: applied_projects 저장 ── */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_applied_projects') {
+    header('Content-Type: application/json; charset=utf-8');
+
+    // CSRF
+    $sessionToken = (string)($_SESSION['dc_csrf_token'] ?? '');
+    $postToken    = (string)($_POST['csrf_token'] ?? '');
+    if ($sessionToken === '' || !hash_equals($sessionToken, $postToken)) {
+        echo json_encode(['ok' => false, 'msg' => 'CSRF 검증 실패.'], JSON_UNESCAPED_UNICODE); exit;
+    }
+
+    $featId      = trim((string)($_POST['feature_id'] ?? ''));
+    $rawProjects = $_POST['applied_projects'] ?? [];
+    if (!is_array($rawProjects)) $rawProjects = [];
+
+    // 허용 project id 목록 로드
+    $_pFile2 = DC_DATA_DIR . '/projects.json';
+    $_pd2    = is_file($_pFile2) ? (json_decode(file_get_contents($_pFile2), true) ?? []) : [];
+    $allowedPids = array_column(is_array($_pd2) ? $_pd2 : [], 'id');
+
+    // 입력 검증: 빈 문자열 제거 + 허용 목록 필터
+    $newApplied = array_values(array_filter(
+        array_unique(array_map('strval', $rawProjects)),
+        fn($pid) => $pid !== '' && in_array($pid, $allowedPids, true)
+    ));
+
+    // features.json strict 로드
+    $featRaw = file_get_contents($featuresFile);
+    $featArr = json_decode($featRaw, true);
+    if (!is_array($featArr)) {
+        echo json_encode(['ok' => false, 'msg' => 'features.json 읽기 실패.'], JSON_UNESCAPED_UNICODE); exit;
+    }
+
+    $found = false;
+    foreach ($featArr as &$f) {
+        if (($f['id'] ?? '') === $featId) {
+            $f['applied_projects'] = $newApplied;
+            $found = true;
+            break;
+        }
+    }
+    unset($f);
+
+    if (!$found) {
+        echo json_encode(['ok' => false, 'msg' => '기능을 찾을 수 없습니다.'], JSON_UNESCAPED_UNICODE); exit;
+    }
+
+    $jsonOut = json_encode($featArr, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    if ($jsonOut === false || file_put_contents($featuresFile, $jsonOut, LOCK_EX) === false) {
+        echo json_encode(['ok' => false, 'msg' => '저장 실패.'], JSON_UNESCAPED_UNICODE); exit;
+    }
+
+    echo json_encode(['ok' => true, 'applied_projects' => $newApplied], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="ko">
@@ -162,6 +218,7 @@ $jsQ  = json_encode($urlQ, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP)
   const DATA            = <?= $jsData ?>;
   const PROJECTS        = <?= $jsProjects ?>;
   const APPLY_REQUESTS  = <?= $jsApplyRequests ?>;
+  const KN_CSRF         = <?= json_encode($wsLaunchCsrf, JSON_HEX_TAG | JSON_HEX_AMP) ?>;
 
   /* ── 카테고리 목록 ── */
   const cats = [...new Set(DATA.map(d => d.feat.category).filter(Boolean))];
@@ -304,16 +361,36 @@ $jsQ  = json_encode($urlQ, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP)
     const srcHtml = `<div class="kn-apply-row"><span class="kn-apply-label">원본 프로젝트</span><span class="kn-apply-val">${esc(srcName)}</span></div>`;
 
     const appliedIds = Array.isArray(f.applied_projects) ? f.applied_projects : [];
-    let appliedHtml = '';
-    if (appliedIds.length > 0) {
-      const chips = appliedIds.map(pid => {
-        const pName = PROJECTS[pid] || pid;
-        return `<span class="kn-applied-chip">${esc(pName)}</span>`;
-      }).join('');
-      appliedHtml = `<div class="kn-apply-row"><span class="kn-apply-label">적용된 프로젝트</span><span class="kn-apply-val kn-applied-chips">${chips}</span></div>`;
-    } else {
-      appliedHtml = `<div class="kn-apply-row"><span class="kn-apply-label">적용된 프로젝트</span><span class="kn-apply-val kn-apply-empty-inline">—</span></div>`;
-    }
+    const chipsHtml = appliedIds.length > 0
+      ? appliedIds.map(pid => `<span class="kn-applied-chip">${esc(PROJECTS[pid] || pid)}</span>`).join('')
+      : `<span class="kn-apply-empty-inline">—</span>`;
+
+    const editBtnHtml = `<button type="button" class="kn-ap-edit-btn" onclick="openApEdit('${esc(f.id)}')">편집</button>`;
+
+    // 체크박스 목록 (모든 프로젝트)
+    const checkboxes = Object.entries(PROJECTS).map(([pid, pname]) => {
+      const checked = appliedIds.includes(pid) ? 'checked' : '';
+      return `<label class="kn-ap-check"><input type="checkbox" value="${esc(pid)}" ${checked}> ${esc(pname)}</label>`;
+    }).join('');
+
+    const editAreaHtml = `
+      <div class="kn-ap-edit-area" id="kn-ap-edit-${esc(f.id)}" style="display:none">
+        <div class="kn-ap-checks">${checkboxes || '<span style="color:var(--text3);font-size:12px">등록된 프로젝트 없음</span>'}</div>
+        <div class="kn-ap-edit-actions">
+          <button type="button" class="kn-ap-save-btn" onclick="saveApplied('${esc(f.id)}')">저장</button>
+          <button type="button" class="kn-ap-cancel-btn" onclick="closeApEdit('${esc(f.id)}')">취소</button>
+          <span class="kn-ap-msg" id="kn-ap-msg-${esc(f.id)}"></span>
+        </div>
+      </div>`;
+
+    const appliedHtml = `<div class="kn-apply-row kn-ap-row" id="kn-ap-row-${esc(f.id)}">
+      <span class="kn-apply-label">적용된 프로젝트</span>
+      <span class="kn-apply-val">
+        <span class="kn-applied-chips" id="kn-ap-chips-${esc(f.id)}">${chipsHtml}</span>
+        ${editBtnHtml}
+      </span>
+      ${editAreaHtml}
+    </div>`;
 
     const matched = APPLY_REQUESTS.filter(a => a.record_id === f.id);
     let arHtml = '';
@@ -327,6 +404,70 @@ $jsQ  = json_encode($urlQ, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP)
         `</span></div>`;
     }
     return srcHtml + appliedHtml + arHtml;
+  }
+
+  // ── applied_projects 편집 ──────────────────────────────────
+  let _apCurrentFid = null;
+
+  function openApEdit(fid) {
+    if (_apCurrentFid && _apCurrentFid !== fid) closeApEdit(_apCurrentFid);
+    _apCurrentFid = fid;
+    document.getElementById(`kn-ap-edit-${fid}`).style.display = 'block';
+    document.getElementById(`kn-ap-chips-${fid}`).style.display = 'none';
+    document.querySelector(`#kn-ap-row-${fid} .kn-ap-edit-btn`).style.display = 'none';
+  }
+
+  function closeApEdit(fid) {
+    const edit = document.getElementById(`kn-ap-edit-${fid}`);
+    if (edit) edit.style.display = 'none';
+    const chips = document.getElementById(`kn-ap-chips-${fid}`);
+    if (chips) chips.style.display = '';
+    const btn = document.querySelector(`#kn-ap-row-${fid} .kn-ap-edit-btn`);
+    if (btn) btn.style.display = '';
+    const msg = document.getElementById(`kn-ap-msg-${fid}`);
+    if (msg) msg.textContent = '';
+    if (_apCurrentFid === fid) _apCurrentFid = null;
+  }
+
+  async function saveApplied(fid) {
+    const editArea = document.getElementById(`kn-ap-edit-${fid}`);
+    const checked  = [...editArea.querySelectorAll('input[type=checkbox]:checked')].map(el => el.value);
+    const msgEl    = document.getElementById(`kn-ap-msg-${fid}`);
+    msgEl.textContent = '저장 중…';
+    msgEl.className   = 'kn-ap-msg';
+
+    const fd = new FormData();
+    fd.append('action',     'save_applied_projects');
+    fd.append('csrf_token', KN_CSRF);
+    fd.append('feature_id', fid);
+    checked.forEach(pid => fd.append('applied_projects[]', pid));
+
+    try {
+      const res  = await fetch('knowledge.php', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (data.ok) {
+        // DATA 배열 업데이트
+        const entry = DATA.find(d => d.feat.id === fid);
+        if (entry) entry.feat.applied_projects = data.applied_projects;
+
+        // chips 갱신
+        const newIds = data.applied_projects;
+        const chipsEl = document.getElementById(`kn-ap-chips-${fid}`);
+        chipsEl.innerHTML = newIds.length > 0
+          ? newIds.map(pid => `<span class="kn-applied-chip">${esc(PROJECTS[pid] || pid)}</span>`).join('')
+          : `<span class="kn-apply-empty-inline">—</span>`;
+
+        msgEl.textContent = '✅ 저장됐습니다.';
+        msgEl.classList.add('kn-ap-msg-ok');
+        setTimeout(() => closeApEdit(fid), 800);
+      } else {
+        msgEl.textContent = '❌ ' + (data.msg || '저장 실패');
+        msgEl.classList.add('kn-ap-msg-err');
+      }
+    } catch {
+      msgEl.textContent = '❌ 네트워크 오류';
+      msgEl.classList.add('kn-ap-msg-err');
+    }
   }
 
   function esc(str) {
