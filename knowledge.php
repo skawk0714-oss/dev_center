@@ -303,18 +303,30 @@ $jsQ  = json_encode($urlQ, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP)
     const srcName = srcId ? (PROJECTS[srcId] || srcId) : '—';
     const srcHtml = `<div class="kn-apply-row"><span class="kn-apply-label">원본 프로젝트</span><span class="kn-apply-val">${esc(srcName)}</span></div>`;
 
-    const matched = APPLY_REQUESTS.filter(a => a.record_id === f.id);
-    let arHtml;
-    if (matched.length === 0) {
-      arHtml = `<div class="kn-apply-empty">아직 다른 프로젝트 반영 요청이 없습니다.</div>`;
-    } else {
-      arHtml = matched.map(a => {
-        const tName  = PROJECTS[a.target_project_id] || a.target_project_id || '—';
-        const status = a.status || '—';
-        return `<div class="kn-apply-row"><span class="kn-apply-label">${esc(tName)}</span><span class="kn-apply-status kn-apply-status-${esc(status)}">${esc(status)}</span></div>`;
+    const appliedIds = Array.isArray(f.applied_projects) ? f.applied_projects : [];
+    let appliedHtml = '';
+    if (appliedIds.length > 0) {
+      const chips = appliedIds.map(pid => {
+        const pName = PROJECTS[pid] || pid;
+        return `<span class="kn-applied-chip">${esc(pName)}</span>`;
       }).join('');
+      appliedHtml = `<div class="kn-apply-row"><span class="kn-apply-label">적용된 프로젝트</span><span class="kn-apply-val kn-applied-chips">${chips}</span></div>`;
+    } else {
+      appliedHtml = `<div class="kn-apply-row"><span class="kn-apply-label">적용된 프로젝트</span><span class="kn-apply-val kn-apply-empty-inline">—</span></div>`;
     }
-    return srcHtml + arHtml;
+
+    const matched = APPLY_REQUESTS.filter(a => a.record_id === f.id);
+    let arHtml = '';
+    if (matched.length > 0) {
+      arHtml = `<div class="kn-apply-row kn-apply-requests-row"><span class="kn-apply-label">반영 요청</span><span class="kn-apply-val">` +
+        matched.map(a => {
+          const tName  = PROJECTS[a.target_project_id] || a.target_project_id || '—';
+          const status = a.status || '—';
+          return `<span class="kn-apply-status kn-apply-status-${esc(status)}">${esc(tName)} · ${esc(status)}</span>`;
+        }).join('') +
+        `</span></div>`;
+    }
+    return srcHtml + appliedHtml + arHtml;
   }
 
   function esc(str) {

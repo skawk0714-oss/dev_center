@@ -5,7 +5,8 @@
     "category": "agent",
     "tags": ["snmp", "agent", "powershell", "toner", "counter", "device"],
     "status": "active",
-    "record": "docs/knowledge/records/snmp-agent-collector.json"
+    "record": "docs/knowledge/records/snmp-agent-collector.json",
+    "applied_projects": ["260614-copier-rms"]
   },
   {
     "id": "agent-usb-package",
@@ -13,7 +14,8 @@
     "category": "agent",
     "tags": ["agent", "usb", "installer", "token", "setup", "zip", "snmp"],
     "status": "active",
-    "record": "docs/knowledge/records/agent-usb-package.json"
+    "record": "docs/knowledge/records/agent-usb-package.json",
+    "applied_projects": ["260614-copier-rms"]
   },
   {
     "id": "lab-command-center",
@@ -21,7 +23,8 @@
     "category": "lab",
     "tags": ["lab", "experiment", "command-center", "design", "idea", "priority"],
     "status": "active",
-    "record": "docs/knowledge/records/lab-command-center.json"
+    "record": "docs/knowledge/records/lab-command-center.json",
+    "applied_projects": ["260614-dev-center"]
   },
   {
     "id": "project-center",
@@ -29,7 +32,8 @@
     "category": "system",
     "tags": ["project", "center", "priority", "roadmap", "json"],
     "status": "active",
-    "record": "docs/knowledge/records/project-center.json"
+    "record": "docs/knowledge/records/project-center.json",
+    "applied_projects": ["260614-dev-center"]
   },
   {
     "id": "companies-help-modal",
@@ -37,7 +41,8 @@
     "category": "ui",
     "tags": ["help", "manual", "tooltip", "modal", "companies"],
     "status": "active",
-    "record": "docs/knowledge/records/companies-help-modal.json"
+    "record": "docs/knowledge/records/companies-help-modal.json",
+    "applied_projects": ["260614-copier-rms"]
   },
   {
     "id": "companies-body-ui",
@@ -45,7 +50,8 @@
     "category": "ui",
     "tags": ["companies", "ui", "mobile", "table", "card", "responsive"],
     "status": "active",
-    "record": "docs/knowledge/records/companies-body-ui.json"
+    "record": "docs/knowledge/records/companies-body-ui.json",
+    "applied_projects": ["260614-copier-rms"]
   },
   {
     "id": "lab-apply-request-workflow",
@@ -53,7 +59,8 @@
     "category": "lab",
     "tags": ["lab", "apply-request", "workflow", "review", "priority", "inbox"],
     "status": "active",
-    "record": "docs/knowledge/records/lab-apply-request-workflow.json"
+    "record": "docs/knowledge/records/lab-apply-request-workflow.json",
+    "applied_projects": ["260614-dev-center"]
   },
   {
     "id": "tabler-bids-preview",
@@ -61,6 +68,7 @@
     "category": "ui",
     "tags": ["tabler", "bids", "preview", "ui", "library", "dark-mode", "responsive"],
     "status": "active",
-    "record": "docs/knowledge/records/tabler-bids-preview.json"
+    "record": "docs/knowledge/records/tabler-bids-preview.json",
+    "applied_projects": ["260614-copier-rms"]
   }
 ]

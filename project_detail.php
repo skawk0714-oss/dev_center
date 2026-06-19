@@ -22,17 +22,32 @@ function loadRelatedRecords(string $projectId): array {
     foreach ($features as $feat) {
         $id = (string)($feat['id'] ?? '');
         if ($id === '') continue;
+
+        // applied_projects 배열 우선 체크 (없으면 record의 project_id로 fallback)
+        $appliedProjects = (array)($feat['applied_projects'] ?? []);
+        $matchedViaApplied = in_array($projectId, $appliedProjects, true);
+
         $recPath = DC_DATA_DIR . '/records/' . $id . '.json';
-        if (!is_file($recPath)) continue;
-        $rec = json_decode(file_get_contents($recPath), true);
-        if (!is_array($rec)) { $skipCount++; continue; }
-        if (($rec['project_id'] ?? '') !== $projectId) continue;
+        $rec = null;
+        if (is_file($recPath)) {
+            $decoded = json_decode(file_get_contents($recPath), true);
+            if (is_array($decoded)) {
+                $rec = $decoded;
+            } else {
+                $skipCount++;
+            }
+        }
+
+        // applied_projects에 있거나 record의 project_id가 일치하면 포함
+        $matchedViaRecord = ($rec !== null && ($rec['project_id'] ?? '') === $projectId);
+        if (!$matchedViaApplied && !$matchedViaRecord) continue;
+
         $related[] = [
             'id'      => $id,
-            'title'   => (string)($rec['title']    ?? $feat['title']    ?? $id),
-            'summary' => (string)($rec['summary']   ?? ''),
-            'category'=> (string)($rec['category']  ?? $feat['category'] ?? ''),
-            'tags'    => (array)($rec['tags'] ?? $feat['tags'] ?? []),
+            'title'   => (string)(($rec['title'] ?? null) ?? ($feat['title'] ?? $id)),
+            'summary' => (string)($rec['summary']  ?? ''),
+            'category'=> (string)(($rec['category'] ?? null) ?? ($feat['category'] ?? '')),
+            'tags'    => (array)(($rec['tags'] ?? null) ?? ($feat['tags'] ?? [])),
         ];
     }
     return ['records' => $related, 'skip' => $skipCount];
