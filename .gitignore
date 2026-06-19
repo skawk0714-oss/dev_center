@@ -1,0 +1,9 @@
+# 인증/보안 파일
+data/google_drive_credentials.local.json
+data/*credentials*.json
+data/*secrets*.json
+config.local.php
+
+# 로컬 환경 전용
+*.log
+*.tmp
