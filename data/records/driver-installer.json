@@ -1,0 +1,39 @@
+{
+  "id": "driver-installer",
+  "project_id": "260614-copier-rms",
+  "title": "드라이버 현장 설치 마법사",
+  "category": "agent",
+  "status": "completed",
+  "summary": "현장에서 USB 없이 직접 실행하는 WPF GUI 드라이버 설치 마법사 (standalone, config.json 불필요). VBS → PowerShell WPF 4단계: IP/장소/모델 입력 → PC IP 고정 → 드라이버 설치 → 방화벽 설정",
+  "tags": ["driver", "installer", "wpf", "powershell", "standalone", "printer"],
+  "files": [
+    "agent/driver_install.ps1",
+    "agent/현장설치_실행.vbs",
+    "agent/uninstall.ps1",
+    "drivers/제조사/모델(콤마구분)/x64/",
+    "agent/tools/SimpleScan*.exe"
+  ],
+  "related_commits": [],
+  "prompt": "현장설치 누르면 gui로 표현해줘. 기본프린터 체크박스로, 심플스캔 파일 어디 넣는지, 추후 유지보수 쉽게 만들어줘.",
+  "review_notes": "ComboBox 흰 글씨 버그 → TextBox(검색)+ListBox(다크테마)로 교체. 프린터명 괄호 제거: '컬러복사기 D450' / '흑백복사기 D450'. 기본프린터 라디오→체크박스+상호배타 이벤트 핸들러. ParseFile UTF-8 BOM 필수.",
+  "validation": [
+    "PowerShell ParseFile PASS: driver_install.ps1",
+    "PowerShell ParseFile PASS: uninstall.ps1",
+    "모델 드롭다운: drivers/ 폴더 구조 자동 스캔 확인",
+    "SimpleScan: tools/SimpleScan*.exe 자동 감지 확인",
+    "uninstall.ps1: 올바른 태스크명(RMS_SNMP_Collector, RMS_SNMP_Collector_Retry) 확인",
+    "uninstall.ps1: 실행 전 YesNo 확인 다이얼로그 확인"
+  ],
+  "reuse_notes": "모델 추가: drivers/제조사/모델명/x64/ 폴더 생성만 하면 드롭다운에 자동 반영. SimpleScan 업데이트: tools/SimpleScan*.exe 파일 교체. 기본프린터 체크박스 상호배타는 Checked 이벤트 핸들러로 구현 (CheckedChanged 없음 주의).",
+  "lab_experiment_id": "driver-installer",
+  "reusable": true,
+  "compatible_types": ["php-erp", "php-local-tool"],
+  "target_files": ["agent/driver_install.ps1", "agent/현장설치_실행.vbs", "agent/uninstall.ps1"],
+  "requires_db": false,
+  "risk_level": "low",
+  "adapt_notes": {
+    "other-printers": "drivers/ 폴더 구조만 맞추면 제조사/모델 무관하게 동작. pnputil /add-driver 명령은 INF 기반이므로 표준 드라이버 전용."
+  },
+  "created_at": "2026-06-21",
+  "updated_at": "2026-06-21"
+}
