@@ -1,0 +1,30 @@
+{
+  "id": "server-oid-interpreter",
+  "project_id": "260614-copier-rms",
+  "title": "서버 OID 해석 엔진",
+  "category": "backend",
+  "status": "active",
+  "summary": "에이전트가 수집한 원시 OID를 확정 매핑 규칙(모델->벤더->표준)에 따라 해석하여 지표를 산출하는 엔진",
+  "tags": ["snmp", "oid", "interpreter", "mapping", "backend", "parser"],
+  "files": [
+    "includes/oid_interpret.php",
+    "agent_oid_learning_api.php",
+    "oid_review.php"
+  ],
+  "related_commits": ["9e0eba3"],
+  "prompt": "Phase 3a/3b: 에이전트는 원시 OID만 전송. 서버가 printer_model_oid_maps 테이블을 기반으로 4계층 폴백을 통해 지표(토너, 카운터)를 해석. 백분율은 transform 없을 시 잔량(.9)↔최대(.8) 자동 환산.",
+  "review_notes": "Phase 3b 수집 엔진 컷오버 완료. 에이전트의 하드코딩된 OID 해석 로직을 서버로 완전히 이관함.",
+  "validation": [
+    "php -l includes/oid_interpret.php PASS"
+  ],
+  "reuse_notes": "이 모듈은 에이전트의 상태(Stateless)를 보장하며, 새로운 프린터 모델이 추가되어도 에이전트 재배포 없이 서버의 매핑 DB만 업데이트하면 되므로 확장성이 매우 높음.",
+  "lab_experiment_id": "server-oid-interpreter",
+  "reusable": true,
+  "compatible_types": ["php-erp"],
+  "target_files": ["includes/oid_interpret.php", "agent_oid_learning_api.php", "oid_review.php"],
+  "requires_db": true,
+  "risk_level": "medium",
+  "adapt_notes": {"laravel-saas": "Service Provider 패턴 및 Cache 적용 권장."},
+  "created_at": "2026-06-25",
+  "updated_at": "2026-06-25"
+}

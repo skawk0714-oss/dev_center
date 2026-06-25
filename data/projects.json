@@ -11,8 +11,8 @@
     "badge": "운영 핵심",
     "commercial": "높음",
     "priority": 95,
-    "completion": 70,
-    "next": "모바일 레이아웃 최적화, 운영 화면 안정화, 고객 현장 사용 흐름 정리",
+    "completion": 75,
+    "next": "에이전트 패키징 리뉴얼, 모바일 레이아웃 최적화, 고객 현장 사용 흐름 정리",
     "memo": "사무기기 erp",
     "commands": {
       "vscode": true,

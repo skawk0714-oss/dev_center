@@ -160,5 +160,14 @@
         "applied_projects": [
             "260614-copier-rms"
         ]
+    },
+    {
+        "id": "server-oid-interpreter",
+        "title": "서버 OID 해석 엔진",
+        "category": "backend",
+        "tags": ["snmp", "oid", "interpreter", "mapping", "backend", "parser"],
+        "status": "active",
+        "record": "docs/knowledge/records/server-oid-interpreter.json",
+        "applied_projects": ["260614-copier-rms"]
     }
 ]

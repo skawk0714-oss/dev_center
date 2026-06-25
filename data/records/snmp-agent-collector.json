@@ -9,16 +9,18 @@
   "files": [
     "agent/snmp_collect.ps1",
     "agent_api.php",
-    "agent/setup_wizard.ps1"
+    "agent/setup_wizard.ps1",
+    "includes/oid_interpret.php"
   ],
-  "related_commits": [],
-  "prompt": "SNMP OID로 복사기 토너 잔량과 페이지 카운터를 읽고 agent_api.php로 POST 전송. D470 폐토너 waste_pct 기준: 남은 용량%; 사용량=100-waste_pct.",
-  "review_notes": "D470 폐토너 waste_pct 기준이 한때 반전 해석됐다가 정정됨. d470_logic.php/테스트/문서 정정 완료. WiFi 단절 시 192.168.219.100 도달 불가 → 코드 문제 아님, 현장 조치 필요.",
+  "related_commits": ["9e0eba3"],
+  "prompt": "SNMP OID로 복사기 토너 잔량과 페이지 카운터를 읽고 agent_api.php로 POST 전송. D470 폐토너 waste_pct 기준: 남은 용량%; 사용량=100-waste_pct. Phase 3b 컷오버: 에이전트는 구문 분석 없이 원시 OID만 전송. 서버가 해석을 담당하며 구버전 키 포맷 하위호환 유지.",
+  "review_notes": "D470 폐토너 waste_pct 기준이 한때 반전 해석됐다가 정정됨. d470_logic.php/테스트/문서 정정 완료. WiFi 단절 시 192.168.219.100 도달 불가 → 코드 문제 아님, 현장 조치 필요. Gemini 최종 리뷰 통과(9e0eba3). 실장비 E2E 미실시(192.168.219.100 도달 불가 + 해당 모델 확정매핑 0개라 현장 진행 예정). 에이전트에서 Resolve-SupplyIndices가 제거되어 성능이 개선됨.",
   "validation": [
-    "PowerShell Parser PASS: [System.Management.Automation.Language.Parser]::ParseFile('agent/snmp_collect.ps1',...)",
-    "php -l agent_api.php PASS"
+    "php -l includes/oid_interpret.php PASS",
+    "php -l agent_api.php PASS",
+    "PowerShell Parser PASS: [System.Management.Automation.Language.Parser]::ParseFile('agent/snmp_collect.ps1',...)"
   ],
-  "reuse_notes": "snmp_collect.ps1는 OID 목록이 모델별로 다르므로 install_presets.json에서 모델별 OID를 관리. 새 모델 추가 시 OID 매핑 먼저 확인할 것.",
+  "reuse_notes": "snmp_collect.ps1는 OID 목록이 모델별로 다르므로 install_presets.json에서 모델별 OID를 관리. 새 모델 추가 시 OID 매핑 먼저 확인할 것. 이제 에이전트는 매핑 지식이 불필요하며, 서버의 확정매핑(printer_model_oid_maps)에 전적으로 의존함.",
   "lab_experiment_id": "snmp-agent-collector",
   "reusable": true,
   "compatible_types": ["php-erp", "php-local-tool"],
@@ -27,5 +29,5 @@
   "risk_level": "medium",
   "adapt_notes": {"laravel-saas": "API endpoint로 분리 필요. Laravel Jobs 사용 권장."},
   "created_at": "2026-06-14",
-  "updated_at": "2026-06-14"
+  "updated_at": "2026-06-25"
 }
