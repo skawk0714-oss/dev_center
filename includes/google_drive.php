@@ -238,6 +238,55 @@ function gd_upload_file(array $file, string $folderId = ''): array
 }
 
 /**
+ * 업로드된 Drive 파일을 자료실(resources.json)에 자료로 등록한다.
+ * 자료실/Google Drive 화면 어디서 올리든 동일하게 등록되도록 공용화한 함수.
+ *
+ * @param array  $driveFile gd_upload_file 결과의 file (id,name,webViewLink,mimeType)
+ * @return bool 저장 성공 여부
+ */
+function dc_register_drive_resource(array $driveFile, string $folderId, string $title = '', string $desc = ''): bool
+{
+    $path = DC_DATA_DIR . '/resources.json';
+    $r = is_file($path) ? json_decode((string) file_get_contents($path), true) : [];
+    if (!is_array($r)) { $r = []; }
+
+    // 폴더 ID -> 폴더명 (drive_folders.json 역매핑). 못 찾으면 ID 그대로.
+    $folderName = $folderId !== '' ? $folderId : '루트';
+    $dfPath = DC_DATA_DIR . '/drive_folders.json';
+    if ($folderId !== '' && is_file($dfPath)) {
+        $df = json_decode((string) file_get_contents($dfPath), true);
+        if (is_array($df)) {
+            $key = array_search($folderId, $df, true);
+            if ($key !== false && $key !== '_root') { $folderName = (string) $key; }
+        }
+    }
+
+    $title = trim($title) !== '' ? trim($title) : (string) ($driveFile['name'] ?? '업로드 파일');
+    $r[] = [
+        'id'             => 'drive-' . date('ymdHis') . '-' . substr(bin2hex(random_bytes(3)), 0, 6),
+        'title'          => $title,
+        'category'       => 'other',
+        'project_id'     => '260614-copier-rms',
+        'description'    => trim($desc),
+        'usage_type'     => 'reference',
+        'usage_note'     => '개발센터 구글 드라이브(' . $folderName . ' 폴더)에 업로드된 자료입니다.',
+        'storage_type'   => 'google_drive',
+        'path'           => '',
+        'url'            => (string) ($driveFile['webViewLink'] ?? ''),
+        'drive_file_id'  => (string) ($driveFile['id'] ?? ''),
+        'drive_folder_id'=> $folderId,
+        'mime_type'      => (string) ($driveFile['mimeType'] ?? ''),
+        'tags'           => ['drive', $folderName],
+        'resource_kind'  => 'project_asset',
+        'status'         => 'active',
+        'created_at'     => date('Y-m-d'),
+        'updated_at'     => date('Y-m-d'),
+    ];
+    $out = json_encode($r, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
+    return $out !== false && file_put_contents($path, $out, LOCK_EX) !== false;
+}
+
+/**
  * 공통 cURL 래퍼.
  * @return array{ok:bool, status:int, body:string, err:string}
  */

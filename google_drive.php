@@ -20,7 +20,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $targetFolder = trim((string) ($_POST['folder'] ?? ''));
         $res = gd_upload_file($_FILES['file'] ?? [], $targetFolder);
         if ($res['ok']) {
-            $flash = ['type' => 'ok', 'msg' => '업로드 완료: ' . (string) ($res['file']['name'] ?? '') . ' (id: ' . (string) ($res['file']['id'] ?? '') . ')'];
+            // 자료실(resources.json)에도 자동 등록 — 어느 화면에서 올리든 자료실에 뜨도록 통일
+            $registered = dc_register_drive_resource($res['file'], $targetFolder);
+            $name = (string) ($res['file']['name'] ?? '');
+            $flash = $registered
+                ? ['type' => 'ok', 'msg' => '업로드 완료: ' . $name . ' (자료실에도 등록됨)']
+                : ['type' => 'ok', 'msg' => '업로드 완료: ' . $name . ' (단, 자료실 등록은 실패 — 수동 확인 필요)'];
         } else {
             $flash = ['type' => 'error', 'msg' => (string) $res['err']];
         }

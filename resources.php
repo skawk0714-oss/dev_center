@@ -45,36 +45,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'uploa
         header('Location: resources.php'); exit;
     }
 
-    // resources.json 에 새 자료로 등록
+    // resources.json 에 새 자료로 등록 (공용 헬퍼 — Google Drive 화면과 동일 로직)
     $titleIn = trim((string) ($_POST['title'] ?? ''));
     $title   = $titleIn !== '' ? $titleIn : (string) ($up['file']['name'] ?? '업로드 파일');
-    $newRes  = [
-        'id'             => 'drive-' . date('ymdHis') . '-' . substr(bin2hex(random_bytes(3)), 0, 6),
-        'title'          => $title,
-        'category'       => 'other',
-        'project_id'     => '260614-copier-rms',
-        'description'    => trim((string) ($_POST['description'] ?? '')),
-        'usage_type'     => 'reference',
-        'usage_note'     => '개발센터 구글 드라이브(' . $folderKey . ' 폴더)에 업로드된 자료입니다.',
-        'storage_type'   => 'google_drive',
-        'path'           => '',
-        'url'            => (string) ($up['file']['webViewLink'] ?? ''),
-        'drive_file_id'  => (string) ($up['file']['id'] ?? ''),
-        'drive_folder_id'=> $folderId,
-        'mime_type'      => (string) ($up['file']['mimeType'] ?? ''),
-        'tags'           => ['drive', $folderKey],
-        'resource_kind'  => 'project_asset',
-        'status'         => 'active',
-        'created_at'     => date('Y-m-d'),
-        'updated_at'     => date('Y-m-d'),
-    ];
-
-    $existing = is_file($jsonPath) ? json_decode((string) file_get_contents($jsonPath), true) : [];
-    if (!is_array($existing)) { $existing = []; }
-    $existing[] = $newRes;
-    // JSON_INVALID_UTF8_SUBSTITUTE: 제목 등에 깨진 바이트가 있어도 등록이 실패하지 않게(고아 업로드 방지)
-    $out = json_encode($existing, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
-    if ($out === false || file_put_contents($jsonPath, $out, LOCK_EX) === false) {
+    $saved   = dc_register_drive_resource($up['file'], $folderId, $titleIn, (string) ($_POST['description'] ?? ''));
+    if (!$saved) {
         $_SESSION['rc_flash'] = ['type' => 'error', 'msg' => '드라이브 업로드는 됐지만 자료 등록(저장)에 실패했습니다.'];
     } else {
         $_SESSION['rc_flash'] = ['type' => 'ok', 'msg' => '업로드 완료: ' . $title . ' → 개발센터/' . $folderKey];
