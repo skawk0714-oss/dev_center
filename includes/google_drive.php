@@ -131,6 +131,62 @@ function gd_list_files(string $folderId = ''): array
 }
 
 /**
+ * 폴더를 만든다. 같은 이름 폴더가 부모 안에 이미 있으면 재사용(idempotent).
+ * $parentId 가 빈값이면 내 드라이브 루트에 만든다.
+ * @return array{ok:bool, id?:string, name?:string, created?:bool, err?:string}
+ */
+function gd_create_folder(string $name, string $parentId = ''): array
+{
+    $name = trim($name);
+    if ($name === '') {
+        return ['ok' => false, 'err' => '폴더 이름이 비어 있습니다.'];
+    }
+    $tok = gd_access_token();
+    if (!$tok['ok']) {
+        return ['ok' => false, 'err' => $tok['err']];
+    }
+
+    // 기존 동일 이름 폴더 탐색 (중복 생성 방지)
+    $parent    = $parentId !== '' ? $parentId : 'root';
+    $parentEsc = str_replace("'", "\\'", $parent);
+    $nameEsc   = str_replace("'", "\\'", $name);
+    $q = http_build_query([
+        'q'      => "name = '{$nameEsc}' and '{$parentEsc}' in parents "
+                  . "and mimeType = 'application/vnd.google-apps.folder' and trashed = false",
+        'fields' => 'files(id,name)',
+    ]);
+    $find = gd_http('GET', GD_API_FILES . '?' . $q, ['headers' => ['Authorization: Bearer ' . $tok['token']]]);
+    if ($find['ok']) {
+        $fj = json_decode($find['body'], true);
+        if (is_array($fj) && !empty($fj['files'][0]['id'])) {
+            return ['ok' => true, 'id' => (string) $fj['files'][0]['id'], 'name' => $name, 'created' => false];
+        }
+    }
+
+    // 신규 생성
+    $meta = ['name' => $name, 'mimeType' => 'application/vnd.google-apps.folder'];
+    if ($parentId !== '') {
+        $meta['parents'] = [$parentId];
+    }
+    $resp = gd_http('POST', GD_API_FILES . '?fields=id,name', [
+        'headers' => [
+            'Authorization: Bearer ' . $tok['token'],
+            'Content-Type: application/json; charset=UTF-8',
+        ],
+        'body' => json_encode($meta, JSON_UNESCAPED_UNICODE),
+    ]);
+    if (!$resp['ok']) {
+        return ['ok' => false, 'err' => '폴더 생성 실패: ' . $resp['err']];
+    }
+    $json = json_decode($resp['body'], true);
+    if (!is_array($json) || empty($json['id'])) {
+        $msg = is_array($json) ? (string) ($json['error']['message'] ?? '알 수 없음') : '응답 파싱 실패';
+        return ['ok' => false, 'err' => '폴더 생성 거부: ' . $msg];
+    }
+    return ['ok' => true, 'id' => (string) $json['id'], 'name' => $name, 'created' => true];
+}
+
+/**
  * 로컬 업로드 파일을 Drive 에 멀티파트로 올린다.
  * @param array $file  $_FILES['...'] 한 건 (tmp_name, name, type 사용)
  * @return array{ok:bool, file?:array, err?:string}
