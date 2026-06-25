@@ -224,7 +224,9 @@ foreach ($filtered as $r):
             <?php elseif ($storageType === 'url' && $url !== ''): ?>
               <a href="<?= rc_e($url) ?>" target="_blank" rel="noopener" class="rc-btn primary">열기</a>
             <?php elseif ($storageType === 'google_drive'): ?>
-              <a href="google_drive.php" class="rc-btn primary">Google Drive 열기</a>
+              <?php $driveId = (string)($r['drive_file_id'] ?? ''); ?>
+              <a href="<?= $driveId !== '' ? 'https://drive.google.com/file/d/' . rc_e($driveId) . '/view' : 'google_drive.php' ?>"
+                 target="_blank" rel="noopener" class="rc-btn primary">Google Drive 열기</a>
             <?php elseif ($storageType === 'note'): ?>
               <span class="rc-tag">메모</span>
             <?php endif; ?>

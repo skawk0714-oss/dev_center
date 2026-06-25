@@ -1,0 +1,8 @@
+# data/ 는 PHP가 서버사이드로만 읽는다. 웹 직접 접근 차단(자격증명 등 민감정보 노출 방지).
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>
