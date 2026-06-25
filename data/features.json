@@ -169,5 +169,14 @@
         "status": "active",
         "record": "docs/knowledge/records/server-oid-interpreter.json",
         "applied_projects": ["260614-copier-rms"]
+    },
+    {
+        "id": "google-drive-integration",
+        "title": "구글 드라이브 연동",
+        "category": "backend",
+        "tags": ["google-drive", "oauth", "rest-api", "curl", "upload", "resources"],
+        "status": "active",
+        "record": "docs/knowledge/records/google-drive-integration.json",
+        "applied_projects": ["260614-dev-center"]
     }
 ]

@@ -1,0 +1,34 @@
+{
+  "id": "google-drive-integration",
+  "project_id": "260614-dev-center",
+  "title": "구글 드라이브 연동",
+  "category": "backend",
+  "status": "active",
+  "summary": "외부 라이브러리 없이 cURL + Drive REST API v3로 구글 드라이브에 연결해 자료실 파일을 업로드·목록·폴더 관리하는 연동 모듈",
+  "tags": ["google-drive", "oauth", "rest-api", "curl", "upload", "resources"],
+  "files": [
+    "includes/google_drive.php",
+    "google_drive.php",
+    "resources.php",
+    "data/.htaccess",
+    "data/drive_folders.json"
+  ],
+  "related_commits": ["4002350", "64838c8", "fb34b88", "a6efc5e"],
+  "prompt": "구글 라이브러리(composer) 없이 refresh_token으로 access_token을 발급(grant_type=refresh_token)하고 Drive REST API v3를 cURL로 호출. 폴더 목록/생성(중복 시 재사용)/멀티파트 업로드 지원. 업로드 시 resources.json에 google_drive 자료로 자동 등록(dc_register_drive_resource 공용 헬퍼). 자료실/Google Drive 화면 어디서 올려도 동일 등록.",
+  "review_notes": "권한은 drive.file scope 권장(앱이 만든 파일만 접근 → 개인 데이터 분리). 자격증명(client_secret/refresh_token)은 data/.htaccess로 웹 직접접근 차단(403). 업로드→등록 순서라 등록 실패 시 고아 파일 방지를 위해 JSON_INVALID_UTF8_SUBSTITUTE 사용.",
+  "validation": [
+    "php -l includes/google_drive.php / resources.php / google_drive.php PASS",
+    "실연결 E2E: 토큰 발급·폴더 목록·업로드·자료실 자동등록 성공",
+    "자격증명 파일 HTTP 403 차단 확인"
+  ],
+  "reuse_notes": "drive_folders.json에 폴더명->folderId 맵을 두고 업로드 대상 폴더를 매핑. refresh_token scope가 읽기전용(drive.metadata.readonly)이면 업로드/폴더생성이 403 → 쓰기 scope(drive 또는 drive.file)로 재발급 필요.",
+  "lab_experiment_id": "google-drive-integration",
+  "reusable": true,
+  "compatible_types": ["php-erp", "php-local-tool"],
+  "target_files": ["includes/google_drive.php", "google_drive.php", "resources.php"],
+  "requires_db": false,
+  "risk_level": "medium",
+  "adapt_notes": {"laravel-saas": "google/apiclient 패키지 또는 Socialite로 대체. 토큰은 DB/Cache에 보관."},
+  "created_at": "2026-06-25",
+  "updated_at": "2026-06-25"
+}
