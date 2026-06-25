@@ -7,9 +7,87 @@ if (empty($_SESSION['dc_csrf_token'])) {
     $_SESSION['dc_csrf_token'] = bin2hex(random_bytes(32));
 }
 
+require_once __DIR__ . '/includes/google_drive.php';
+
+// 개발센터 Drive 폴더 맵 (drive_folders.json: 폴더명 => folderId)
+$driveFolders = [];
+$dfPath = DC_DATA_DIR . '/drive_folders.json';
+if (is_file($dfPath)) {
+    $dfRaw = json_decode((string) file_get_contents($dfPath), true);
+    if (is_array($dfRaw)) {
+        $driveFolders = $dfRaw;
+    }
+}
+
+$jsonPath = DC_DATA_DIR . '/resources.json';
+
+// ── 업로드 처리 (POST): 파일을 개발센터 Drive 폴더에 올리고 자료로 등록 ──────
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'upload') {
+    if (!hash_equals($_SESSION['dc_csrf_token'] ?? '', (string) ($_POST['csrf_token'] ?? ''))) {
+        $_SESSION['rc_flash'] = ['type' => 'error', 'msg' => 'CSRF 검증 실패. 새로고침 후 다시 시도하세요.'];
+        header('Location: resources.php'); exit;
+    }
+    if (!gd_configured()) {
+        $_SESSION['rc_flash'] = ['type' => 'error', 'msg' => '구글 드라이브 자격증명이 없습니다.'];
+        header('Location: resources.php'); exit;
+    }
+
+    $folderKey = trim((string) ($_POST['drive_folder'] ?? ''));
+    $folderId  = (string) ($driveFolders[$folderKey] ?? '');
+    if ($folderId === '') {
+        $_SESSION['rc_flash'] = ['type' => 'error', 'msg' => '대상 폴더를 선택하세요.'];
+        header('Location: resources.php'); exit;
+    }
+
+    $up = gd_upload_file($_FILES['file'] ?? [], $folderId);
+    if (!$up['ok']) {
+        $_SESSION['rc_flash'] = ['type' => 'error', 'msg' => (string) $up['err']];
+        header('Location: resources.php'); exit;
+    }
+
+    // resources.json 에 새 자료로 등록
+    $titleIn = trim((string) ($_POST['title'] ?? ''));
+    $title   = $titleIn !== '' ? $titleIn : (string) ($up['file']['name'] ?? '업로드 파일');
+    $newRes  = [
+        'id'             => 'drive-' . date('ymdHis') . '-' . substr(bin2hex(random_bytes(3)), 0, 6),
+        'title'          => $title,
+        'category'       => 'other',
+        'project_id'     => '260614-copier-rms',
+        'description'    => trim((string) ($_POST['description'] ?? '')),
+        'usage_type'     => 'reference',
+        'usage_note'     => '개발센터 구글 드라이브(' . $folderKey . ' 폴더)에 업로드된 자료입니다.',
+        'storage_type'   => 'google_drive',
+        'path'           => '',
+        'url'            => (string) ($up['file']['webViewLink'] ?? ''),
+        'drive_file_id'  => (string) ($up['file']['id'] ?? ''),
+        'drive_folder_id'=> $folderId,
+        'mime_type'      => (string) ($up['file']['mimeType'] ?? ''),
+        'tags'           => ['drive', $folderKey],
+        'resource_kind'  => 'project_asset',
+        'status'         => 'active',
+        'created_at'     => date('Y-m-d'),
+        'updated_at'     => date('Y-m-d'),
+    ];
+
+    $existing = is_file($jsonPath) ? json_decode((string) file_get_contents($jsonPath), true) : [];
+    if (!is_array($existing)) { $existing = []; }
+    $existing[] = $newRes;
+    // JSON_INVALID_UTF8_SUBSTITUTE: 제목 등에 깨진 바이트가 있어도 등록이 실패하지 않게(고아 업로드 방지)
+    $out = json_encode($existing, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
+    if ($out === false || file_put_contents($jsonPath, $out, LOCK_EX) === false) {
+        $_SESSION['rc_flash'] = ['type' => 'error', 'msg' => '드라이브 업로드는 됐지만 자료 등록(저장)에 실패했습니다.'];
+    } else {
+        $_SESSION['rc_flash'] = ['type' => 'ok', 'msg' => '업로드 완료: ' . $title . ' → 개발센터/' . $folderKey];
+    }
+    header('Location: resources.php'); exit;
+}
+
+// 업로드 결과 플래시 (PRG)
+$rcFlash = $_SESSION['rc_flash'] ?? null;
+unset($_SESSION['rc_flash']);
+
 $resources = [];
 $loadError = null;
-$jsonPath  = DC_DATA_DIR . '/resources.json';
 
 if (file_exists($jsonPath)) {
     $raw  = file_get_contents($jsonPath);
@@ -118,8 +196,34 @@ function rc_e(string $s): string { return htmlspecialchars($s, ENT_QUOTES | ENT_
     </div>
   </div>
 
+<?php if ($rcFlash !== null): ?>
+  <div class="dc-alert dc-alert-<?= $rcFlash['type'] === 'ok' ? 'ok' : 'error' ?>"><?= rc_e((string) $rcFlash['msg']) ?></div>
+<?php endif; ?>
+
 <?php if ($loadError !== null): ?>
   <div class="dc-alert dc-alert-error"><?= rc_e($loadError) ?></div>
+<?php endif; ?>
+
+<?php
+// 업로드 대상 폴더 후보 (_root 제외)
+$uploadFolders = array_values(array_filter(array_keys($driveFolders), static fn($k) => $k !== '_root'));
+?>
+<?php if (!empty($uploadFolders) && gd_configured()): ?>
+  <form method="post" enctype="multipart/form-data" class="rc-upload-form kn-toolbar" style="gap:8px;flex-wrap:wrap;align-items:center">
+    <input type="hidden" name="action" value="upload">
+    <input type="hidden" name="csrf_token" value="<?= rc_e($_SESSION['dc_csrf_token']) ?>">
+    <strong style="margin-right:4px">📤 개발센터 드라이브에 업로드</strong>
+    <input type="file" name="file" required class="kn-search-input" style="flex:0 0 auto">
+    <input type="text" name="title" placeholder="제목(선택, 비우면 파일명)" class="kn-search-input" style="flex:0 0 auto">
+    <select name="drive_folder" class="kn-search-input" style="flex:0 0 auto">
+      <?php foreach ($uploadFolders as $fk): ?>
+        <option value="<?= rc_e($fk) ?>"<?= $fk === '기타' ? ' selected' : '' ?>>개발센터/<?= rc_e($fk) ?></option>
+      <?php endforeach; ?>
+    </select>
+    <button type="submit" class="rc-btn primary">업로드</button>
+  </form>
+<?php elseif (gd_configured() && empty($uploadFolders)): ?>
+  <div class="dc-alert dc-alert-error">개발센터 드라이브 폴더가 없습니다. <code>data/drive_folders.json</code> 을 먼저 생성하세요.</div>
 <?php endif; ?>
 
   <div class="rc-wrap">
