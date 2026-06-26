@@ -1,0 +1,16 @@
+{
+  "drive_folder": "개발PC_백업",
+  "keep_count": 5,
+  "paths": [
+    "C:/xampp/htdocs/copier",
+    "C:/xampp/htdocs/dev_center",
+    "C:/xampp/htdocs/stockguard",
+    "C:/xampp/htdocs/copier_dev",
+    "C:/xampp/htdocs/dashboard",
+    "C:/xampp/htdocs/sindoh"
+  ],
+  "exclude_dirs": ["node_modules", "vendor"],
+  "db_all_user": true,
+  "db_extra": ["copier_rms"],
+  "db_system_exclude": ["information_schema", "performance_schema", "mysql", "sys"]
+}

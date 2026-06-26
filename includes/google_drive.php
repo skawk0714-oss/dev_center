@@ -238,6 +238,112 @@ function gd_upload_file(array $file, string $folderId = ''): array
 }
 
 /**
+ * 대용량 로컬 파일을 resumable(분할) 업로드로 Drive 에 올린다.
+ * gd_upload_file 과 달리 HTTP 업로드($_FILES)가 아니라 디스크의 실제 경로를 받으며,
+ * 8MB 청크로 스트리밍해 메모리를 거의 쓰지 않는다(백업 ZIP 등 수백 MB~GB 대응).
+ *
+ * @return array{ok:bool, file?:array, err?:string}
+ */
+function gd_upload_local_file(string $localPath, string $name, string $folderId = '', string $mime = 'application/octet-stream'): array
+{
+    if (!is_file($localPath)) {
+        return ['ok' => false, 'err' => '로컬 파일 없음: ' . $localPath];
+    }
+    $tok = gd_access_token();
+    if (!$tok['ok']) {
+        return ['ok' => false, 'err' => $tok['err']];
+    }
+    $size = (int) filesize($localPath);
+
+    // 1) resumable 세션 시작 → 응답 헤더의 Location(세션 URI) 확보
+    $meta = ['name' => $name];
+    if ($folderId !== '') {
+        $meta['parents'] = [$folderId];
+    }
+    $ch = curl_init('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id,name,webViewLink,size,mimeType');
+    curl_setopt_array($ch, [
+        CURLOPT_POST           => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HEADER         => true,
+        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_TIMEOUT        => 60,
+        CURLOPT_HTTPHEADER     => [
+            'Authorization: Bearer ' . $tok['token'],
+            'Content-Type: application/json; charset=UTF-8',
+            'X-Upload-Content-Type: ' . $mime,
+            'X-Upload-Content-Length: ' . $size,
+        ],
+        CURLOPT_POSTFIELDS     => json_encode($meta, JSON_UNESCAPED_UNICODE),
+    ]);
+    $resp   = curl_exec($ch);
+    $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $hsize  = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+    $cerr   = curl_error($ch);
+    curl_close($ch);
+    if ($resp === false || $status < 200 || $status >= 300) {
+        return ['ok' => false, 'err' => '업로드 세션 시작 실패 (HTTP ' . $status . ' ' . $cerr . ')'];
+    }
+    $headers = substr((string) $resp, 0, $hsize);
+    if (!preg_match('/^location:\s*(\S+)/im', $headers, $m)) {
+        return ['ok' => false, 'err' => '업로드 세션 URI(Location) 없음'];
+    }
+    $sessionUri = trim($m[1]);
+
+    // 2) 8MB(256KB 배수) 청크로 PUT
+    $chunkSize = 8 * 1024 * 1024;
+    $fh = fopen($localPath, 'rb');
+    if (!$fh) {
+        return ['ok' => false, 'err' => '파일 열기 실패'];
+    }
+    $offset = 0;
+    $final  = null;
+    while ($offset < $size) {
+        $data = fread($fh, $chunkSize);
+        $len  = strlen($data);
+        $end  = $offset + $len - 1;
+
+        $c = curl_init($sessionUri);
+        curl_setopt_array($c, [
+            CURLOPT_CUSTOMREQUEST  => 'PUT',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_TIMEOUT        => 600,
+            CURLOPT_HTTPHEADER     => [
+                'Content-Length: ' . $len,
+                'Content-Range: bytes ' . $offset . '-' . $end . '/' . $size,
+            ],
+            CURLOPT_POSTFIELDS     => $data,
+        ]);
+        $r   = curl_exec($c);
+        $st  = (int) curl_getinfo($c, CURLINFO_HTTP_CODE);
+        $ce  = curl_error($c);
+        curl_close($c);
+
+        if ($r === false) {
+            fclose($fh);
+            return ['ok' => false, 'err' => '청크 업로드 네트워크 오류: ' . $ce];
+        }
+        if ($st === 308) {            // Resume Incomplete → 다음 청크
+            $offset += $len;
+            continue;
+        }
+        if ($st === 200 || $st === 201) {  // 완료
+            $final = json_decode((string) $r, true);
+            $offset += $len;
+            break;
+        }
+        fclose($fh);
+        return ['ok' => false, 'err' => '청크 업로드 실패 (HTTP ' . $st . ')'];
+    }
+    fclose($fh);
+
+    if (!is_array($final) || empty($final['id'])) {
+        return ['ok' => false, 'err' => '업로드 완료 응답 파싱 실패'];
+    }
+    return ['ok' => true, 'file' => $final];
+}
+
+/**
  * 업로드된 Drive 파일을 자료실(resources.json)에 자료로 등록한다.
  * 자료실/Google Drive 화면 어디서 올리든 동일하게 등록되도록 공용화한 함수.
  *
@@ -284,6 +390,38 @@ function dc_register_drive_resource(array $driveFile, string $folderId, string $
     ];
     $out = json_encode($r, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
     return $out !== false && file_put_contents($path, $out, LOCK_EX) !== false;
+}
+
+/**
+ * Drive 파일 삭제. 기본은 영구 삭제(용량 즉시 회수). $permanent=false 면 휴지통 이동(복구 가능).
+ *
+ * @return array{ok:bool, err?:string}
+ */
+function gd_delete_file(string $fileId, bool $permanent = true): array
+{
+    if ($fileId === '') {
+        return ['ok' => false, 'err' => 'fileId 없음'];
+    }
+    $tok = gd_access_token();
+    if (!$tok['ok']) {
+        return ['ok' => false, 'err' => $tok['err']];
+    }
+
+    if ($permanent) {
+        $r = gd_http('DELETE', GD_API_FILES . '/' . rawurlencode($fileId),
+            ['headers' => ['Authorization: Bearer ' . $tok['token']]]);
+        if ($r['status'] === 204 || $r['ok']) {
+            return ['ok' => true];
+        }
+        return ['ok' => false, 'err' => '삭제 실패 (HTTP ' . $r['status'] . ')'];
+    }
+
+    // 휴지통 이동
+    $r = gd_http('PATCH', GD_API_FILES . '/' . rawurlencode($fileId) . '?fields=id', [
+        'headers' => ['Authorization: Bearer ' . $tok['token'], 'Content-Type: application/json'],
+        'body'    => json_encode(['trashed' => true]),
+    ]);
+    return ['ok' => $r['ok'], 'err' => $r['ok'] ? '' : '휴지통 이동 실패 (HTTP ' . $r['status'] . ')'];
 }
 
 /**
