@@ -1,4 +1,4 @@
-/* 자동 생성물 — registry.json 의 스냅샷. 직접 수정하지 말 것. file:// 오프라인 fallback 용. */
+/* 자동 생성물 — registry.json 스냅샷. 직접 수정 금지. */
 window.COPIER_COMPONENT_REGISTRY = {
     "schema_version": 1,
     "library_id": "copier-ui-components",
@@ -291,6 +291,56 @@ window.COPIER_COMPONENT_REGISTRY = {
             ],
             "known_pitfalls": [],
             "related_components": [],
+            "supersedes": null,
+            "revision": 1,
+            "created_at": "2026-07-16",
+            "updated_at": "2026-07-16"
+        },
+        {
+            "schema_version": 1,
+            "id": "list-menu",
+            "title": "목록형 메뉴 (섹션·하위메뉴)",
+            "category": "navigation",
+            "summary": "섹션 제목·활성 항목·접히는 하위메뉴를 갖춘 목록 메뉴. daisyUI menu를 토큰 CSS로 이식(네이티브 <details>, JS 불필요).",
+            "tags": [
+                "menu",
+                "navigation",
+                "submenu",
+                "sidebar",
+                "메뉴"
+            ],
+            "status": "active",
+            "aliases": [],
+            "html": "<ul class='menu'><li class='menu-title'>재고</li><li><a class='active'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M12 3s6 6 6 10a6 6 0 0 1-12 0c0-4 6-10 6-10z'/></svg>토너 현황</a></li><li><a><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M21 8l-9-5-9 5 9 5 9-5z'/><path d='M3 8v8l9 5 9-5V8'/></svg>소모품 재고</a></li><li><details open><summary><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><path d='M7 7L3 11l4 4'/><path d='M3 11h12'/><path d='M17 17l4-4-4-4'/><path d='M21 13H10'/></svg>입출고</summary><ul><li><a>출고</a></li><li><a>입고</a></li><li><a>반품</a></li></ul></details></li><li class='menu-title'>정산</li><li><a>정산·수익</a></li><li><a>세금계산서</a></li></ul>",
+            "css": ".menu{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:8px;width:240px;max-width:100%;font-size:13px} .menu ul{list-style:none;margin:0;padding:0} .menu li{list-style:none} .menu-title{padding:8px 12px 4px;font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--text3)} .menu a,.menu summary{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:8px;color:var(--text2);text-decoration:none;cursor:pointer} .menu a:hover,.menu summary:hover{background:var(--bg3);color:var(--text)} .menu a.active{background:var(--accent);color:#fff} .menu svg{width:16px;height:16px;flex-shrink:0} .menu details>summary{list-style:none} .menu details>summary::-webkit-details-marker{display:none} .menu details>summary::after{content:'';margin-left:auto;width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .18s;opacity:.55} .menu details[open]>summary::after{transform:rotate(45deg)} .menu details>ul{margin:2px 0 2px 14px;padding-left:12px;border-left:1px solid var(--border)} .menu details>ul a{padding:7px 10px;font-size:12.5px}",
+            "js": "",
+            "dependencies": [],
+            "project_refs": [],
+            "source": {
+                "type": "external",
+                "project_path": null,
+                "url": "https://daisyui.com/components/menu/",
+                "author": "daisyUI",
+                "license": "MIT (패턴 참고, CSS는 토큰으로 자체 작성)",
+                "attribution": "daisyUI menu 디자인을 CopierRMS CSS 변수로 이식",
+                "adaptation_notes": "Tailwind/daisyUI 클래스 제거, 하위메뉴는 네이티브 <details>로 접힘 처리(JS 불필요)"
+            },
+            "verified": false,
+            "verification": {
+                "verified_at": null,
+                "verified_by": [],
+                "checks": []
+            },
+            "usage_notes": [
+                "섹션은 .menu-title, 활성 항목은 a.active",
+                "하위메뉴는 <details>로 감싸면 클릭 시 접힘/펼침"
+            ],
+            "known_pitfalls": [
+                "JS 없이 동작하므로 <details> 지원 브라우저 필요(모던 전부 지원)"
+            ],
+            "related_components": [
+                "sidebar-accordion-menu"
+            ],
             "supersedes": null,
             "revision": 1,
             "created_at": "2026-07-16",
