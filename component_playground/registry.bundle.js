@@ -800,6 +800,341 @@ window.COPIER_COMPONENT_REGISTRY = {
             "revision": 1,
             "created_at": "2026-07-16",
             "updated_at": "2026-07-16"
+        },
+        {
+            "schema_version": 1,
+            "id": "progress-gauge",
+            "title": "잔량 게이지 (진행바)",
+            "category": "data-display",
+            "summary": "토너/폐토너 잔량 등 % 게이지. 낮음(빨강)·주의(주황)·정상(녹색) 단계색.",
+            "tags": [
+                "progress",
+                "gauge",
+                "toner",
+                "게이지"
+            ],
+            "status": "active",
+            "aliases": [],
+            "html": "<div class='gauges'><div class='g'><span class='gl'>검정(K)</span><div class='gbar'><i style='width:83%'></i></div><span class='gp'>83%</span></div><div class='g'><span class='gl'>파랑(C)</span><div class='gbar'><i style='width:100%'></i></div><span class='gp'>100%</span></div><div class='g'><span class='gl'>빨강(M)</span><div class='gbar low'><i style='width:23%'></i></div><span class='gp low'>23%</span></div><div class='g'><span class='gl'>노랑(Y)</span><div class='gbar mid'><i style='width:67%'></i></div><span class='gp'>67%</span></div><div class='g'><span class='gl'>폐토너</span><div class='gbar'><i style='width:100%'></i></div><span class='gp'>여유</span></div></div>",
+            "css": ".gauges{display:flex;flex-direction:column;gap:9px;max-width:340px} .g{display:flex;align-items:center;gap:10px} .gl{width:60px;font-size:12px;color:var(--text2);flex-shrink:0} .gbar{flex:1;height:8px;background:var(--bg3);border-radius:100px;overflow:hidden} .gbar>i{display:block;height:100%;background:var(--success);border-radius:100px} .gbar.mid>i{background:var(--warning)} .gbar.low>i{background:var(--danger)} .gp{width:42px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:var(--text2);flex-shrink:0} .gp.low{color:var(--danger);font-weight:700}",
+            "js": "",
+            "dependencies": [],
+            "project_refs": [
+                "toner.php",
+                "device_detail.php"
+            ],
+            "source": {
+                "type": "project",
+                "project_path": null,
+                "url": null,
+                "author": "CopierRMS",
+                "license": "project-internal",
+                "attribution": "우선 신규 컴포넌트(일반 UI 패턴 참고, 토큰 CSS 자체작성)",
+                "adaptation_notes": "빌드/외부 의존 없음"
+            },
+            "verified": false,
+            "verification": {
+                "verified_at": null,
+                "verified_by": [],
+                "checks": []
+            },
+            "usage_notes": [
+                "단계색: .gbar에 mid(주의)/low(부족) 클래스",
+                "실데이터는 width % 값만 교체"
+            ],
+            "known_pitfalls": [],
+            "related_components": [],
+            "supersedes": null,
+            "revision": 1,
+            "created_at": "2026-07-16",
+            "updated_at": "2026-07-16"
+        },
+        {
+            "schema_version": 1,
+            "id": "stat-cards",
+            "title": "KPI 통계 카드",
+            "category": "data-display",
+            "summary": "대시보드 지표 카드(오늘 입고·출고·부족재고). 좌측 의미색 바.",
+            "tags": [
+                "stat",
+                "kpi",
+                "dashboard",
+                "카드"
+            ],
+            "status": "active",
+            "aliases": [],
+            "html": "<div class='stat-row'><div class='stat in'><div class='sk'>오늘 입고</div><div class='sv'>+8</div><div class='sd'>어제比 +2</div></div><div class='stat out'><div class='sk'>오늘 출고</div><div class='sv'>-5</div><div class='sd'>어제比 -1</div></div><div class='stat'><div class='sk'>소모품 품목</div><div class='sv'>78</div></div><div class='stat low'><div class='sk'>부족 재고</div><div class='sv'>35</div><div class='sd'>발주 필요</div></div></div>",
+            "css": ".stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px} .stat{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px 15px;border-left:3px solid var(--accent)} .stat.in{border-left-color:var(--success)} .stat.out{border-left-color:var(--danger)} .stat.low{border-left-color:var(--warning)} .stat .sk{font-size:11px;color:var(--text2)} .stat .sv{font-size:24px;font-weight:750;margin-top:4px;font-variant-numeric:tabular-nums} .stat .sd{font-size:11px;color:var(--text3);margin-top:2px}",
+            "js": "",
+            "dependencies": [],
+            "project_refs": [
+                "dashboard.php"
+            ],
+            "source": {
+                "type": "project",
+                "project_path": null,
+                "url": null,
+                "author": "CopierRMS",
+                "license": "project-internal",
+                "attribution": "우선 신규 컴포넌트(일반 UI 패턴 참고, 토큰 CSS 자체작성)",
+                "adaptation_notes": "빌드/외부 의존 없음"
+            },
+            "verified": false,
+            "verification": {
+                "verified_at": null,
+                "verified_by": [],
+                "checks": []
+            },
+            "usage_notes": [
+                "의미색은 .in/.out/.low 클래스로",
+                "숫자는 tabular-nums"
+            ],
+            "known_pitfalls": [],
+            "related_components": [],
+            "supersedes": null,
+            "revision": 1,
+            "created_at": "2026-07-16",
+            "updated_at": "2026-07-16"
+        },
+        {
+            "schema_version": 1,
+            "id": "modal-basic",
+            "title": "일반 모달 (상세)",
+            "category": "overlay",
+            "summary": "헤더·본문·푸터를 갖춘 일반 모달. 내장 <dialog> 기반(포커스 가둠·Esc 자동).",
+            "tags": [
+                "modal",
+                "dialog",
+                "overlay",
+                "모달"
+            ],
+            "status": "active",
+            "aliases": [],
+            "html": "<button id='om' class='mbtn'>상세 열기</button><dialog id='dlg' class='gm'><div class='gm-h'><h3>장비 상세</h3><button id='cm' class='gm-x'>X</button></div><div class='gm-b'><p>DWA4 · 현대자동차 · 192.168.0.10</p><p>최근 수집: 2026-07-15 08:50</p></div><div class='gm-f'><button id='cm2' class='mbtn ghost'>닫기</button><button class='mbtn'>편집</button></div></dialog>",
+            "css": ".mbtn{cursor:pointer;font:inherit;font-weight:650;border-radius:8px;padding:9px 15px;border:none;background:var(--accent);color:#fff} .mbtn.ghost{background:var(--bg2);color:var(--text);border:1px solid var(--border)} dialog.gm{border:1px solid var(--border);border-radius:12px;background:var(--bg2);color:var(--text);padding:0;width:min(92vw,420px)} dialog.gm::backdrop{background:rgba(10,14,22,.5)} .gm-h{display:flex;align-items:center;padding:14px 17px;border-bottom:1px solid var(--border)} .gm-h h3{margin:0;font-size:15px} .gm-x{margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px} .gm-b{padding:16px 17px;font-size:13px;color:var(--text2);display:flex;flex-direction:column;gap:6px} .gm-f{padding:13px 17px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}",
+            "js": "var d=document.getElementById('dlg');document.getElementById('om').addEventListener('click',function(){d.showModal()});function c(){d.close()}document.getElementById('cm').addEventListener('click',c);document.getElementById('cm2').addEventListener('click',c);d.addEventListener('click',function(e){if(e.target===d)d.close()});",
+            "dependencies": [],
+            "project_refs": [],
+            "source": {
+                "type": "project",
+                "project_path": null,
+                "url": null,
+                "author": "CopierRMS",
+                "license": "project-internal",
+                "attribution": "우선 신규 컴포넌트(일반 UI 패턴 참고, 토큰 CSS 자체작성)",
+                "adaptation_notes": "미리보기엔 sandbox allow-modals 필요"
+            },
+            "verified": false,
+            "verification": {
+                "verified_at": null,
+                "verified_by": [],
+                "checks": []
+            },
+            "usage_notes": [
+                "확인창은 confirmation-dialog, 상세/편집은 이 모달"
+            ],
+            "known_pitfalls": [
+                "showModal은 상위 프레임 allow-modals 필요"
+            ],
+            "related_components": [
+                "confirmation-dialog"
+            ],
+            "supersedes": null,
+            "revision": 1,
+            "created_at": "2026-07-16",
+            "updated_at": "2026-07-16"
+        },
+        {
+            "schema_version": 1,
+            "id": "action-dropdown",
+            "title": "액션 드롭다운 (케밥 메뉴)",
+            "category": "action",
+            "summary": "테이블 행 등의 ⋮ 버튼 → 반품·수정·취소 액션 메뉴. 바깥 클릭 닫힘.",
+            "tags": [
+                "dropdown",
+                "menu",
+                "action",
+                "케밥"
+            ],
+            "status": "active",
+            "aliases": [],
+            "html": "<div class='ad' id='ad'><button class='ad-btn' data-adt>⋮</button><div class='ad-menu'><a>반품 처리</a><a>단가 수정</a><a class='danger'>이력 취소</a></div></div>",
+            "css": ".ad{position:relative;display:inline-block} .ad-btn{cursor:pointer;width:32px;height:32px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);border-radius:7px;font-size:16px;line-height:1} .ad-btn:hover{border-color:var(--accent);color:var(--accent)} .ad-menu{position:absolute;top:calc(100% + 5px);right:0;min-width:150px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;box-shadow:0 10px 30px rgba(20,30,60,.18);padding:5px;display:none;z-index:20} .ad.open .ad-menu{display:block} .ad-menu a{display:block;padding:8px 11px;border-radius:6px;font-size:13px;color:var(--text2);cursor:pointer;text-decoration:none} .ad-menu a:hover{background:var(--bg3);color:var(--text)} .ad-menu a.danger{color:var(--danger)}",
+            "js": "var ad=document.getElementById('ad');ad.querySelector('[data-adt]').addEventListener('click',function(e){e.stopPropagation();ad.classList.toggle('open')});document.addEventListener('click',function(e){if(!ad.contains(e.target))ad.classList.remove('open')});ad.querySelectorAll('.ad-menu a').forEach(function(a){a.addEventListener('click',function(){ad.classList.remove('open')})});",
+            "dependencies": [],
+            "project_refs": [
+                "stockio.php"
+            ],
+            "source": {
+                "type": "project",
+                "project_path": null,
+                "url": null,
+                "author": "CopierRMS",
+                "license": "project-internal",
+                "attribution": "우선 신규 컴포넌트(일반 UI 패턴 참고, 토큰 CSS 자체작성)",
+                "adaptation_notes": "빌드/외부 의존 없음"
+            },
+            "verified": false,
+            "verification": {
+                "verified_at": null,
+                "verified_by": [],
+                "checks": []
+            },
+            "usage_notes": [
+                "행별 여러 동작을 좁은 공간에 모을 때"
+            ],
+            "known_pitfalls": [],
+            "related_components": [
+                "bottom-sheet"
+            ],
+            "supersedes": null,
+            "revision": 1,
+            "created_at": "2026-07-16",
+            "updated_at": "2026-07-16"
+        },
+        {
+            "schema_version": 1,
+            "id": "quantity-stepper",
+            "title": "수량 스테퍼 (＋/－)",
+            "category": "input",
+            "summary": "입출고 수량 등 정수 증감 입력. 0 미만 방지.",
+            "tags": [
+                "stepper",
+                "number",
+                "input",
+                "수량"
+            ],
+            "status": "active",
+            "aliases": [],
+            "html": "<div class='qty'><button class='qb' data-q='-1'>−</button><input class='qi' id='qv' value='1' inputmode='numeric'><button class='qb' data-q='1'>＋</button></div>",
+            "css": ".qty{display:inline-flex;align-items:center;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--bg2)} .qb{width:34px;height:34px;border:none;background:var(--bg2);color:var(--text);cursor:pointer;font-size:15px} .qb:hover{background:var(--bg3)} .qi{width:52px;height:34px;border:none;border-left:1px solid var(--border);border-right:1px solid var(--border);text-align:center;background:var(--bg2);color:var(--text);font:inherit;font-size:14px;font-variant-numeric:tabular-nums;outline:none}",
+            "js": "var v=document.getElementById('qv');document.querySelectorAll('.qb').forEach(function(b){b.addEventListener('click',function(){var n=parseInt(v.value,10);if(isNaN(n))n=0;n+=parseInt(b.dataset.q,10);if(n<0)n=0;v.value=n})});",
+            "dependencies": [],
+            "project_refs": [
+                "stockio.php"
+            ],
+            "source": {
+                "type": "project",
+                "project_path": null,
+                "url": null,
+                "author": "CopierRMS",
+                "license": "project-internal",
+                "attribution": "우선 신규 컴포넌트(일반 UI 패턴 참고, 토큰 CSS 자체작성)",
+                "adaptation_notes": "빌드/외부 의존 없음"
+            },
+            "verified": false,
+            "verification": {
+                "verified_at": null,
+                "verified_by": [],
+                "checks": []
+            },
+            "usage_notes": [
+                "0 미만 방지 내장",
+                "0 허용 필드는 value||기본값 금지"
+            ],
+            "known_pitfalls": [],
+            "related_components": [
+                "form-controls"
+            ],
+            "supersedes": null,
+            "revision": 1,
+            "created_at": "2026-07-16",
+            "updated_at": "2026-07-16"
+        },
+        {
+            "schema_version": 1,
+            "id": "date-range",
+            "title": "날짜 범위 선택",
+            "category": "input",
+            "summary": "이력·정산 기간 필터용 시작~종료 날짜 입력.",
+            "tags": [
+                "date",
+                "range",
+                "filter",
+                "날짜"
+            ],
+            "status": "active",
+            "aliases": [],
+            "html": "<div class='dr'><input type='date' class='di' value='2026-07-01'><span class='ds'>~</span><input type='date' class='di' value='2026-07-16'></div>",
+            "css": ".dr{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap} .di{background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font:inherit;font-size:13px;outline:none} .di:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)} .ds{color:var(--text3)}",
+            "js": "",
+            "dependencies": [],
+            "project_refs": [
+                "stockio.php",
+                "settle.php"
+            ],
+            "source": {
+                "type": "project",
+                "project_path": null,
+                "url": null,
+                "author": "CopierRMS",
+                "license": "project-internal",
+                "attribution": "우선 신규 컴포넌트(네이티브 date + 토큰 스타일)",
+                "adaptation_notes": "빌드/외부 의존 없음"
+            },
+            "verified": false,
+            "verification": {
+                "verified_at": null,
+                "verified_by": [],
+                "checks": []
+            },
+            "usage_notes": [
+                "네이티브 <input type=date> 사용"
+            ],
+            "known_pitfalls": [],
+            "related_components": [
+                "form-controls"
+            ],
+            "supersedes": null,
+            "revision": 1,
+            "created_at": "2026-07-16",
+            "updated_at": "2026-07-16"
+        },
+        {
+            "schema_version": 1,
+            "id": "search-input",
+            "title": "검색 입력 (아이콘·클리어)",
+            "category": "input",
+            "summary": "돋보기 아이콘 + 입력 시 나타나는 클리어(X) 버튼.",
+            "tags": [
+                "search",
+                "input",
+                "filter",
+                "검색"
+            ],
+            "status": "active",
+            "aliases": [],
+            "html": "<div class='si'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'><circle cx='11' cy='11' r='7'/><path d='M21 21l-4-4'/></svg><input id='sq' class='sinp' placeholder='소모품 검색...'><button id='sx' class='sclr' hidden>X</button></div>",
+            "css": ".si{position:relative;display:inline-flex;align-items:center;width:260px;max-width:100%} .si>svg{position:absolute;left:11px;width:15px;height:15px;color:var(--text3);pointer-events:none} .sinp{width:100%;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 32px 8px 34px;font:inherit;font-size:13px;outline:none} .sinp:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)} .sclr{position:absolute;right:8px;width:20px;height:20px;border:none;background:var(--bg3);color:var(--text2);border-radius:50%;cursor:pointer;font-size:11px;line-height:1}",
+            "js": "var q=document.getElementById('sq'),x=document.getElementById('sx');q.addEventListener('input',function(){x.hidden=!q.value});x.addEventListener('click',function(){q.value='';x.hidden=true;q.focus()});",
+            "dependencies": [],
+            "project_refs": [],
+            "source": {
+                "type": "project",
+                "project_path": null,
+                "url": null,
+                "author": "CopierRMS",
+                "license": "project-internal",
+                "attribution": "우선 신규 컴포넌트(일반 UI 패턴 참고, 토큰 CSS 자체작성)",
+                "adaptation_notes": "빌드/외부 의존 없음"
+            },
+            "verified": false,
+            "verification": {
+                "verified_at": null,
+                "verified_by": [],
+                "checks": []
+            },
+            "usage_notes": [
+                "입력 있을 때만 클리어 버튼 표시"
+            ],
+            "known_pitfalls": [],
+            "related_components": [
+                "form-controls"
+            ],
+            "supersedes": null,
+            "revision": 1,
+            "created_at": "2026-07-16",
+            "updated_at": "2026-07-16"
         }
     ]
 };
