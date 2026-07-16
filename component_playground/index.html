@@ -267,7 +267,7 @@
       +"<scr"+"ipt>window.onerror=function(m){parent.postMessage({t:'err',id:'"+frameId+"',m:String(m)},'*');return true};"
       +"window.addEventListener('unhandledrejection',function(ev){parent.postMessage({t:'err',id:'"+frameId+"',m:String(ev.reason)},'*')});</scr"+"ipt>"
       +"<scr"+"ipt>try{\n"+js+"\n}catch(e){parent.postMessage({t:'err',id:'"+frameId+"',m:String(e)},'*')}"
-      +"setTimeout(function(){parent.postMessage({t:'h',id:'"+frameId+"',h:Math.min("+maxH+",Math.max(70,document.documentElement.scrollHeight))},'*')},60);</scr"+"ipt>"
+      +"function _ph(){parent.postMessage({t:'h',id:'"+frameId+"',h:Math.min("+maxH+",Math.max(70,document.documentElement.scrollHeight))},'*')}setTimeout(_ph,60);setTimeout(_ph,400);if(window.ResizeObserver){try{new ResizeObserver(_ph).observe(document.body)}catch(e){}}</scr"+"ipt>"
       +"</body></html>";
   }
   window.addEventListener("message",function(e){

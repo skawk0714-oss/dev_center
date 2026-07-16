@@ -362,7 +362,7 @@ window.COPIER_COMPONENT_REGISTRY = {
             "aliases": [],
             "html": "<span id='tip' tabindex='0' class='tip-anchor'>폐토너 잔량 <span class='tip-i'>i</span></span>",
             "css": ".tip-anchor{display:inline-flex;align-items:center;gap:6px;cursor:help;color:var(--text2);font-size:13px} .tip-i{display:inline-flex;width:18px;height:18px;align-items:center;justify-content:center;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;font-style:normal} .tip-pop{position:absolute;z-index:900;max-width:220px;background:var(--text);color:var(--bg2);font-size:12px;padding:8px 11px;border-radius:6px;box-shadow:0 10px 30px rgba(20,30,60,.18)}",
-            "js": "var a=document.getElementById('tip');var p=null;function show(){if(p)return;p=document.createElement('div');p.className='tip-pop';p.textContent='남은 폐토너 용량(%)입니다. 사용량 = 100 - 이 값.';document.body.appendChild(p);var r=a.getBoundingClientRect(),t=p.getBoundingClientRect();var l=scrollX+r.left,m=scrollX+document.documentElement.clientWidth-t.width-8;p.style.left=Math.min(l,m)+'px';p.style.top=(scrollY+r.top-t.height-8)+'px'}function hide(){if(p){p.remove();p=null}}a.addEventListener('mouseenter',show);a.addEventListener('mouseleave',hide);a.addEventListener('focus',show);a.addEventListener('blur',hide);",
+            "js": "var a=document.getElementById('tip');var p=null;function show(){if(p)return;p=document.createElement('div');p.className='tip-pop';p.textContent='남은 폐토너 용량(%)입니다. 사용량 = 100 - 이 값.';document.body.appendChild(p);var r=a.getBoundingClientRect(),t=p.getBoundingClientRect();var l=scrollX+r.left,m=scrollX+document.documentElement.clientWidth-t.width-8;p.style.left=Math.min(l,m)+'px';p.style.top=(scrollY+r.bottom+8)+'px'}function hide(){if(p){p.remove();p=null}}a.addEventListener('mouseenter',show);a.addEventListener('mouseleave',hide);a.addEventListener('focus',show);a.addEventListener('blur',hide);",
             "dependencies": [],
             "project_refs": [],
             "source": {
@@ -543,7 +543,7 @@ window.COPIER_COMPONENT_REGISTRY = {
             "status": "active",
             "aliases": [],
             "html": "<div class='form-grid'><div><label class='fl'>거래처</label><input class='inp' placeholder='업체 검색...'></div><div><label class='fl'>유형</label><select class='inp'><option>출고</option><option>입고</option><option>반품</option></select></div><div class='full'><label class='fl'>메모</label><textarea class='inp'></textarea></div><div class='full frow'><label class='ck'><input type='checkbox' checked> 임대 품목</label><label class='sw'><input type='checkbox' checked><span class='tk'></span> 알림 받기</label></div></div>",
-            "css": ".form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px} .form-grid .full{grid-column:1/-1} .fl{font-size:11px;color:var(--text2);font-weight:600;display:block;margin-bottom:5px} .inp{width:100%;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font:inherit;font-size:13px;outline:none} .inp:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)} textarea.inp{min-height:60px;resize:vertical} .frow{display:flex;gap:16px;align-items:center;flex-wrap:wrap} .ck{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--text)} .ck input{accent-color:var(--accent)} .sw{position:relative;display:inline-flex;align-items:center;gap:9px;cursor:pointer;font-size:13px} .sw input{position:absolute;opacity:0} .sw .tk{width:38px;height:22px;border-radius:100px;background:var(--bg3);border:1px solid var(--border);position:relative;transition:background .15s} .sw .tk::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s} .sw input:checked+.tk{background:var(--accent);border-color:var(--accent)} .sw input:checked+.tk::after{transform:translateX(16px)}",
+            "css": ".form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 22px;max-width:460px} .form-grid .full{grid-column:1/-1} .fl{font-size:11px;color:var(--text2);font-weight:600;display:block;margin-bottom:5px} .inp{width:100%;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font:inherit;font-size:13px;outline:none} .inp:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)} textarea.inp{min-height:60px;resize:vertical} .frow{display:flex;gap:16px;align-items:center;flex-wrap:wrap} .ck{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--text)} .ck input{accent-color:var(--accent)} .sw{position:relative;display:inline-flex;align-items:center;gap:9px;cursor:pointer;font-size:13px} .sw input{position:absolute;opacity:0} .sw .tk{width:38px;height:22px;border-radius:100px;background:var(--bg3);border:1px solid var(--border);position:relative;transition:background .15s} .sw .tk::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s} .sw input:checked+.tk{background:var(--accent);border-color:var(--accent)} .sw input:checked+.tk::after{transform:translateX(16px)}",
             "js": "",
             "dependencies": [],
             "project_refs": [],
@@ -815,8 +815,8 @@ window.COPIER_COMPONENT_REGISTRY = {
             ],
             "status": "active",
             "aliases": [],
-            "html": "<div class='gauges'><div class='g'><span class='gl'>검정(K)</span><div class='gbar'><i style='width:83%'></i></div><span class='gp'>83%</span></div><div class='g'><span class='gl'>파랑(C)</span><div class='gbar'><i style='width:100%'></i></div><span class='gp'>100%</span></div><div class='g'><span class='gl'>빨강(M)</span><div class='gbar low'><i style='width:23%'></i></div><span class='gp low'>23%</span></div><div class='g'><span class='gl'>노랑(Y)</span><div class='gbar mid'><i style='width:67%'></i></div><span class='gp'>67%</span></div><div class='g'><span class='gl'>폐토너</span><div class='gbar'><i style='width:100%'></i></div><span class='gp'>여유</span></div></div>",
-            "css": ".gauges{display:flex;flex-direction:column;gap:9px;max-width:340px} .g{display:flex;align-items:center;gap:10px} .gl{width:60px;font-size:12px;color:var(--text2);flex-shrink:0} .gbar{flex:1;height:8px;background:var(--bg3);border-radius:100px;overflow:hidden} .gbar>i{display:block;height:100%;background:var(--success);border-radius:100px} .gbar.mid>i{background:var(--warning)} .gbar.low>i{background:var(--danger)} .gp{width:42px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:var(--text2);flex-shrink:0} .gp.low{color:var(--danger);font-weight:700}",
+            "html": "<div class='gauges'><div class='g'><span class='gl'>검정(K)</span><div class='gbar k'><i style='width:83%'></i></div><span class='gp'>83%</span></div><div class='g'><span class='gl'>파랑(C)</span><div class='gbar c'><i style='width:100%'></i></div><span class='gp'>100%</span></div><div class='g'><span class='gl'>빨강(M)</span><div class='gbar m'><i style='width:23%'></i></div><span class='gp'>23%</span></div><div class='g'><span class='gl'>노랑(Y)</span><div class='gbar y'><i style='width:67%'></i></div><span class='gp'>67%</span></div><div class='g'><span class='gl'>폐토너</span><div class='gbar w'><i style='width:100%'></i></div><span class='gp'>여유</span></div></div>",
+            "css": ".gauges{display:flex;flex-direction:column;gap:9px;max-width:340px} .g{display:flex;align-items:center;gap:10px} .gl{width:60px;font-size:12px;color:var(--text2);flex-shrink:0} .gbar{flex:1;height:8px;background:var(--bg3);border-radius:100px;overflow:hidden} .gbar>i{display:block;height:100%;background:var(--text2);border-radius:100px} .gbar.k>i{background:var(--text2)} .gbar.c>i{background:#22B8CF} .gbar.m>i{background:#E0457B} .gbar.y>i{background:#E0A81E} .gbar.w>i{background:var(--text3)} .gp{width:42px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:var(--text2);flex-shrink:0}",
             "js": "",
             "dependencies": [],
             "project_refs": [
@@ -839,13 +839,13 @@ window.COPIER_COMPONENT_REGISTRY = {
                 "checks": []
             },
             "usage_notes": [
-                "단계색: .gbar에 mid(주의)/low(부족) 클래스",
+                "토너색: .gbar에 k/c/m/y/w 클래스(라이트·다크 모두 대응)",
                 "실데이터는 width % 값만 교체"
             ],
             "known_pitfalls": [],
             "related_components": [],
             "supersedes": null,
-            "revision": 1,
+            "revision": 2,
             "created_at": "2026-07-16",
             "updated_at": "2026-07-16"
         },
@@ -910,7 +910,7 @@ window.COPIER_COMPONENT_REGISTRY = {
             ],
             "status": "active",
             "aliases": [],
-            "html": "<button id='om' class='mbtn'>상세 열기</button><dialog id='dlg' class='gm'><div class='gm-h'><h3>장비 상세</h3><button id='cm' class='gm-x'>X</button></div><div class='gm-b'><p>DWA4 · 현대자동차 · 192.168.0.10</p><p>최근 수집: 2026-07-15 08:50</p></div><div class='gm-f'><button id='cm2' class='mbtn ghost'>닫기</button><button class='mbtn'>편집</button></div></dialog>",
+            "html": "<div style='min-height:260px'><button id='om' class='mbtn'>상세 열기</button></div><dialog id='dlg' class='gm'><div class='gm-h'><h3>장비 상세</h3><button id='cm' class='gm-x'>X</button></div><div class='gm-b'><p>DWA4 · 현대자동차 · 192.168.0.10</p><p>최근 수집: 2026-07-15 08:50</p></div><div class='gm-f'><button id='cm2' class='mbtn ghost'>닫기</button><button class='mbtn'>편집</button></div></dialog>",
             "css": ".mbtn{cursor:pointer;font:inherit;font-weight:650;border-radius:8px;padding:9px 15px;border:none;background:var(--accent);color:#fff} .mbtn.ghost{background:var(--bg2);color:var(--text);border:1px solid var(--border)} dialog.gm{border:1px solid var(--border);border-radius:12px;background:var(--bg2);color:var(--text);padding:0;width:min(92vw,420px)} dialog.gm::backdrop{background:rgba(10,14,22,.5)} .gm-h{display:flex;align-items:center;padding:14px 17px;border-bottom:1px solid var(--border)} .gm-h h3{margin:0;font-size:15px} .gm-x{margin-left:auto;background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px} .gm-b{padding:16px 17px;font-size:13px;color:var(--text2);display:flex;flex-direction:column;gap:6px} .gm-f{padding:13px 17px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}",
             "js": "var d=document.getElementById('dlg');document.getElementById('om').addEventListener('click',function(){d.showModal()});function c(){d.close()}document.getElementById('cm').addEventListener('click',c);document.getElementById('cm2').addEventListener('click',c);d.addEventListener('click',function(e){if(e.target===d)d.close()});",
             "dependencies": [],
@@ -958,7 +958,7 @@ window.COPIER_COMPONENT_REGISTRY = {
             ],
             "status": "active",
             "aliases": [],
-            "html": "<div class='ad' id='ad'><button class='ad-btn' data-adt>⋮</button><div class='ad-menu'><a>반품 처리</a><a>단가 수정</a><a class='danger'>이력 취소</a></div></div>",
+            "html": "<div style='display:flex;justify-content:flex-end;min-height:180px'><div class='ad' id='ad'><button class='ad-btn' data-adt>⋮</button><div class='ad-menu'><a>반품 처리</a><a>단가 수정</a><a class='danger'>이력 취소</a></div></div></div>",
             "css": ".ad{position:relative;display:inline-block} .ad-btn{cursor:pointer;width:32px;height:32px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);border-radius:7px;font-size:16px;line-height:1} .ad-btn:hover{border-color:var(--accent);color:var(--accent)} .ad-menu{position:absolute;top:calc(100% + 5px);right:0;min-width:150px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;box-shadow:0 10px 30px rgba(20,30,60,.18);padding:5px;display:none;z-index:20} .ad.open .ad-menu{display:block} .ad-menu a{display:block;padding:8px 11px;border-radius:6px;font-size:13px;color:var(--text2);cursor:pointer;text-decoration:none} .ad-menu a:hover{background:var(--bg3);color:var(--text)} .ad-menu a.danger{color:var(--danger)}",
             "js": "var ad=document.getElementById('ad');ad.querySelector('[data-adt]').addEventListener('click',function(e){e.stopPropagation();ad.classList.toggle('open')});document.addEventListener('click',function(e){if(!ad.contains(e.target))ad.classList.remove('open')});ad.querySelectorAll('.ad-menu a').forEach(function(a){a.addEventListener('click',function(){ad.classList.remove('open')})});",
             "dependencies": [],
@@ -1056,7 +1056,7 @@ window.COPIER_COMPONENT_REGISTRY = {
             "status": "active",
             "aliases": [],
             "html": "<div class='dr'><input type='date' class='di' value='2026-07-01'><span class='ds'>~</span><input type='date' class='di' value='2026-07-16'></div>",
-            "css": ".dr{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap} .di{background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font:inherit;font-size:13px;outline:none} .di:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)} .ds{color:var(--text3)}",
+            "css": ".dr{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap} .di{background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font:inherit;font-size:13px;outline:none} .di:focus-visible{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)} .ds{color:var(--text3)} html[data-theme='dark'] .di::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.85}",
             "js": "",
             "dependencies": [],
             "project_refs": [
