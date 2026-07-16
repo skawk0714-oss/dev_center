@@ -74,6 +74,9 @@
   .ov{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;background:rgba(10,14,22,.55);backdrop-filter:blur(2px);padding:16px;}
   .ov-panel{background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 18px 50px rgba(0,0,0,.35);width:min(96vw,940px);max-height:92vh;display:flex;flex-direction:column;overflow:hidden;}
   #io .ov-panel{width:min(96vw,560px);}
+  #preview .ov-panel{width:min(94vw,900px);max-height:92vh;}
+  .pv-body{flex:1;min-height:0;overflow:auto;background:var(--bg);}
+  .pv-body iframe{width:100%;border:0;display:block;height:200px;}
   .ed-head{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--border);}
   .ed-head h3{margin:0;font-size:15px;font-weight:700;}
   .ed-head .x{margin-left:auto;appearance:none;background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;border-radius:6px;font-size:16px;line-height:1;}
@@ -177,6 +180,14 @@
  </div>
 </div>
 
+<!-- 확대 미리보기 오버레이 -->
+<div class="ov" id="preview" hidden>
+ <div class="ov-panel">
+  <div class="ed-head"><h3 id="pvTitle">미리보기</h3><button class="btn btn-ghost" type="button" id="pvTheme" style="margin-left:auto;font-size:11.5px;padding:6px 10px;">🌗 <span id="pvThemeLabel">다크</span></button><button class="x" type="button" id="pvClose" aria-label="닫기" style="margin-left:8px;">✕</button></div>
+  <div class="pv-body"><iframe id="pvbig" sandbox="allow-scripts allow-modals"></iframe></div>
+ </div>
+</div>
+
 <div id="toast-host" aria-live="polite"></div>
 
 <script>
@@ -245,16 +256,17 @@
   }
 
   // ── 미리보기 문서 생성(격리) ──
-  function docFor(c,frameId){
+  function docFor(c,frameId,maxH,th){
+    maxH=maxH||600; var t=th||theme();
     var js=String(c.js||"").replace(/<\/script>/gi,"<\\/script>");
-    return "<!doctype html><html data-theme=\""+theme()+"\"><head><meta charset=\"utf-8\">"
+    return "<!doctype html><html data-theme=\""+t+"\"><head><meta charset=\"utf-8\">"
       +"<meta http-equiv=\"Content-Security-Policy\" content=\""+CSP+"\">"
       +"<style>"+TOKENS+"html,body{margin:0}body{padding:16px;background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px}"+String(c.css||"")+"</style></head><body>"
       +String(c.html||"")
       +"<scr"+"ipt>window.onerror=function(m){parent.postMessage({t:'err',id:'"+frameId+"',m:String(m)},'*');return true};"
       +"window.addEventListener('unhandledrejection',function(ev){parent.postMessage({t:'err',id:'"+frameId+"',m:String(ev.reason)},'*')});</scr"+"ipt>"
       +"<scr"+"ipt>try{\n"+js+"\n}catch(e){parent.postMessage({t:'err',id:'"+frameId+"',m:String(e)},'*')}"
-      +"setTimeout(function(){parent.postMessage({t:'h',id:'"+frameId+"',h:Math.min(600,Math.max(70,document.documentElement.scrollHeight))},'*')},60);</scr"+"ipt>"
+      +"setTimeout(function(){parent.postMessage({t:'h',id:'"+frameId+"',h:Math.min("+maxH+",Math.max(70,document.documentElement.scrollHeight))},'*')},60);</scr"+"ipt>"
       +"</body></html>";
   }
   window.addEventListener("message",function(e){
@@ -359,6 +371,7 @@
       var cc=document.createElement("span"); cc.className="chip"; cc.textContent=CATLABEL[c.category]||c.category; head.appendChild(cc);
       if(x.pending){ var pc=document.createElement("span"); pc.className="chip pending"; pc.textContent="정본 변경 제안"; head.appendChild(pc); }
       var acts=document.createElement("div"); acts.className="card-acts";
+      acts.appendChild(mini("확대",function(){ openPreview(c); }));
       acts.appendChild(mini("코드",function(){ var box=card.querySelector(".code-box"); box.hidden=!box.hidden; }));
       if(x.origin==="draft"){
         acts.appendChild(mini("편집",function(){ openEditor(c); }));
@@ -502,6 +515,17 @@
   document.getElementById("themeBtn").addEventListener("click",function(){ root.setAttribute("data-theme", theme()==="dark"?"light":"dark"); syncTheme(); renderCards(); });
   syncTheme();
   function toast(msg,ok){ var h=document.getElementById("toast-host"); var t=document.createElement("div"); t.className="toast"+(ok?"":" err"); t.textContent=msg; h.appendChild(t); setTimeout(function(){t.style.opacity="0";t.style.transition="opacity .3s";setTimeout(function(){t.remove();},300);},2200); }
+
+  /* 확대 미리보기 — 카드보다 크게, 내용 크기에 맞춰(작으면 작게·크면 스크롤) */
+  var preview=document.getElementById("preview"),pvBig=document.getElementById("pvbig"),pvTitle=document.getElementById("pvTitle");
+  var pvCur=null,pvTheme=null;
+  function renderPreview(){ pvBig.style.height="200px"; pvBig.srcdoc=docFor(pvCur,"pvbig",1600,pvTheme); document.getElementById("pvThemeLabel").textContent=(pvTheme==="dark")?"라이트":"다크"; }
+  function openPreview(c){ pvCur=c; pvTheme=theme(); pvTitle.textContent=c.title||"미리보기"; renderPreview(); preview.hidden=false; }
+  function closePreview(){ preview.hidden=true; pvBig.srcdoc=""; }
+  document.getElementById("pvTheme").addEventListener("click",function(){ pvTheme=(pvTheme==="dark")?"light":"dark"; renderPreview(); });
+  document.getElementById("pvClose").addEventListener("click",closePreview);
+  preview.addEventListener("click",function(e){ if(e.target===preview) closePreview(); });
+  window.addEventListener("keydown",function(e){ if(e.key==="Escape"&&!preview.hidden) closePreview(); });
 
   boot();
 })();
