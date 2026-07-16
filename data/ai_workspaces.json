@@ -233,5 +233,35 @@
       "php -r \"json_decode(file_get_contents('data/instruction_reviews.json')); echo json_last_error();\"",
       "git diff --name-only"
     ]
+  },
+  {
+    "id": "ws-component-library",
+    "label": "컴포넌트 라이브러리 AI",
+    "menu": "component_library",
+    "ai_tools": ["codex", "claude", "vscode-codex", "vscode-claude"],
+    "default_project_id": "260614-dev-center",
+    "allowed_files": [
+      "data/component_library/registry.json",
+      "component_playground/index.html",
+      "component_playground/registry.bundle.js",
+      "docs/COMPONENT_LIBRARY.md"
+    ],
+    "do_not_touch": [
+      "data/ai_workspaces.json",
+      "AGENTS.md",
+      "data/projects.json",
+      "data/features.json",
+      "data/lab_experiments.json",
+      "data/prompts.json",
+      "project_manager.php",
+      "knowledge.php",
+      "lab.php",
+      "prompts.php",
+      "settings.php"
+    ],
+    "startup_prompt_template": "templates/ai_roles/knowledge.md",
+    "validation_commands": [
+      "php -r \"json_decode(file_get_contents('data/component_library/registry.json')); echo json_last_error();\""
+    ]
   }
 ]
