@@ -42,6 +42,7 @@
 | ws-resources | data/resources.json, resources.php, assets/css/dev_center.css |
 | ws-executables | data/executables.json, executables.php, assets/css/dev_center.css |
 | ws-instruction-review | docs/instruction_reviews/*.md, data/instruction_reviews.json |
+| ws-component-library | data/component_library/registry.json, component_playground/index.html, component_playground/registry.bundle.js, docs/COMPONENT_LIBRARY.md |
 
 **공통 do_not_touch (전 워크스페이스):**
 - `data/ai_workspaces.json` — 절대 수정 금지
