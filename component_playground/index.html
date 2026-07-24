@@ -43,6 +43,8 @@
   .tab.active .n{background:var(--accent-soft);color:var(--accent);}
 
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin-top:18px;}
+  .subgroup-head{grid-column:1/-1;display:flex;align-items:center;gap:8px;margin:12px 2px 0;font-size:12px;font-weight:800;color:var(--text2);letter-spacing:.02em;padding-bottom:6px;border-bottom:1px solid var(--border);}
+  .subgroup-head .sn{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--text3);background:var(--bg3);border-radius:100px;padding:1px 7px;}
   .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 8px rgba(20,30,60,.06);}
   .card.draft{border-color:color-mix(in srgb,var(--warning) 45%,var(--border));}
   .card-head{display:flex;align-items:center;gap:7px;padding:11px 13px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
@@ -362,7 +364,15 @@
       return x.c.category===activeTab;
     });
     if(!items.length){ var e=document.createElement("div"); e.className="empty-hint"; e.textContent="여기에 표시할 컴포넌트가 없습니다. [＋ 새 초안]으로 코드를 붙여넣어 추가하세요."; grid.appendChild(e); return; }
-    items.forEach(function(x){
+    function subGroupOf(c){
+      var id=c.id||"";
+      if(/^proto-oidcheck/.test(id)) return "프로토타입 · OID검증";
+      if(/^proto-company/.test(id)) return "프로토타입 · 거래처";
+      if(/^proto-/.test(id)) return "프로토타입 · 기타";
+      if(/^menu-/.test(id)) return "메뉴 레이아웃";
+      return "공용 컴포넌트";
+    }
+    function renderOne(x){
       var c=x.c, fid="pv-"+x.origin+"-"+c.id;
       var card=document.createElement("div"); card.className="card"+(x.origin==="draft"?" draft":"");
       // 헤드
@@ -397,6 +407,17 @@
       card.appendChild(box);
       grid.appendChild(card);
       fr.srcdoc=docFor(c,fid);
+    }
+    // 하위그룹 헤더로 묶어 표시 (id 규칙에서 도출). 그룹이 1개뿐이면 헤더 생략.
+    var SUBGROUP_ORDER=["공용 컴포넌트","메뉴 레이아웃","프로토타입 · 거래처","프로토타입 · OID검증","프로토타입 · 기타"];
+    var byGroup={};
+    items.forEach(function(x){ var g=subGroupOf(x.c); (byGroup[g]=byGroup[g]||[]).push(x); });
+    var present=SUBGROUP_ORDER.filter(function(g){return byGroup[g];});
+    Object.keys(byGroup).forEach(function(g){ if(present.indexOf(g)<0) present.push(g); });
+    var multi=present.length>1;
+    present.forEach(function(g){
+      if(multi){ var h=document.createElement("div"); h.className="subgroup-head"; h.innerHTML='<span>'+g+'</span><span class="sn">'+byGroup[g].length+'</span>'; grid.appendChild(h); }
+      byGroup[g].forEach(renderOne);
     });
     wireCopy(grid);
   }
