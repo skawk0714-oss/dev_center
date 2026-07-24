@@ -1294,6 +1294,118 @@
             ],
             "created_at": "2026-07-24",
             "updated_at": "2026-07-24"
+        },
+        {
+            "schema_version": 1,
+            "category": "layout",
+            "status": "prototype",
+            "aliases": [],
+            "js": "",
+            "dependencies": [],
+            "project_refs": [
+                "companies.php",
+                "docs/TASK_COMPANY_DEPT_GROUPING_20260724.md"
+            ],
+            "source": {
+                "type": "project",
+                "project_path": "companies.php",
+                "url": null,
+                "author": "CopierRMS",
+                "license": "project-internal",
+                "attribution": "거래처 부서(location) 분류 표시 프로토타입",
+                "adaptation_notes": "부서=devices.location. 확정 시 스키마 변경 없이 상세 드로어 그룹핑만"
+            },
+            "verified": false,
+            "verification": {
+                "verified_at": null,
+                "verified_by": [],
+                "checks": []
+            },
+            "known_pitfalls": [
+                "location 자유입력이라 오타로 그룹 갈릴 수 있음(정규화 별도)"
+            ],
+            "related_components": [
+                "proto-company-dept-headers",
+                "proto-company-dept-chips"
+            ],
+            "supersedes": null,
+            "revision": 1,
+            "created_at": "2026-07-24",
+            "updated_at": "2026-07-24",
+            "id": "proto-company-dept-headers",
+            "title": "[프로토·거래처 A] 부서 헤더 그룹 (PC+모바일)",
+            "summary": "거래처 상세에서 장비를 부서(location)별 소제목으로 묶어 표시. PC=항상 펼침, 모바일=부서 접기.",
+            "tags": [
+                "prototype",
+                "company",
+                "거래처",
+                "부서",
+                "group",
+                "pc",
+                "mobile"
+            ],
+            "html": "<div class=\"cd-frameset\">\n  <div class=\"cd-col\">\n    <div class=\"cd-lbl\"><span class=\"pill\">PC</span> 거래처 상세 · 부서 헤더 그룹</div>\n    <div class=\"cd-panel cdA\">\n      <div class=\"cdA-head\">영주시청 <small>· 장비 4대 · 부서 3</small></div>\n      <div class=\"cdA-grp\">총무과 <span>2</span></div>\n      <div class=\"cd-dev\"><span class=\"cd-dot ok\"></span><span class=\"cd-m\">D450</span> 컬러<span class=\"cd-ip\">192.168.0.100</span></div>\n      <div class=\"cd-dev\"><span class=\"cd-dot ok\"></span><span class=\"cd-m\">CM5010</span> 컬러<span class=\"cd-ip\">192.168.0.101</span></div>\n      <div class=\"cdA-grp\">회계과 <span>1</span></div>\n      <div class=\"cd-dev\"><span class=\"cd-dot warn\"></span><span class=\"cd-m\">CM2077</span> 컬러<span class=\"cd-warn\">카운터 누락</span></div>\n      <div class=\"cdA-grp\">부서 미지정 <span>1</span></div>\n      <div class=\"cd-dev\"><span class=\"cd-dot ok\"></span><span class=\"cd-m\">N501</span> 흑백<span class=\"cd-ip\">—</span></div>\n    </div>\n  </div>\n  <div class=\"cd-col\">\n    <div class=\"cd-lbl\"><span class=\"pill\">모바일</span> 부서 헤더 + 접기</div>\n    <div class=\"cd-phone\">\n      <div class=\"cd-panel cdA\">\n        <div class=\"cdA-head\">영주시청 <small>· 4대</small></div>\n        <div class=\"cdA-grp\" onclick=\"this.parentNode.querySelectorAll('.cdA-g1').forEach(e=>e.style.display=e.style.display==='none'?'':'none')\">총무과 <span>2</span> <i style=\"margin-left:auto\">▾</i></div>\n        <div class=\"cd-dev cdA-g1\"><span class=\"cd-dot ok\"></span><span class=\"cd-m\">D450</span> 컬러<span class=\"cd-ip\">.100</span></div>\n        <div class=\"cd-dev cdA-g1\"><span class=\"cd-dot ok\"></span><span class=\"cd-m\">CM5010</span> 컬러<span class=\"cd-ip\">.101</span></div>\n        <div class=\"cdA-grp\">회계과 <span>1</span></div>\n        <div class=\"cd-dev\"><span class=\"cd-dot warn\"></span><span class=\"cd-m\">CM2077</span><span class=\"cd-warn\">카운터 누락</span></div>\n      </div>\n    </div>\n  </div>\n</div>",
+            "css": ".cd-frameset{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--text)}\n.cd-col{flex:1;min-width:280px}\n.cd-lbl{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;display:flex;align-items:center;gap:6px}\n.cd-lbl .pill{background:var(--accent-soft,rgba(59,130,246,.12));color:var(--accent);border-radius:99px;padding:1px 8px;font-size:10px}\n.cd-phone{max-width:340px;border:1px solid var(--border);border-radius:18px;padding:10px;background:var(--bg)}\n.cd-panel{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}\n.cd-dev{display:flex;align-items:center;gap:8px;padding:9px 12px;border-top:1px solid var(--border)}\n.cd-dev:first-child{border-top:0}\n.cd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}\n.cd-dot.ok{background:var(--success,#3fb950)} .cd-dot.warn{background:var(--warning,#e6a23c)}\n.cd-m{font-weight:600} .cd-ip{font-family:var(--font-mono,monospace);font-size:11px;color:var(--text3);margin-left:auto}\n.cd-warn{font-size:10px;color:var(--warning,#e6a23c);font-weight:700;background:rgba(230,162,60,.15);border-radius:99px;padding:1px 7px;margin-left:auto}.cdA-head{padding:12px 14px;font-weight:700;font-size:15px;border-bottom:1px solid var(--border)}\n.cdA-head small{font-weight:400;color:var(--text3);font-size:12px}\n.cdA-grp{display:flex;align-items:center;gap:7px;padding:8px 14px;background:var(--bg3);font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}\n.cdA-grp span{background:var(--bg);border:1px solid var(--border);border-radius:99px;padding:0 7px;font-family:var(--font-mono,monospace)}\n.cdA-grp[onclick]{cursor:pointer}",
+            "usage_notes": [
+                "부서가 적을 때 한눈에",
+                "미지정 그룹 별도"
+            ]
+        },
+        {
+            "schema_version": 1,
+            "category": "layout",
+            "status": "prototype",
+            "aliases": [],
+            "js": "var CDB={all:[['ok','D450','총무과','.100',0],['ok','CM5010','총무과','.101',0],['warn','CM2077','회계과','',1],['ok','N501','미지정','—',0]],\nchong:[['ok','D450','총무과','.100',0],['ok','CM5010','총무과','.101',0]],\nhoe:[['warn','CM2077','회계과','',1]],none:[['ok','N501','미지정','—',0]]};\nfunction cdbRender(k){var h='';CDB[k].forEach(function(r){h+='<div class=\"cd-dev\"><span class=\"cd-dot '+r[0]+'\"></span><span class=\"cd-m\">'+r[1]+'</span> '+r[2]+(r[4]?'<span class=\"cd-warn\">카운터 누락</span>':'<span class=\"cd-ip\">'+r[3]+'</span>')+'</div>';});document.getElementById('cdbList').innerHTML=h;}\nfunction cdbPick(b,k){[].forEach.call(b.parentNode.children,function(x){x.classList.remove('active')});b.classList.add('active');cdbRender(k);}\ncdbRender('all');",
+            "dependencies": [],
+            "project_refs": [
+                "companies.php",
+                "docs/TASK_COMPANY_DEPT_GROUPING_20260724.md"
+            ],
+            "source": {
+                "type": "project",
+                "project_path": "companies.php",
+                "url": null,
+                "author": "CopierRMS",
+                "license": "project-internal",
+                "attribution": "거래처 부서(location) 분류 표시 프로토타입",
+                "adaptation_notes": "부서=devices.location. 확정 시 스키마 변경 없이 상세 드로어 그룹핑만"
+            },
+            "verified": false,
+            "verification": {
+                "verified_at": null,
+                "verified_by": [],
+                "checks": []
+            },
+            "known_pitfalls": [
+                "location 자유입력이라 오타로 그룹 갈릴 수 있음(정규화 별도)"
+            ],
+            "related_components": [
+                "proto-company-dept-headers",
+                "proto-company-dept-chips"
+            ],
+            "supersedes": null,
+            "revision": 1,
+            "created_at": "2026-07-24",
+            "updated_at": "2026-07-24",
+            "id": "proto-company-dept-chips",
+            "title": "[프로토·거래처 B] 부서 칩 필터 (PC+모바일)",
+            "summary": "상단 부서 칩으로 필터. 부서가 많거나 장비가 많을 때 유리. PC/모바일 동일 패턴, 모바일은 칩 가로스크롤.",
+            "tags": [
+                "prototype",
+                "company",
+                "거래처",
+                "부서",
+                "chip",
+                "filter",
+                "pc",
+                "mobile"
+            ],
+            "html": "<div class=\"cd-frameset\">\n  <div class=\"cd-col\">\n    <div class=\"cd-lbl\"><span class=\"pill\">PC</span> 거래처 상세 · 부서 칩 필터</div>\n    <div class=\"cd-panel cdB\">\n      <div class=\"cdB-head\">영주시청 <small>· 장비 4대</small></div>\n      <div class=\"cdB-chips\">\n        <button class=\"cdB-chip active\" onclick=\"cdbPick(this,'all')\">전체 4</button>\n        <button class=\"cdB-chip\" onclick=\"cdbPick(this,'chong')\">총무과 2</button>\n        <button class=\"cdB-chip\" onclick=\"cdbPick(this,'hoe')\">회계과 1</button>\n        <button class=\"cdB-chip\" onclick=\"cdbPick(this,'none')\">미지정 1</button>\n      </div>\n      <div class=\"cdB-list\" id=\"cdbList\"></div>\n    </div>\n  </div>\n  <div class=\"cd-col\">\n    <div class=\"cd-lbl\"><span class=\"pill\">모바일</span> 상단 칩 스크롤 + 목록</div>\n    <div class=\"cd-phone\">\n      <div class=\"cd-panel cdB\">\n        <div class=\"cdB-head\">영주시청 <small>· 4대</small></div>\n        <div class=\"cdB-chips cdB-mchips\">\n          <button class=\"cdB-chip active\">전체 4</button><button class=\"cdB-chip\">총무과 2</button><button class=\"cdB-chip\">회계과 1</button><button class=\"cdB-chip\">미지정 1</button>\n        </div>\n        <div class=\"cd-dev\"><span class=\"cd-dot ok\"></span><span class=\"cd-m\">D450</span> 총무과<span class=\"cd-ip\">.100</span></div>\n        <div class=\"cd-dev\"><span class=\"cd-dot ok\"></span><span class=\"cd-m\">CM5010</span> 총무과<span class=\"cd-ip\">.101</span></div>\n        <div class=\"cd-dev\"><span class=\"cd-dot warn\"></span><span class=\"cd-m\">CM2077</span> 회계과<span class=\"cd-warn\">카운터 누락</span></div>\n        <div class=\"cd-dev\"><span class=\"cd-dot ok\"></span><span class=\"cd-m\">N501</span> 미지정<span class=\"cd-ip\">—</span></div>\n      </div>\n    </div>\n  </div>\n</div>",
+            "css": ".cd-frameset{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--text)}\n.cd-col{flex:1;min-width:280px}\n.cd-lbl{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;display:flex;align-items:center;gap:6px}\n.cd-lbl .pill{background:var(--accent-soft,rgba(59,130,246,.12));color:var(--accent);border-radius:99px;padding:1px 8px;font-size:10px}\n.cd-phone{max-width:340px;border:1px solid var(--border);border-radius:18px;padding:10px;background:var(--bg)}\n.cd-panel{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}\n.cd-dev{display:flex;align-items:center;gap:8px;padding:9px 12px;border-top:1px solid var(--border)}\n.cd-dev:first-child{border-top:0}\n.cd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}\n.cd-dot.ok{background:var(--success,#3fb950)} .cd-dot.warn{background:var(--warning,#e6a23c)}\n.cd-m{font-weight:600} .cd-ip{font-family:var(--font-mono,monospace);font-size:11px;color:var(--text3);margin-left:auto}\n.cd-warn{font-size:10px;color:var(--warning,#e6a23c);font-weight:700;background:rgba(230,162,60,.15);border-radius:99px;padding:1px 7px;margin-left:auto}.cdB-head{padding:12px 14px;font-weight:700;font-size:15px}\n.cdB-head small{font-weight:400;color:var(--text3);font-size:12px}\n.cdB-chips{display:flex;gap:6px;padding:0 12px 10px;flex-wrap:wrap}\n.cdB-mchips{flex-wrap:nowrap;overflow-x:auto}\n.cdB-chip{white-space:nowrap;background:var(--bg);border:1px solid var(--border);border-radius:99px;padding:5px 12px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer}\n.cdB-chip.active{background:var(--accent);border-color:var(--accent);color:#fff}\n.cdB-list .cd-dev:first-child{border-top:1px solid var(--border)}",
+            "usage_notes": [
+                "부서 많을 때 목록이 짧게 유지됨"
+            ]
         }
     ]
 }
