@@ -1135,6 +1135,166 @@ window.COPIER_COMPONENT_REGISTRY = {
             "revision": 1,
             "created_at": "2026-07-16",
             "updated_at": "2026-07-16"
+        },
+        {
+            "schema_version": 1,
+            "category": "layout",
+            "status": "prototype",
+            "aliases": [],
+            "js": "var PMD={d470:{n:'D470',s:'(주)영탁건설 · 본사',rows:[['총 카운터','57,501','...43.10.2.1.4.1.1',0],['토너 K','48%','...9.1.4',0],['토너 C','27%','...9.1.1',0],['토너 M','37%','...9.1.2',0],['토너 Y','29%','...9.1.3',0]]},\ncm:{n:'CM2077',s:'영주시청 · 회계과',rows:[['총 카운터','—','매핑 없음',1],['토너 K','65%','...9.1.4',0],['토너 C','65%','...9.1.1',0],['토너 M','70%','...9.1.2',0],['토너 Y','58%','...9.1.3',0]]},\nd450:{n:'D450',s:'영주시청 · 총무과',rows:[['총 카운터','35,613','...43.10.2.1.4.1.1',0],['토너 K','48%','...9.1.4',0],['토너 C','27%','...9.1.1',0],['토너 M','37%','...9.1.2',0],['토너 Y','29%','...9.1.3',0]]}};\nfunction pmdRender(k){var d=PMD[k];var h='<div class=\"pmd-h\"><b>'+d.n+'</b></div><div class=\"pmd-sub\">'+d.s+' · 최근 수집 기준</div>';\nh+='<table class=\"pmd-tbl\"><tr><th>지표</th><th>현재 해석값</th><th>OID</th><th></th></tr>';\nd.rows.forEach(function(r){h+='<tr><td class=\"pmd-metric\">'+r[0]+'</td><td class=\"'+(r[3]?'pmd-miss':'pmd-val')+'\">'+r[1]+'</td><td class=\"pmd-oid\">'+r[2]+'</td><td style=\"text-align:right\">'+(r[3]?'<button class=\"pmd-fix\">매핑 지정</button>':'<span class=\"pmd-ok\">확정됨</span>')+'</td></tr>';});\nh+='</table>';document.getElementById('pmdMain').innerHTML=h;}\nfunction pmdPick(b){[].forEach.call(document.querySelectorAll('.pmd-dev'),function(x){x.classList.remove('active')});b.classList.add('active');pmdRender(b.dataset.k);}\npmdRender('cm');",
+            "dependencies": [],
+            "project_refs": [
+                "oid_review.php",
+                "docs/TASK_OID_REVIEW_PER_DEVICE_20260724.md"
+            ],
+            "source": {
+                "type": "project",
+                "project_path": "oid_review.php",
+                "url": null,
+                "author": "CopierRMS",
+                "license": "project-internal",
+                "attribution": "oid_review 거래처/장비 중심 재구성 프로토타입",
+                "adaptation_notes": "선택용 목업. 확정 시 실제 oid_review 백엔드(confirm_map·해석) 재사용"
+            },
+            "verified": false,
+            "verification": {
+                "verified_at": null,
+                "verified_by": [],
+                "checks": []
+            },
+            "known_pitfalls": [],
+            "related_components": [
+                "proto-oidcheck-master-detail",
+                "proto-oidcheck-card-grid",
+                "proto-oidcheck-wizard"
+            ],
+            "supersedes": null,
+            "revision": 1,
+            "id": "proto-oidcheck-master-detail",
+            "title": "[프로토] OID검증 A · 마스터-디테일",
+            "summary": "좌측 거래처>장비 리스트, 우측 현재 해석값 대조표+매핑수정. 데스크톱 관리자 친화.",
+            "tags": [
+                "prototype",
+                "oid",
+                "master-detail",
+                "프로토타입",
+                "거래처"
+            ],
+            "html": "<div class=\"pmd\">\n  <div class=\"pmd-side\">\n    <div class=\"pmd-search\"><i class=\"bi bi-search\"></i><input placeholder=\"거래처·장비 검색…\"></div>\n    <div class=\"pmd-group\">(주)영탁건설</div>\n    <button class=\"pmd-dev\" data-k=\"d470\" onclick=\"pmdPick(this)\"><span class=\"pmd-dot ok\"></span>D470 <small>컬러 · 본사</small></button>\n    <div class=\"pmd-group\">영주시청</div>\n    <button class=\"pmd-dev active\" data-k=\"cm\" onclick=\"pmdPick(this)\"><span class=\"pmd-dot warn\"></span>CM2077 <small>컬러 · 회계과</small><span class=\"pmd-tag\">카운터 누락</span></button>\n    <button class=\"pmd-dev\" data-k=\"d450\" onclick=\"pmdPick(this)\"><span class=\"pmd-dot ok\"></span>D450 <small>컬러 · 총무과</small></button>\n  </div>\n  <div class=\"pmd-main\" id=\"pmdMain\"></div>\n</div>",
+            "css": ".pmd{display:grid;grid-template-columns:260px 1fr;gap:14px;font-size:13px;color:var(--text);min-height:360px}\n.pmd-side{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:10px;overflow:auto}\n.pmd-search{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 10px;margin-bottom:10px;color:var(--text3)}\n.pmd-search input{border:0;background:transparent;color:var(--text);outline:none;width:100%}\n.pmd-group{font-size:11px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin:10px 4px 4px}\n.pmd-dev{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:8px;padding:8px 10px;color:var(--text);cursor:pointer}\n.pmd-dev small{color:var(--text3);font-weight:400}\n.pmd-dev:hover{background:var(--bg3)}\n.pmd-dev.active{background:var(--accent-soft,rgba(59,130,246,.12));border-color:var(--accent)}\n.pmd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}\n.pmd-dot.ok{background:var(--success,#3fb950)} .pmd-dot.warn{background:var(--warning,#e6a23c)}\n.pmd-tag{margin-left:auto;font-size:10px;background:rgba(230,162,60,.15);color:var(--warning,#e6a23c);border-radius:99px;padding:1px 7px;font-weight:700}\n.pmd-main{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;overflow:auto}\n.pmd-h{display:flex;align-items:center;gap:10px;margin-bottom:4px}\n.pmd-h b{font-size:16px}\n.pmd-sub{color:var(--text3);font-size:12px;margin-bottom:16px}\n.pmd-tbl{width:100%;border-collapse:collapse}\n.pmd-tbl th{text-align:left;font-size:11px;color:var(--text3);text-transform:uppercase;padding:8px 6px;border-bottom:1px solid var(--border)}\n.pmd-tbl td{padding:9px 6px;border-bottom:1px solid var(--border)}\n.pmd-metric{font-weight:600}\n.pmd-val{font-family:var(--font-mono,monospace);font-weight:700}\n.pmd-oid{font-family:var(--font-mono,monospace);font-size:11px;color:var(--text3)}\n.pmd-miss{color:var(--warning,#e6a23c);font-weight:600}\n.pmd-fix{background:var(--accent);color:#fff;border:0;border-radius:7px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer}\n.pmd-ok{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:5px 10px;font-size:12px;color:var(--success,#3fb950);font-weight:600}",
+            "usage_notes": [
+                "넓은 화면에서 장비 전환이 빠름",
+                "카운터 누락 등 상태를 리스트에서 바로 표시"
+            ],
+            "created_at": "2026-07-24",
+            "updated_at": "2026-07-24"
+        },
+        {
+            "schema_version": 1,
+            "category": "layout",
+            "status": "prototype",
+            "aliases": [],
+            "js": "var PCG={d450:['D450 · 총무과',[['총 카운터','35,613',0],['토너 K','48%',0],['토너 C','27%',0],['토너 M','37%',0],['토너 Y','29%',0]]],\ncm:['CM2077 · 회계과',[['총 카운터','매핑 없음',1],['토너 K','65%',0],['토너 C','65%',0],['토너 M','70%',0],['토너 Y','58%',0]]],\nn501:['N501 · 민원실',[['총 카운터','12,088',0],['토너 K','72%',0]]]};\nfunction pcgOpen(k){var d=PCG[k];var h='<button class=\"pcg-close\" onclick=\"pcgClose()\">×</button><div style=\"font-weight:700;font-size:15px;margin-bottom:10px\">'+d[0]+'</div>';\nd[1].forEach(function(r){h+='<div class=\"pcg-srow\"><span>'+r[0]+'</span>'+(r[2]?'<span><b style=\"color:var(--warning,#e6a23c)\">'+r[1]+'</b> <button class=\"pcg-fix\">매핑 지정</button></span>':'<b>'+r[1]+'</b>')+'</div>';});\ndocument.getElementById('pcgSheetIn').innerHTML=h;document.getElementById('pcgSheet').classList.add('show');}\nfunction pcgClose(){document.getElementById('pcgSheet').classList.remove('show');}",
+            "dependencies": [],
+            "project_refs": [
+                "oid_review.php",
+                "docs/TASK_OID_REVIEW_PER_DEVICE_20260724.md"
+            ],
+            "source": {
+                "type": "project",
+                "project_path": "oid_review.php",
+                "url": null,
+                "author": "CopierRMS",
+                "license": "project-internal",
+                "attribution": "oid_review 거래처/장비 중심 재구성 프로토타입",
+                "adaptation_notes": "선택용 목업. 확정 시 실제 oid_review 백엔드(confirm_map·해석) 재사용"
+            },
+            "verified": false,
+            "verification": {
+                "verified_at": null,
+                "verified_by": [],
+                "checks": []
+            },
+            "known_pitfalls": [],
+            "related_components": [
+                "proto-oidcheck-master-detail",
+                "proto-oidcheck-card-grid",
+                "proto-oidcheck-wizard"
+            ],
+            "supersedes": null,
+            "revision": 1,
+            "id": "proto-oidcheck-card-grid",
+            "title": "[프로토] OID검증 B · 카드 그리드+상세시트",
+            "summary": "거래처 선택 후 장비 카드(미니 토너게이지+상태배지) 그리드, 카드 탭 시 하단 시트 상세+매핑수정. 모바일 친화.",
+            "tags": [
+                "prototype",
+                "oid",
+                "card",
+                "bottom-sheet",
+                "프로토타입",
+                "모바일"
+            ],
+            "html": "<div class=\"pcg\">\n  <div class=\"pcg-top\"><div class=\"pcg-search\"><i class=\"bi bi-search\"></i><input value=\"영주시청\" readonly></div><span class=\"pcg-count\">장비 3대</span></div>\n  <div class=\"pcg-grid\">\n    <button class=\"pcg-card\" onclick=\"pcgOpen('d450')\"><div class=\"pcg-cn\">D450 <span class=\"pcg-badge ok\">정상</span></div><div class=\"pcg-loc\">총무과 · 컬러</div><div class=\"pcg-g\"><i style=\"--w:48%;--c:#5b6270\"></i><i style=\"--w:27%;--c:#3aa0d1\"></i><i style=\"--w:37%;--c:#d13a8a\"></i><i style=\"--w:29%;--c:#d1b83a\"></i></div><div class=\"pcg-cnt\">카운터 35,613</div></button>\n    <button class=\"pcg-card warn\" onclick=\"pcgOpen('cm')\"><div class=\"pcg-cn\">CM2077 <span class=\"pcg-badge warn\">카운터 누락</span></div><div class=\"pcg-loc\">회계과 · 컬러</div><div class=\"pcg-g\"><i style=\"--w:65%;--c:#5b6270\"></i><i style=\"--w:65%;--c:#3aa0d1\"></i><i style=\"--w:70%;--c:#d13a8a\"></i><i style=\"--w:58%;--c:#d1b83a\"></i></div><div class=\"pcg-cnt miss\">카운터 —</div></button>\n    <button class=\"pcg-card\" onclick=\"pcgOpen('n501')\"><div class=\"pcg-cn\">N501 <span class=\"pcg-badge ok\">정상</span></div><div class=\"pcg-loc\">민원실 · 흑백</div><div class=\"pcg-g\"><i style=\"--w:72%;--c:#5b6270\"></i></div><div class=\"pcg-cnt\">카운터 12,088</div></button>\n  </div>\n  <div class=\"pcg-sheet\" id=\"pcgSheet\"><div class=\"pcg-sheet-in\" id=\"pcgSheetIn\"></div></div>\n</div>",
+            "css": ".pcg{font-size:13px;color:var(--text);position:relative;min-height:360px}\n.pcg-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}\n.pcg-search{display:flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 11px;flex:1;color:var(--text3)}\n.pcg-search input{border:0;background:transparent;color:var(--text);outline:none;width:100%}\n.pcg-count{font-size:12px;color:var(--text3)}\n.pcg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}\n.pcg-card{text-align:left;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:13px 14px;cursor:pointer;color:var(--text)}\n.pcg-card.warn{border-left:3px solid var(--warning,#e6a23c)}\n.pcg-card:hover{border-color:var(--accent)}\n.pcg-cn{font-weight:700;font-size:14px;display:flex;align-items:center;gap:7px}\n.pcg-loc{color:var(--text3);font-size:12px;margin:2px 0 10px}\n.pcg-badge{font-size:10px;border-radius:99px;padding:1px 7px;font-weight:700}\n.pcg-badge.ok{background:rgba(63,185,80,.15);color:var(--success,#3fb950)}\n.pcg-badge.warn{background:rgba(230,162,60,.15);color:var(--warning,#e6a23c)}\n.pcg-g{display:flex;gap:4px;margin-bottom:8px}\n.pcg-g i{height:6px;flex:1;border-radius:99px;background:linear-gradient(90deg,var(--c) var(--w),var(--bg3) var(--w))}\n.pcg-cnt{font-family:var(--font-mono,monospace);font-size:12px;color:var(--text2)}\n.pcg-cnt.miss{color:var(--warning,#e6a23c);font-weight:700}\n.pcg-sheet{position:absolute;left:0;right:0;bottom:0;background:var(--bg2);border:1px solid var(--border);border-radius:14px 14px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.18);transform:translateY(110%);transition:transform .25s;padding:16px 18px}\n.pcg-sheet.show{transform:translateY(0)}\n.pcg-srow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}\n.pcg-srow b{font-family:var(--font-mono,monospace)}\n.pcg-fix{background:var(--accent);color:#fff;border:0;border-radius:7px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer}\n.pcg-close{float:right;background:transparent;border:0;color:var(--text3);cursor:pointer;font-size:18px}",
+            "usage_notes": [
+                "현장/폰에서 한눈에 상태 파악",
+                "하단 시트로 상세·수정"
+            ],
+            "created_at": "2026-07-24",
+            "updated_at": "2026-07-24"
+        },
+        {
+            "schema_version": 1,
+            "category": "layout",
+            "status": "prototype",
+            "aliases": [],
+            "js": "function pwzDevs(){document.getElementById('pwzBody').innerHTML=\n'<div class=\"pwz-hint\">영주시청 — 검증할 장비를 고르세요</div>'+\n'<button class=\"pwz-pick\" onclick=\"pwzCheck(0)\"><span class=\"pwz-dot\" style=\"background:var(--success,#3fb950)\"></span>D450<small>총무과 · 정상</small></button>'+\n'<button class=\"pwz-pick\" onclick=\"pwzCheck(1)\"><span class=\"pwz-dot\" style=\"background:var(--warning,#e6a23c)\"></span>CM2077<small>회계과 · 카운터 누락</small></button>';}\nfunction pwzCheck(bad){var rows=bad?[['총 카운터','매핑 없음',1],['토너 K','65%',0],['토너 C','65%',0],['토너 M','70%',0],['토너 Y','58%',0]]:[['총 카운터','35,613',0],['토너 K','48%',0],['토너 C','27%',0]];\nvar h='<div class=\"pwz-hint\">현장 사진과 아래 값을 대조하세요. 다르면 [매핑 지정]으로 고칩니다.</div>';\nrows.forEach(function(r){h+='<div class=\"pwz-row\"><span>'+r[0]+'</span>'+(r[2]?'<span><b style=\"color:var(--warning,#e6a23c)\">'+r[1]+'</b> <button class=\"pwz-fix\">매핑 지정</button></span>':'<b>'+r[1]+'</b>')+'</div>';});\nh+='<button class=\"pwz-back\" onclick=\"pwzDevs()\">← 장비 다시 선택</button>';\ndocument.getElementById('pwzBody').innerHTML=h;}\npwzDevs();",
+            "dependencies": [],
+            "project_refs": [
+                "oid_review.php",
+                "docs/TASK_OID_REVIEW_PER_DEVICE_20260724.md"
+            ],
+            "source": {
+                "type": "project",
+                "project_path": "oid_review.php",
+                "url": null,
+                "author": "CopierRMS",
+                "license": "project-internal",
+                "attribution": "oid_review 거래처/장비 중심 재구성 프로토타입",
+                "adaptation_notes": "선택용 목업. 확정 시 실제 oid_review 백엔드(confirm_map·해석) 재사용"
+            },
+            "verified": false,
+            "verification": {
+                "verified_at": null,
+                "verified_by": [],
+                "checks": []
+            },
+            "known_pitfalls": [],
+            "related_components": [
+                "proto-oidcheck-master-detail",
+                "proto-oidcheck-card-grid",
+                "proto-oidcheck-wizard"
+            ],
+            "supersedes": null,
+            "revision": 1,
+            "id": "proto-oidcheck-wizard",
+            "title": "[프로토] OID검증 C · 단계별 위저드",
+            "summary": "거래처→장비→확인·수정 3단계. 한 번에 하나씩, 사진 대조 안내 포함. 초보/현장 친화.",
+            "tags": [
+                "prototype",
+                "oid",
+                "wizard",
+                "step",
+                "프로토타입"
+            ],
+            "html": "<div class=\"pwz\">\n  <div class=\"pwz-steps\"><span class=\"pwz-s done\">1 거래처</span><span class=\"pwz-s active\">2 장비</span><span class=\"pwz-s\">3 확인·수정</span></div>\n  <div class=\"pwz-body\" id=\"pwzBody\"></div>\n</div>",
+            "css": ".pwz{font-size:13px;color:var(--text);max-width:560px;margin:0 auto}\n.pwz-steps{display:flex;gap:8px;margin-bottom:16px}\n.pwz-s{flex:1;text-align:center;font-size:12px;font-weight:700;color:var(--text3);background:var(--bg2);border:1px solid var(--border);border-radius:99px;padding:8px 6px}\n.pwz-s.done{color:var(--success,#3fb950);border-color:var(--success,#3fb950)}\n.pwz-s.active{color:#fff;background:var(--accent);border-color:var(--accent)}\n.pwz-body{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;min-height:280px}\n.pwz-pick{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;color:var(--text);cursor:pointer;font-size:14px}\n.pwz-pick:hover{border-color:var(--accent)}\n.pwz-pick .pwz-dot{width:9px;height:9px;border-radius:50%}\n.pwz-pick small{color:var(--text3);margin-left:auto}\n.pwz-row{display:flex;justify-content:space-between;align-items:center;padding:11px 2px;border-bottom:1px solid var(--border)}\n.pwz-row b{font-family:var(--font-mono,monospace);font-size:14px}\n.pwz-fix{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:7px 14px;font-weight:700;cursor:pointer}\n.pwz-back{background:transparent;border:1px solid var(--border);border-radius:8px;padding:7px 14px;color:var(--text2);cursor:pointer;margin-top:14px}\n.pwz-hint{font-size:12px;color:var(--text3);margin-bottom:12px}",
+            "usage_notes": [
+                "현장 설치 직후 검증 흐름에 맞음",
+                "사진 대조 문구를 단계에 넣음"
+            ],
+            "created_at": "2026-07-24",
+            "updated_at": "2026-07-24"
         }
     ]
 };
