@@ -81,6 +81,13 @@ $recordCount = is_dir($recordsDir) ? count(glob($recordsDir . '/*.json') ?: []) 
       <div class="dc-card-meta">localhost/copier</div>
     </a>
 
+    <a href="docs/knowledge_base/INDEX.md" class="dc-card external" target="_blank">
+      <div class="dc-card-icon">📚</div>
+      <div class="dc-card-title">통합 문서 색인</div>
+      <div class="dc-card-desc">copier·dev_center 마크다운 문서를 한곳에서 찾는 색인입니다.</div>
+      <div class="dc-card-meta">knowledge_base</div>
+    </a>
+
     <a href="README.md" class="dc-card external" target="_blank">
       <div class="dc-card-icon">📄</div>
       <div class="dc-card-title">Dev Center README</div>

@@ -1,6 +1,7 @@
 {
   "drive_folder": "개발PC_백업",
   "keep_count": 5,
+  "claude_memory_path": "%USERPROFILE%/.claude/projects/C--xampp-htdocs-copier/memory",
   "paths": [
     "C:/xampp/htdocs/copier",
     "C:/xampp/htdocs/dev_center",

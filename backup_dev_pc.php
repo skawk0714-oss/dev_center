@@ -52,6 +52,7 @@ $excludeDirs     = array_map('strtolower', (array) ($cfg['exclude_dirs'] ?? []))
 $dbAllUser       = (bool) ($cfg['db_all_user'] ?? true);
 $dbExtra         = (array) ($cfg['db_extra'] ?? []);
 $dbSysExclude    = (array) ($cfg['db_system_exclude'] ?? ['information_schema', 'performance_schema', 'mysql', 'sys']);
+$claudeMemPath   = (string) ($cfg['claude_memory_path'] ?? '');   // Claude 자동 메모리 폴더(%USERPROFILE% 등 환경변수 허용). 비면 건너뜀.
 
 // ── 임시 작업 폴더 ─────────────────────────────────────────────────────────
 $stamp   = date('Ymd_His');
@@ -171,6 +172,37 @@ foreach ($paths as $src) {
     }
     bk_log('  추가: ' . $base);
 }
+
+// Claude 자동 메모리 폴더 추가 (config의 claude_memory_path)
+// - 프로젝트 폴더 밖(.claude)이라 paths로는 안 잡혀 여기서 직접 수집.
+// - 폴더가 없거나 비어 있어도 백업을 멈추지 않고 경고만 남긴다(메모리 누락 조기 발견용).
+$memCount = 0;
+if ($claudeMemPath !== '') {
+    // %USERPROFILE% 같은 윈도우 환경변수 치환 (무인 S4U 백업에서도 해석되도록)
+    $memResolved = preg_replace_callback('/%([^%]+)%/', static function (array $m): string {
+        $v = getenv($m[1]);
+        return $v !== false ? $v : $m[0];
+    }, $claudeMemPath);
+    $memResolved = rtrim(str_replace('\\', '/', $memResolved), '/');
+    if (is_dir($memResolved)) {
+        foreach (new DirectoryIterator($memResolved) as $fi) {
+            if ($fi->isFile()) {
+                $zip->addFile($fi->getPathname(), 'claude_memory/' . $fi->getFilename());
+                $memCount++;
+            }
+        }
+        if ($memCount > 0) {
+            bk_log('  추가: claude_memory (' . $memCount . '개 메모리 파일)');
+        } else {
+            bk_log('  [경고] 메모리 폴더가 비어 있음 — claude_memory 미포함: ' . $memResolved);
+        }
+    } else {
+        bk_log('  [경고] 메모리 폴더 없음 — claude_memory 미포함: ' . $memResolved);
+    }
+} else {
+    bk_log('  [정보] claude_memory_path 미설정 — 메모리 백업 건너뜀');
+}
+
 $zip->close();
 if (!is_file($zipPath) || filesize($zipPath) === 0) {
     bk_fail('ZIP 압축 결과가 비었습니다.');

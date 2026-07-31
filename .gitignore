@@ -7,3 +7,9 @@ config.local.php
 # 로컬 환경 전용
 *.log
 *.tmp
+
+# Claude 자동 메모리 백업 사본 (구글 드라이브 백업엔 포함, git에는 제외)
+data/claude_memory/
+
+# 자격증명 백업본(.bak_날짜)도 막는다 - .json으로 끝나지 않아 위 패턴을 빠져나갔다
+data/*credentials*.json.bak*

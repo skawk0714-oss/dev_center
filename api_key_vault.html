@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API 키 보관함 🔐</title>
+<style>
+  :root{
+    --bg:#0f1216; --panel:#171c23; --panel2:#1f2630; --line:#2a323d;
+    --txt:#e6e9ee; --muted:#8b97a7; --accent:#4f8cff; --accent2:#3b6fd4;
+    --danger:#ff5c5c; --ok:#38c172; --warn:#e0a800;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:"Segoe UI","Malgun Gothic",system-ui,sans-serif;
+    background:var(--bg); color:var(--txt); min-height:100vh;
+  }
+  .wrap{max-width:900px; margin:0 auto; padding:24px 18px 60px}
+  h1{font-size:20px; margin:0; display:flex; align-items:center; gap:8px}
+  .sub{color:var(--muted); font-size:13px; margin-top:4px}
+  .card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px; margin-top:18px}
+  input,textarea,select{
+    width:100%; background:var(--panel2); border:1px solid var(--line); color:var(--txt);
+    padding:11px 12px; border-radius:9px; font-size:14px; font-family:inherit;
+  }
+  input:focus,textarea:focus{outline:none; border-color:var(--accent)}
+  label{display:block; font-size:12px; color:var(--muted); margin:12px 0 5px}
+  button{
+    background:var(--accent); color:#fff; border:0; padding:11px 16px; border-radius:9px;
+    font-size:14px; font-weight:600; cursor:pointer; transition:.15s;
+  }
+  button:hover{background:var(--accent2)}
+  button.ghost{background:transparent; border:1px solid var(--line); color:var(--txt)}
+  button.ghost:hover{background:var(--panel2)}
+  button.danger{background:transparent; border:1px solid var(--danger); color:var(--danger)}
+  button.danger:hover{background:rgba(255,92,92,.12)}
+  button.sm{padding:6px 10px; font-size:12px}
+  .row{display:flex; gap:10px; flex-wrap:wrap}
+  .center{min-height:70vh; display:flex; align-items:center; justify-content:center}
+  .center .card{width:100%; max-width:400px}
+  .hidden{display:none !important}
+  .topbar{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap}
+  .toolbar{display:flex; gap:8px; align-items:center; margin:16px 0; flex-wrap:wrap}
+  .toolbar input{flex:1; min-width:180px}
+  .entry{
+    background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding:14px 16px; margin-top:10px;
+  }
+  .entry-head{display:flex; justify-content:space-between; align-items:center; gap:10px}
+  .entry-name{font-weight:600; font-size:15px}
+  .badge{font-size:11px; color:var(--muted); background:var(--panel2); padding:2px 8px; border-radius:20px; border:1px solid var(--line)}
+  .keyline{
+    display:flex; gap:8px; align-items:center; margin-top:10px;
+    background:var(--panel2); border:1px solid var(--line); border-radius:8px; padding:8px 10px;
+  }
+  .keyval{flex:1; font-family:"Consolas",monospace; font-size:13px; word-break:break-all; letter-spacing:.5px}
+  .meta{font-size:12px; color:var(--muted); margin-top:8px; white-space:pre-wrap}
+  .empty{text-align:center; color:var(--muted); padding:40px 10px}
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    background:var(--ok); color:#fff; padding:10px 18px; border-radius:24px; font-size:13px;
+    opacity:0; transition:.25s; pointer-events:none; z-index:100;
+  }
+  .toast.show{opacity:1}
+  .hint{font-size:12px; color:var(--muted); margin-top:8px; line-height:1.6}
+  .warnbox{background:rgba(224,168,0,.1); border:1px solid var(--warn); color:#ffd873; font-size:12px; padding:10px 12px; border-radius:8px; margin-top:12px; line-height:1.6}
+  .modal-bg{position:fixed; inset:0; background:rgba(0,0,0,.6); display:flex; align-items:center; justify-content:center; z-index:50; padding:16px}
+  .modal{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:22px; width:100%; max-width:460px; max-height:90vh; overflow:auto}
+  .modal h2{margin:0 0 4px; font-size:16px}
+  .foot{display:flex; justify-content:flex-end; gap:8px; margin-top:20px}
+  .link{color:var(--accent); cursor:pointer; font-size:12px; background:none; border:0; padding:0}
+  .link:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== 최초 설정 화면 ===== -->
+  <div id="setupScreen" class="center hidden">
+    <div class="card">
+      <h1>🔐 보관함 만들기</h1>
+      <div class="sub">처음 사용하시네요. 마스터 비밀번호를 정해주세요.</div>
+      <label>마스터 비밀번호</label>
+      <input id="setupPw" type="password" placeholder="8자 이상 권장" autocomplete="new-password">
+      <label>비밀번호 확인</label>
+      <input id="setupPw2" type="password" placeholder="다시 입력" autocomplete="new-password">
+      <div class="warnbox">
+        ⚠️ <b>이 비밀번호는 복구가 불가능합니다.</b> 잊어버리면 저장된 키를 절대 열 수 없어요. 꼭 기억하거나 안전한 곳에 적어두세요.
+      </div>
+      <div class="warnbox">
+        💾 <b>보관함 생성</b>을 누르면 저장할 <b>파일 위치를 고르는 창</b>이 뜹니다. 구글드라이브 동기화 폴더 안에 <code>apikey_vault.json</code>으로 저장하면 다른 PC와 자동 동기화돼요. (창을 취소하면 이 브라우저에만 저장됩니다.)
+      </div>
+      <div class="foot">
+        <button onclick="doSetup()">보관함 생성</button>
+      </div>
+      <div class="fs-only" style="margin-top:14px; text-align:center">
+        <button class="link" onclick="openFromFile()">이미 만든 보관함 파일이 있어요 (드라이브에서 열기)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 잠금 해제 화면 ===== -->
+  <div id="lockScreen" class="center hidden">
+    <div class="card">
+      <h1>🔒 잠금 해제</h1>
+      <div class="sub">마스터 비밀번호를 입력하세요.</div>
+      <label>마스터 비밀번호</label>
+      <input id="unlockPw" type="password" placeholder="비밀번호" autocomplete="current-password" onkeydown="if(event.key==='Enter')doUnlock()">
+      <div id="unlockErr" class="warnbox hidden">비밀번호가 올바르지 않습니다.</div>
+      <div class="foot">
+        <button id="unlockBtn" onclick="doUnlock()">열기</button>
+      </div>
+      <div class="fs-only" style="margin-top:14px; text-align:center">
+        <button class="link" onclick="openFromFile()">📁 드라이브 파일에서 열기 (다른 PC / 재연결)</button>
+      </div>
+      <div style="margin-top:10px; text-align:center">
+        <button class="link" onclick="askReset()">비밀번호를 잊으셨나요? (전체 초기화)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 메인 화면 ===== -->
+  <div id="mainScreen" class="hidden">
+    <div class="topbar">
+      <div>
+        <h1>🔐 API 키 보관함</h1>
+        <div class="sub" id="countInfo"></div>
+      </div>
+      <div class="row">
+        <button class="ghost sm fs-only" onclick="saveToNewFile()">☁️ 파일로 저장</button>
+        <button class="ghost sm fs-only" onclick="reloadFromFile()">🔄 불러오기</button>
+        <button class="ghost sm fs-only" onclick="linkFile()">📁 파일 연결</button>
+        <button class="ghost sm" onclick="exportVault()">백업 내보내기</button>
+        <button class="ghost sm" onclick="document.getElementById('importFile').click()">가져오기</button>
+        <button class="ghost sm" onclick="openChangePw()">비밀번호 변경</button>
+        <button class="ghost sm" onclick="lockNow()">🔒 잠그기</button>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input id="search" placeholder="🔍 이름 / 카테고리 / 메모 검색" oninput="render()">
+      <button onclick="openEditor()">+ 키 추가</button>
+    </div>
+
+    <div id="list"></div>
+    <input id="importFile" type="file" accept=".json" class="hidden" onchange="importVault(event)">
+  </div>
+
+</div>
+
+<!-- ===== 키 추가/편집 모달 ===== -->
+<div id="editorModal" class="modal-bg hidden">
+  <div class="modal">
+    <h2 id="editorTitle">키 추가</h2>
+    <div class="sub" id="editorSub"></div>
+    <input id="editId" type="hidden">
+    <label>이름 / 서비스명 *</label>
+    <input id="editName" placeholder="예: OpenAI, 토스페이먼츠, Gemini">
+    <label>API 키 / 시크릿 *</label>
+    <textarea id="editKey" rows="3" placeholder="키 값 붙여넣기"></textarea>
+    <label>계정 / ID (선택)</label>
+    <input id="editUser" placeholder="예: user@email.com">
+    <label>카테고리 (선택)</label>
+    <input id="editCat" placeholder="예: 결제, AI, 소셜" list="catList">
+    <datalist id="catList"></datalist>
+    <label>메모 (선택)</label>
+    <textarea id="editMemo" rows="2" placeholder="발급일, 용도, 만료일 등"></textarea>
+    <div class="foot">
+      <button class="ghost" onclick="closeEditor()">취소</button>
+      <button onclick="saveEntry()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 비밀번호 변경 모달 ===== -->
+<div id="changePwModal" class="modal-bg hidden">
+  <div class="modal">
+    <h2>마스터 비밀번호 변경</h2>
+    <label>현재 비밀번호</label>
+    <input id="cpCur" type="password" autocomplete="current-password">
+    <label>새 비밀번호</label>
+    <input id="cpNew" type="password" autocomplete="new-password">
+    <label>새 비밀번호 확인</label>
+    <input id="cpNew2" type="password" autocomplete="new-password">
+    <div id="cpErr" class="warnbox hidden"></div>
+    <div class="foot">
+      <button class="ghost" onclick="closeChangePw()">취소</button>
+      <button onclick="changePw()">변경</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+"use strict";
+const LS_KEY = "akv_vault";
+const ITER = 200000;
+const enc = new TextEncoder();
+const dec = new TextDecoder();
+
+let masterPw = null;   // 잠금 해제 중에만 메모리에 존재
+let entries = [];      // 복호화된 키 목록
+let idleTimer = null;
+const IDLE_MS = 10 * 60 * 1000; // 10분 무활동 시 자동 잠금
+let unlockFails = 0;   // 연속 실패 횟수 (점진적 지연용)
+let unlocking = false; // 중복 클릭 방지
+let fileHandle = null; // 구글드라이브 등에 연결된 보관함 파일 핸들
+const FS_OK = ("showSaveFilePicker" in window); // File System Access API 지원 여부
+
+// ---------- 유틸 ----------
+const $ = id => document.getElementById(id);
+const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+function toast(msg, color){
+  const t = $("toast");
+  t.textContent = msg;
+  t.style.background = color || "var(--ok)";
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1600);
+}
+function show(id){ ["setupScreen","lockScreen","mainScreen"].forEach(s => $(s).classList.add("hidden")); $(id).classList.remove("hidden"); }
+function esc(s){ return (s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+// ---------- 암호화 ----------
+async function deriveKey(pw, salt){
+  const base = await crypto.subtle.importKey("raw", enc.encode(pw), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey(
+    { name:"PBKDF2", salt, iterations:ITER, hash:"SHA-256" },
+    base, { name:"AES-GCM", length:256 }, false, ["encrypt","decrypt"]
+  );
+}
+async function encryptVault(obj, pw){
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveKey(pw, salt);
+  const ct = await crypto.subtle.encrypt({ name:"AES-GCM", iv }, key, enc.encode(JSON.stringify(obj)));
+  return { v:1, salt:b64(salt), iv:b64(iv), data:b64(ct) };
+}
+async function decryptVault(vault, pw){
+  const key = await deriveKey(pw, unb64(vault.salt));
+  const pt = await crypto.subtle.decrypt({ name:"AES-GCM", iv:unb64(vault.iv) }, key, unb64(vault.data));
+  return JSON.parse(dec.decode(pt));
+}
+async function persist(){
+  const vault = await encryptVault(entries, masterPw);
+  const str = JSON.stringify(vault);
+  localStorage.setItem(LS_KEY, str);   // 항상 로컬 캐시(안전망)
+  if(fileHandle){
+    try{
+      if(await ensurePermission(fileHandle, "readwrite")) await writeToFile(str);
+      else toast("파일 접근 권한이 없어 로컬에만 저장됨", "var(--warn)");
+    }catch(e){
+      toast("파일 저장 실패 — 로컬에만 저장됨", "var(--warn)");
+    }
+  }
+}
+
+// ---------- 파일(구글드라이브) 연동 ----------
+// IndexedDB에 파일 핸들 보관 (새로고침해도 연결 유지)
+function idb(mode, fn){
+  return new Promise((res, rej) => {
+    const o = indexedDB.open("akv_db", 1);
+    o.onupgradeneeded = () => o.result.createObjectStore("kv");
+    o.onerror = () => rej(o.error);
+    o.onsuccess = () => {
+      const db = o.result;
+      const tx = db.transaction("kv", mode);
+      const store = tx.objectStore("kv");
+      const r = fn(store);
+      tx.oncomplete = () => { db.close(); res(r && r.result); };
+      tx.onerror = () => { db.close(); rej(tx.error); };
+    };
+  });
+}
+const idbSetHandle = h => idb("readwrite", s => s.put(h, "vault"));
+const idbGetHandle = () => idb("readonly",  s => s.get("vault"));
+const idbDelHandle = () => idb("readwrite", s => s.delete("vault"));
+
+async function ensurePermission(handle, mode){
+  const opts = { mode };
+  if((await handle.queryPermission(opts)) === "granted") return true;
+  return (await handle.requestPermission(opts)) === "granted";
+}
+async function readFromFile(){
+  const f = await fileHandle.getFile();
+  return JSON.parse(await f.text());
+}
+async function writeToFile(str){
+  const w = await fileHandle.createWritable();
+  await w.write(str);
+  await w.close();
+}
+// 새 보관함 파일을 드라이브 폴더에 생성/선택
+async function linkNewFile(){
+  fileHandle = await window.showSaveFilePicker({
+    suggestedName: "apikey_vault.json",
+    types: [{ description: "API Key Vault", accept: { "application/json": [".json"] } }]
+  });
+  await idbSetHandle(fileHandle);
+}
+// 기존 보관함 파일을 선택해 연결 (다른 PC에서 최초 연결 시)
+async function linkExistingFile(){
+  const [h] = await window.showOpenFilePicker({
+    types: [{ description: "API Key Vault", accept: { "application/json": [".json"] } }]
+  });
+  fileHandle = h;
+  await idbSetHandle(fileHandle);
+}
+// 툴바: 파일 연결/변경
+async function linkFile(){
+  try{
+    if(!confirm("연결할 보관함 파일을 선택하세요.\n(구글드라이브 동기화 폴더 안의 apikey_vault.json 등)\n\n선택한 파일 내용으로 현재 화면을 새로 불러옵니다.")) return;
+    await linkExistingFile();
+    const vault = await readFromFile();
+    localStorage.setItem(LS_KEY, JSON.stringify(vault));
+    try{
+      entries = await decryptVault(vault, masterPw);
+      render();
+      toast("파일 연결됨 · 최신 내용 불러옴 ☁️");
+    }catch(e){
+      toast("파일 연결됨. 이 파일의 비밀번호로 다시 잠금 해제하세요.", "var(--warn)");
+      lockNow();
+    }
+  }catch(e){ /* 사용자가 취소 */ }
+}
+// 툴바: 현재 화면의 키들을 새 파일에 저장하고 그 파일에 연결
+async function saveToNewFile(){
+  if(!masterPw) return;
+  try{
+    await linkNewFile(); // 저장 위치 선택 → fileHandle 설정 + 기억
+    await persist();     // 현재 entries를 그 파일에 기록
+    render();
+    toast("파일에 저장하고 연결했습니다 ☁️");
+  }catch(e){ /* 사용자가 취소 */ }
+}
+// 설정/잠금 화면: 이미 만든 드라이브 파일을 열기
+async function openFromFile(){
+  try{
+    await linkExistingFile(); // 파일 선택 → fileHandle 설정 + 기억
+    show("lockScreen"); $("unlockPw").focus();
+    $("unlockErr").classList.add("hidden");
+    toast("파일 연결됨. 마스터 비밀번호로 여세요 🔑");
+  }catch(e){ /* 사용자가 취소 */ }
+}
+// 툴바: 파일에서 다시 불러오기 (다른 PC에서 바뀐 내용 동기화)
+async function reloadFromFile(){
+  if(!fileHandle) return toast("연결된 파일이 없습니다.", "var(--warn)");
+  try{
+    if(!(await ensurePermission(fileHandle, "readwrite"))) return toast("파일 접근 권한이 필요합니다.", "var(--danger)");
+    const vault = await readFromFile();
+    localStorage.setItem(LS_KEY, JSON.stringify(vault));
+    entries = await decryptVault(vault, masterPw);
+    render();
+    toast("파일에서 최신 내용을 불러왔습니다 🔄");
+  }catch(e){
+    toast("불러오기 실패 (비밀번호가 다르거나 파일 오류)", "var(--danger)");
+  }
+}
+
+// ---------- 화면 흐름 ----------
+async function boot(){
+  if(!("crypto" in window) || !crypto.subtle){
+    alert("이 브라우저는 암호화(Web Crypto)를 지원하지 않습니다. 최신 크롬/엣지에서 열어주세요.");
+    return;
+  }
+  // 브라우저가 파일 연동을 지원하지 않으면 관련 UI 숨김
+  if(!FS_OK) document.querySelectorAll(".fs-only").forEach(el => el.classList.add("hidden"));
+  // 이전에 연결한 파일 핸들 복원
+  if(FS_OK){
+    try{ fileHandle = await idbGetHandle() || null; }catch(e){ fileHandle = null; }
+  }
+  if(fileHandle || localStorage.getItem(LS_KEY)) show("lockScreen"), $("unlockPw").focus();
+  else show("setupScreen"), $("setupPw").focus();
+}
+async function doSetup(){
+  const pw = $("setupPw").value, pw2 = $("setupPw2").value;
+  if(pw.length < 8) return toast("비밀번호는 8자 이상이어야 합니다.", "var(--danger)");
+  if(pw !== pw2) return toast("비밀번호 확인이 일치하지 않습니다.", "var(--danger)");
+  // 드라이브 폴더에 보관함 파일 생성 (지원 브라우저 한정, 취소 가능)
+  if(FS_OK){
+    try{ await linkNewFile(); }
+    catch(e){ /* 취소 시 이 브라우저에만 저장 */ }
+  }
+  masterPw = pw; entries = [];
+  await persist();
+  $("setupPw").value = $("setupPw2").value = "";
+  enterMain();
+  toast(fileHandle ? "보관함 파일이 생성되었습니다 ☁️" : "보관함이 생성되었습니다 🎉");
+}
+async function doUnlock(){
+  if(unlocking) return;
+  const pw = $("unlockPw").value;
+  const errBox = $("unlockErr");
+  const btn = $("unlockBtn");
+
+  // 연결된 파일이 있으면 파일에서 최신본을 읽고, 없으면 로컬 캐시 사용
+  let vault;
+  try{
+    if(fileHandle){
+      if(!(await ensurePermission(fileHandle, "readwrite"))){
+        errBox.textContent = "파일 접근 권한이 필요합니다. ‘열기’를 다시 눌러 허용해 주세요.";
+        errBox.classList.remove("hidden");
+        return;
+      }
+      vault = await readFromFile();
+      localStorage.setItem(LS_KEY, JSON.stringify(vault)); // 캐시 갱신
+    } else {
+      vault = JSON.parse(localStorage.getItem(LS_KEY));
+    }
+    if(!vault || !vault.salt || !vault.iv || !vault.data) throw 0;
+  }catch(e){
+    errBox.textContent = fileHandle
+      ? "보관함 파일을 읽을 수 없습니다. 파일 위치/권한을 확인하거나 ‘파일 연결’로 다시 선택하세요."
+      : "저장된 보관함 데이터가 손상되었습니다. 백업 파일에서 가져오기를 이용하세요.";
+    errBox.classList.remove("hidden");
+    return;
+  }
+
+  // 연속 실패 시 점진적 지연 (0.5초 × 실패횟수, 최대 5초)
+  unlocking = true;
+  if(btn) btn.disabled = true;
+  if(unlockFails > 0){
+    const wait = Math.min(unlockFails * 500, 5000);
+    errBox.textContent = `잠시 후 다시 시도하세요… (${(wait/1000).toFixed(1)}초)`;
+    errBox.classList.remove("hidden");
+    await new Promise(r => setTimeout(r, wait));
+  }
+
+  try{
+    entries = await decryptVault(vault, pw);
+    masterPw = pw;
+    unlockFails = 0;
+    $("unlockPw").value = ""; errBox.classList.add("hidden");
+    enterMain();
+  }catch(e){
+    unlockFails++;
+    errBox.textContent = `비밀번호가 올바르지 않습니다. (실패 ${unlockFails}회)`;
+    errBox.classList.remove("hidden");
+    $("unlockPw").select();
+  }finally{
+    unlocking = false;
+    if(btn) btn.disabled = false;
+  }
+}
+function enterMain(){
+  show("mainScreen");
+  render();
+  resetIdle();
+}
+function lockNow(){
+  masterPw = null; entries = [];
+  clearTimeout(idleTimer);
+  show("lockScreen");
+  $("unlockPw").value = ""; $("unlockPw").focus();
+}
+async function askReset(){
+  if(confirm("전체 초기화하면 이 브라우저의 저장 내용과 파일 연결이 해제됩니다.\n(구글드라이브의 파일 자체는 삭제되지 않습니다.) 정말 진행할까요?")){
+    localStorage.removeItem(LS_KEY);
+    try{ await idbDelHandle(); }catch(e){}
+    fileHandle = null;
+    location.reload();
+  }
+}
+// 자동 잠금
+function resetIdle(){
+  clearTimeout(idleTimer);
+  if(masterPw) idleTimer = setTimeout(lockNow, IDLE_MS);
+}
+["click","keydown","mousemove"].forEach(ev => document.addEventListener(ev, () => { if(masterPw) resetIdle(); }));
+
+// ---------- 목록 렌더 ----------
+function render(){
+  const q = ($("search").value || "").toLowerCase().trim();
+  const cats = [...new Set(entries.map(e => e.category).filter(Boolean))];
+  $("catList").innerHTML = cats.map(c => `<option value="${esc(c)}">`).join("");
+  $("countInfo").innerHTML = `저장된 키 ${entries.length}개` +
+    (FS_OK ? (fileHandle ? ` · ☁️ <b>${esc(fileHandle.name)}</b> 연결됨` : " · ⚠️ 이 브라우저에만 저장 중") : "");
+
+  let list = entries.slice().sort((a,b) => (a.name||"").localeCompare(b.name||""));
+  if(q) list = list.filter(e =>
+    (e.name||"").toLowerCase().includes(q) ||
+    (e.category||"").toLowerCase().includes(q) ||
+    (e.memo||"").toLowerCase().includes(q) ||
+    (e.username||"").toLowerCase().includes(q)
+  );
+
+  if(!list.length){
+    $("list").innerHTML = `<div class="empty">${entries.length ? "검색 결과가 없습니다." : "아직 저장된 키가 없습니다. <br>‘+ 키 추가’로 시작하세요."}</div>`;
+    return;
+  }
+  $("list").innerHTML = list.map(e => `
+    <div class="entry">
+      <div class="entry-head">
+        <span class="entry-name">${esc(e.name)}${e.category ? ` <span class="badge">${esc(e.category)}</span>` : ""}</span>
+        <div class="row">
+          <button class="ghost sm" onclick="openEditor('${e.id}')">편집</button>
+          <button class="danger sm" onclick="delEntry('${e.id}')">삭제</button>
+        </div>
+      </div>
+      ${e.username ? `<div class="meta">👤 ${esc(e.username)}</div>` : ""}
+      <div class="keyline">
+        <span class="keyval" id="k_${e.id}" data-full="${esc(e.key)}">${mask(e.key)}</span>
+        <button class="ghost sm" onclick="toggleKey('${e.id}')" id="t_${e.id}">보기</button>
+        <button class="sm" onclick="copyKey('${e.id}')">복사</button>
+      </div>
+      ${e.memo ? `<div class="meta">📝 ${esc(e.memo)}</div>` : ""}
+    </div>
+  `).join("");
+}
+function mask(k){ return k ? "•".repeat(Math.min(k.length, 40)) : ""; }
+function toggleKey(id){
+  const el = $("k_"+id), btn = $("t_"+id), full = el.getAttribute("data-full");
+  if(btn.textContent === "보기"){ el.textContent = full; btn.textContent = "숨김"; }
+  else { el.textContent = mask(full); btn.textContent = "보기"; }
+}
+async function copyKey(id){
+  const e = entries.find(x => x.id === id);
+  try{ await navigator.clipboard.writeText(e.key); toast("클립보드에 복사됨 📋"); }
+  catch(err){ toast("복사 실패 (브라우저 권한 확인)", "var(--danger)"); }
+}
+
+// ---------- 추가/편집 ----------
+function openEditor(id){
+  const e = id ? entries.find(x => x.id === id) : null;
+  $("editorTitle").textContent = e ? "키 편집" : "키 추가";
+  $("editorSub").textContent = e ? "" : "";
+  $("editId").value = e ? e.id : "";
+  $("editName").value = e ? e.name : "";
+  $("editKey").value = e ? e.key : "";
+  $("editUser").value = e ? (e.username||"") : "";
+  $("editCat").value = e ? (e.category||"") : "";
+  $("editMemo").value = e ? (e.memo||"") : "";
+  $("editorModal").classList.remove("hidden");
+  $("editName").focus();
+}
+function closeEditor(){ $("editorModal").classList.add("hidden"); }
+async function saveEntry(){
+  const name = $("editName").value.trim();
+  const key = $("editKey").value.trim();
+  if(!name || !key) return toast("이름과 키는 필수입니다.", "var(--danger)");
+  const id = $("editId").value;
+  const data = {
+    name, key,
+    username: $("editUser").value.trim(),
+    category: $("editCat").value.trim(),
+    memo: $("editMemo").value.trim(),
+    updated: new Date().toISOString().slice(0,10)
+  };
+  if(id){ Object.assign(entries.find(x => x.id === id), data); }
+  else { entries.push({ id:uid(), ...data }); }
+  await persist();
+  closeEditor(); render();
+  toast("저장되었습니다 ✅");
+}
+async function delEntry(id){
+  const e = entries.find(x => x.id === id);
+  if(!confirm(`"${e.name}" 키를 삭제할까요?`)) return;
+  entries = entries.filter(x => x.id !== id);
+  await persist(); render();
+  toast("삭제되었습니다");
+}
+
+// ---------- 비밀번호 변경 ----------
+function openChangePw(){ $("cpErr").classList.add("hidden"); $("cpCur").value=$("cpNew").value=$("cpNew2").value=""; $("changePwModal").classList.remove("hidden"); }
+function closeChangePw(){ $("changePwModal").classList.add("hidden"); }
+async function changePw(){
+  const cur = $("cpCur").value, nw = $("cpNew").value, nw2 = $("cpNew2").value;
+  const err = m => { $("cpErr").textContent = m; $("cpErr").classList.remove("hidden"); };
+  if(cur !== masterPw) return err("현재 비밀번호가 올바르지 않습니다.");
+  if(nw.length < 8) return err("새 비밀번호는 8자 이상이어야 합니다.");
+  if(nw !== nw2) return err("새 비밀번호 확인이 일치하지 않습니다.");
+  masterPw = nw;
+  await persist();
+  closeChangePw();
+  toast("비밀번호가 변경되었습니다 🔑");
+}
+
+// ---------- 백업 ----------
+function exportVault(){
+  const raw = localStorage.getItem(LS_KEY);
+  if(!raw) return;
+  const blob = new Blob([raw], { type:"application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `apikey_backup_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast("암호화된 백업이 저장되었습니다 💾");
+}
+function importVault(ev){
+  const file = ev.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try{
+      const v = JSON.parse(reader.result);
+      if(!v.salt || !v.iv || !v.data) throw new Error("형식 오류");
+      if(!confirm("가져오면 현재 보관함을 덮어씁니다. 계속할까요?\n(가져온 뒤 그 파일의 마스터 비밀번호로 잠금 해제해야 합니다.)")) return;
+      const str = JSON.stringify(v);
+      localStorage.setItem(LS_KEY, str);
+      // 연결된 파일이 있으면 그 파일에도 반영
+      if(fileHandle){
+        try{ if(await ensurePermission(fileHandle, "readwrite")) await writeToFile(str); }catch(e){}
+      }
+      masterPw = null; entries = [];
+      location.reload();
+    }catch(e){ toast("올바른 백업 파일이 아닙니다.", "var(--danger)"); }
+  };
+  reader.readAsText(file);
+  ev.target.value = "";
+}
+
+boot();
+</script>
+</body>
+</html>
